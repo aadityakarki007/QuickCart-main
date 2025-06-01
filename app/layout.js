@@ -1,4 +1,4 @@
-// app/layout.js (or layout.tsx)
+// app/layout.js
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import { AppContextProvider } from "@/context/AppContext";
@@ -15,7 +15,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body className={`${outfit.className} antialiased text-gray-700`}>
           <Toaster />
           <AppContextProvider>
