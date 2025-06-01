@@ -51,3 +51,4 @@ export const deleteUserData = inngest.createFunction(
     return { status: "success" };  // <--- RETURN here
   }
 );
+
