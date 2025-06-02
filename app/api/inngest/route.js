@@ -6,6 +6,6 @@ export const { GET, POST, PUT } = serve({
   functions: [
     syncUserData,
     updateUserData,
-    deleteUserData,
-  ],
+    deleteUserData
+  ]
 });
