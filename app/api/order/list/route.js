@@ -15,10 +15,14 @@ export async function GET(request){
             return NextResponse.json({success: false, message: "Unauthorized"}, {status: 401})
         }
 
-        const orders = await Order.find({userId}).populate({
-            path: 'items.product',
-            model: Product
-        })
+        // @ts-ignore - Mongoose typing issue
+        const orders = await Order.find({userId})
+            .populate({
+                path: 'items.product',
+                model: Product
+            })
+            .lean()
+            .exec()
 
         return NextResponse.json({success: true, orders})
     } catch (error) {

@@ -20,7 +20,12 @@ export async function GET(request){
 
         await connectDB()
 
-        const orders = await Order.find({}).populate('items.product').populate('address')
+        // @ts-ignore - Mongoose typing issue
+        const orders = await Order.find({})
+            .populate('items.product')
+            .populate('address')
+            .lean()
+            .exec()
         return NextResponse.json({success: true, orders})
     } catch (error) {
         console.error("Error in seller-orders:", error)

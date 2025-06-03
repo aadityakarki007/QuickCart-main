@@ -30,13 +30,15 @@ export async function POST(request){
         }
 
         // Find user first
-        const user = await User.findById(userId)
+        // @ts-ignore - Mongoose typing issue
+        const user = await User.findById(userId).exec()
         if (!user) {
             return NextResponse.json({success: false, message: "User not found"}, {status: 404})
         }
 
         // Get all available products
-        const allProducts = await Product.find({}).sort({ date: -1 });
+        // @ts-ignore - Mongoose typing issue
+        const allProducts = await Product.find({}).sort({ date: -1 }).exec();
         
         // Map to store available products by ID for quick lookup
         const availableProducts = new Map();
@@ -70,24 +72,25 @@ export async function POST(request){
         }
 
         // Calculate amount using reduce
-        const amount = await items.reduce(async (acc, item) => {
+        const amount = items.reduce((acc, item) => {
             const product = products.find(p => p._id.toString() === item.product);
-            return await acc + product.offerPrice * item.quantity;
-        }, Promise.resolve(0));
+            return acc + (product.offerPrice || product.price) * item.quantity;
+        }, 0);
 
         // Calculate tax and total amount
         const tax = Math.floor(amount * 0.02); // 2% tax
         const totalAmount = amount + tax;
 
         // Create order in database
-        const order = await Order.create({
+        // @ts-ignore - Mongoose typing issue
+        const order = new Order({
             userId: userId,
             items: items.map(item => ({
                 product: item.product,
                 quantity: item.quantity
             })),
-            amount: totalAmount,
-            address: JSON.stringify({
+            totalAmount,
+            address: {
                 userId: userId,
                 fullName: address.fullName,
                 PhoneNumber: address.PhoneNumber,
@@ -95,9 +98,8 @@ export async function POST(request){
                 area: address.area,
                 city: address.city,
                 province: address.province
-            }),
+            },
             status: 'Order Placed',
-            amount,
             date: Date.now(),
             paymentMethod
         });

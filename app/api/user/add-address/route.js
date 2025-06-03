@@ -18,7 +18,7 @@ export async function POST(request){
             return NextResponse.json({success: false, message: "Address data is required"}, {status: 400})
         }
 
-        const newAddress = await Address.create({
+        const newAddress = new Address({
             userId,
             fullName: addressData.fullName,
             PhoneNumber: addressData.phoneNumber,
@@ -28,6 +28,7 @@ export async function POST(request){
             province: addressData.province
         })
 
+        await newAddress.save()
         return NextResponse.json({success: true, message: "Address added successfully", newAddress})
         
     } catch (error) {

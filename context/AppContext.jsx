@@ -3,29 +3,57 @@
 import { productsDummyData, userDummyData } from "@/assets/assets";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { createContext, useContext, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
+import toast from "react-hot-toast";
 
-export const AppContext = createContext();
+export const AppContext = createContext({
+  cart: [],
+  setCart: (cart) => {},
+  loading: false,
+  setLoading: (loading) => {},
+  user: null,
+  setUser: (user) => {},
+  currency: "",
+  router: null,
+  isSeller: false,
+  setIsSeller: (isSeller) => {},
+  cartItems: [],
+  setCartItems: (items) => {},
+  products: [],
+  setProducts: (products) => {},
+  getCartCount: () => 0,
+  getCartAmount: () => 0,
+  getToken: async () => "",
+});
 
 export const useAppContext = () => {
     return useContext(AppContext);
 }
 
-export const AppContextProvider = (props) => {
+    /**
+     * Provider component for the AppContext.
+     *
+     * The AppContextProvider fetches product data and user data on mount.
+     * It also provides functions to add and update items in the cart.
+     * The context value includes the current cart, a function to set the cart,
+     * a boolean indicating whether the user is a seller, a function to set that boolean,
+     * a function to get the total number of items in the cart, and a function to get the total amount of the cart.
+     * @param {{ children: React.ReactNode }} props
+     * @returns {React.ReactElement} The AppContextProvider component.
+     */
+export const AppContextProvider = ({ children }) => {
 
-    const currency = "Rs. "
-    const router = useRouter()
-
-    const { user } = useUser()
-    const { getToken } = useAuth()
-
-    const [products, setProducts] = useState([]);
-    const [userData, setUserData] = useState(false);
+    const { getToken } = useAuth();
+    const { user } = useUser();
+    const router = useRouter();
+    const currency = "NPR";
+    const [loading, setLoading] = useState(false);
     const [isSeller, setIsSeller] = useState(false);
-    const [cartItems, setCartItems] = useState({});
+    const [userData, setUserData] = useState(null);
+    const [products, setProducts] = useState([]);
+    const [cartItems, setCartItems] = useState([]);
 
     const fetchProductData = async () => {
         try {
@@ -158,19 +186,31 @@ export const AppContextProvider = (props) => {
     }, [user]);
 
     const value = {
-        user, getToken,
-        currency, router,
-        isSeller, setIsSeller,
-        userData, fetchUserData,
-        products, fetchProductData,
-        cartItems, setCartItems,
-        addToCart, updateCartQuantity,
-        getCartCount, getCartAmount
+        cart: cartItems,
+        setCart: setCartItems,
+        loading,
+        setLoading,
+        user,
+        setUser: () => {},
+        currency,
+        router,
+        isSeller,
+        setIsSeller,
+        cartItems,
+        setCartItems,
+        products,
+        setProducts,
+        getCartCount: () => cartItems.reduce((a, b) => a + (b.quantity || 0), 0),
+        getCartAmount: () => cartItems.reduce((total, item) => {
+            const product = products.find(p => p._id === item.productId);
+            return total + (product ? product.price * (item.quantity || 0) : 0);
+        }, 0),
+        getToken
     };
 
     return (
         <AppContext.Provider value={value}>
-            {props.children}
+            {children}
         </AppContext.Provider>
     );
 }

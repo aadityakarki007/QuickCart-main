@@ -50,8 +50,7 @@ const OrderSummary = () => {
         return toast.error("Please select a payment method")
       }
 
-      let cartItemsArray = Object.keys(cartItems).map((key) => ({product: key, quantity: cartItems[key] }))
-      cartItemsArray = cartItemsArray.filter((item) => item.quantity > 0)
+      let cartItemsArray = cartItems.filter(item => item.quantity > 0)
       
       if(cartItemsArray.length === 0){
         return toast.error("Your cart is empty")
@@ -62,7 +61,7 @@ const OrderSummary = () => {
       const response = await axios.post('/api/order/create', {
         address: selectedAddress,  // Send the full address object
         items: cartItemsArray,
-        paymentMethod: selectedPayment
+        paymentMethod: selectedPayment.id
       }, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -103,7 +102,10 @@ const OrderSummary = () => {
           <div className="relative inline-block w-full text-sm border">
             <button
               className="peer w-full text-left px-4 pr-2 py-2 bg-white text-gray-700 focus:outline-none"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              onClick={(e) => {
+                e.preventDefault();
+                setIsDropdownOpen(!isDropdownOpen);
+              }}
             >
               <span>
                 {selectedAddress
@@ -123,13 +125,19 @@ const OrderSummary = () => {
                   <li
                     key={index}
                     className="px-4 py-2 hover:bg-gray-500/10 cursor-pointer"
-                    onClick={() => handleAddressSelect(address)}
+                    onClick={(e) => {
+                  e.preventDefault();
+                  handleAddressSelect(address);
+                }}
                   >
                     {address.fullName}, {address.area}, {address.city}, {address.province}
                   </li>
                 ))}
                 <li
-                  onClick={() => router.push("/add-address")}
+                  onClick={(e) => {
+                  e.preventDefault();
+                  router.push("/add-address");
+                }}
                   className="px-4 py-2 hover:bg-gray-500/10 cursor-pointer text-center"
                 >
                   + Add New Address
@@ -165,8 +173,11 @@ const OrderSummary = () => {
             {paymentMethods.map((method) => (
               <button
                 key={method.id}
-                onClick={() => setSelectedPayment(method.id)}
-                className={`border rounded-lg flex items-center justify-center hover:border-orange-500 transition-colors h-24 ${selectedPayment === method.id ? 'border-orange-500' : 'border-gray-200'}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelectedPayment(method);
+                }}
+                className={`border rounded-lg flex items-center justify-center hover:border-orange-500 transition-colors h-24 ${selectedPayment?.id === method.id ? 'border-orange-500' : 'border-gray-200'}`}
               >
                 <img src={method.image} alt={method.name} className="w-[90%] h-[90%] object-contain" />
               </button>
@@ -194,7 +205,10 @@ const OrderSummary = () => {
         </div>
       </div>
 
-      <button onClick={createOrder} className="w-full bg-orange-600 text-white py-3 mt-5 hover:bg-orange-700">
+      <button onClick={(e) => {
+        e.preventDefault();
+        createOrder();
+      }} className="w-full bg-orange-600 text-white py-3 mt-5 hover:bg-orange-700">
         Place Order
       </button>
     </div>

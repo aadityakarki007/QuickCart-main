@@ -11,7 +11,8 @@ export async function POST(request) {
         const { cartData } = await request.json()
 
         await connectDB()
-        const user = await User.findById(userId)
+        // @ts-ignore - Mongoose typing issue
+        const user = await User.findById(userId).exec()
         
         if (!user) {
             return NextResponse.json({ success: false, error: "User not found" }, { status: 404 })
