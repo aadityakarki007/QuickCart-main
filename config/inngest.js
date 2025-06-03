@@ -1,13 +1,18 @@
 import { Inngest } from "inngest";
 import connectDB from "./db";
 import User from "@/models/user";
+import Order from "@/models/Order";
 
 
 // Create a client to send and receive events
-export const inngest = new Inngest({ id: "quickcart-inngest" });
+export const inngest = new Inngest({
+  id: "quickcart-inngest",
+  eventKey: process.env.INNGEST_EVENT_KEY,
+  signingKey: process.env.INNGEST_SIGNING_KEY
+});
 
 // Save user data
-export const syncUserData = inngest.createFunction(
+export const syncUserCreation = inngest.createFunction(
   { id: 'quickcart-next-sync-user-from-clerk' },
   { event: 'clerk.user.created' },
   async ({ event, step }) => {
@@ -37,7 +42,7 @@ export const syncUserData = inngest.createFunction(
 );
 
 // Update user data
-export const updateUserData = inngest.createFunction(
+export const syncUserUpdation = inngest.createFunction(
   { id: 'quickcart-next-update-user-from-clerk' },
   { event: 'clerk.user.updated' },
   async ({ event, step }) => {
@@ -67,7 +72,7 @@ export const updateUserData = inngest.createFunction(
 );
 
 // Delete user data
-export const deleteUserData = inngest.createFunction(
+export const syncUserDeletion = inngest.createFunction(
   { id: 'quickcart-next-delete-user-with-clerk' },
   { event: 'clerk.user.deleted' },
   async ({ event, step }) => {
@@ -92,31 +97,37 @@ export const deleteUserData = inngest.createFunction(
 
 //Inngest function to create user's order in database
 export const createOrder = inngest.createFunction(
-  { id: 'create-user-order', 
+  { 
+    id: 'create-user-order',
     batchEvents: {
       maxSize: 25,
       timeout: '5s',
-}
-
+    }
   },
-  {event: 'order/created'},
-  async ({events, step}) => {
-   
-    const orders = events.map((event) => {
-      return{
-        userId:event.data.userId,
+  { event: 'order/created' },
+  async ({ events, step }) => {
+    try {
+      const orders = events.map((event) => ({
+        userId: event.data.userId,
         items: event.data.items,
         amount: event.data.amount,
         address: event.data.address,
         date: Date.now()
-      }
-    })
-  
-      await connectDB();
-      await Order.insertMany(orders);
+      }));
 
-    
-    return { success: true,processed: orders.length };
+      await step.run('connect-to-db', async () => {
+        await connectDB();
+      });
+
+      await step.run('create-orders', async () => {
+        await Order.insertMany(orders);
+      });
+
+      return { success: true, processed: orders.length };
+    } catch (error) {
+      console.error('Error in createOrder:', error);
+      return { success: false, error: error.message };
+    }
   }
     
 )
