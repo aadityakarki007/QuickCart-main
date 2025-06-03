@@ -2,23 +2,91 @@
 import React, { useState } from "react";
 import { assets } from "@/assets/assets";
 import Image from "next/image";
+import Link from "next/link";
+import { useAppContext } from "@/context/AppContext";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { ListFilter } from "lucide-react";
 
 const AddProduct = () => {
+  
+  const { getToken } = useAppContext()
 
   const [files, setFiles] = useState([]);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('Earphone');
+  const [category, setCategory] = useState('Electronic Devices');
   const [price, setPrice] = useState('');
   const [offerPrice, setOfferPrice] = useState('');
+  const [shippingFee, setShippingFee] = useState('0');
+  const [deliveryCharge, setDeliveryCharge] = useState('0');
+  const [sellerName, setSellerName] = useState('');
+  const [brand, setBrand] = useState('Generic');
+  const [color, setColor] = useState('Multi');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const formData = new FormData()
+
+    formData.append('name',name)
+    formData.append('description',description)
+    formData.append('category',category)
+    formData.append('price',price)
+    formData.append('offerPrice',offerPrice)
+    formData.append('shippingFee',shippingFee)
+    formData.append('deliveryCharge',deliveryCharge)
+    formData.append('sellerName',sellerName)
+    formData.append('brand',brand)
+    formData.append('color',color)
+
+    for (let i = 0; i < files.length; i++) {
+      formData.append('images',files[i])
+    
+    }
+
+    try {
+      const token = await getToken()
+
+      const { data } = await axios.post('/api/product/add',formData,{headers:{Authorization: `Bearer ${token}`}})
+
+      if(data.success){
+        toast.success(data.message)
+        setFiles([]);
+        setName('');
+        setDescription('');
+        setCategory('Electronic Devices');
+        setPrice('');
+        setOfferPrice('');
+        setShippingFee('0');
+        setDeliveryCharge('0');
+        setSellerName('');
+        setBrand('Generic');
+        setColor('Multi');
+
+      } else {
+        toast.error(data.message)
+      }
+    } 
+    
+    catch (error) {
+      toast.error(error.message)
+      
+    }
+
+    
 
   };
 
   return (
     <div className="flex-1 min-h-screen flex flex-col justify-between">
+      <div className="p-4 flex justify-between items-center border-b">
+        <h1 className="text-xl font-semibold">Seller Dashboard</h1>
+        <Link href="/seller/manage-products" className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
+          <ListFilter size={18} className="mr-2" />
+          Manage Products
+        </Link>
+      </div>
       <form onSubmit={handleSubmit} className="md:p-10 p-4 space-y-5 max-w-lg">
         <div>
           <p className="text-base font-medium">Product Image</p>
@@ -86,13 +154,32 @@ const AddProduct = () => {
               onChange={(e) => setCategory(e.target.value)}
               defaultValue={category}
             >
-              <option value="Earphone">Earphone</option>
-              <option value="Headphone">Headphone</option>
-              <option value="Watch">Watch</option>
-              <option value="Smartphone">Smartphone</option>
-              <option value="Laptop">Laptop</option>
-              <option value="Camera">Camera</option>
-              <option value="Accessories">Accessories</option>
+              <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
+              <option value="Home & Lifestyle">Home & Lifestyle</option>
+              <option value="Sports & Outdoor">Sports & Outdoor</option>
+              <option value="Electronic Accessories">Electronic Accessories</option>
+              <option value="Groceries & Pets">Groceries & Pets</option>
+              <option value="Electronic Devices">Electronic Devices</option>
+              <option value="Men's Fashion">Men's Fashion</option>
+              <option value="Watches & Accessories">Watches & Accessories</option>
+              <option value="Women's Fashion">Women's Fashion</option>
+              <option value="Health & Beauty">Health & Beauty</option>
+              <option value="Babies & Toys">Babies & Toys</option>
+              <option value="Clothing & Accessories">Clothing & Accessories</option>
+              <option value="Sports & Outdoor Play">Sports & Outdoor Play</option>
+              <option value="Nursery">Nursery</option>
+              <option value="Disposable Diapers">Disposable Diapers</option>
+              <option value="Diapering & Potty">Diapering & Potty</option>
+              <option value="Pacifiers & Accessories">Pacifiers & Accessories</option>
+              <option value="Feeding">Feeding</option>
+              <option value="Remote Control & Vehicles">Remote Control & Vehicles</option>
+              <option value="Baby Gear">Baby Gear</option>
+              <option value="Baby & Toddler Toys">Baby & Toddler Toys</option>
+              <option value="Toys & Games">Toys & Games</option>
+              <option value="Baby Personal Care">Baby Personal Care</option>
+              <option value="Soaps, Cleansers & Bodywash">Soaps, Cleansers & Bodywash</option>
+              <option value="Baby Bath">Baby Bath</option>
+              <option value="Bathing Tubs & Seats">Bathing Tubs & Seats</option>
             </select>
           </div>
           <div className="flex flex-col gap-1 w-32">
@@ -120,6 +207,78 @@ const AddProduct = () => {
               className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
               onChange={(e) => setOfferPrice(e.target.value)}
               value={offerPrice}
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-1 w-32">
+            <label className="text-base font-medium" htmlFor="shipping-fee">
+              Shipping Fee
+            </label>
+            <input
+              id="shipping-fee"
+              type="number"
+              placeholder="0"
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+              onChange={(e) => setShippingFee(e.target.value)}
+              value={shippingFee}
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-1 w-32">
+            <label className="text-base font-medium" htmlFor="delivery-charge">
+              Delivery Charge
+            </label>
+            <input
+              id="delivery-charge"
+              type="number"
+              placeholder="0"
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+              onChange={(e) => setDeliveryCharge(e.target.value)}
+              value={deliveryCharge}
+              required
+            />
+          </div>
+        </div>
+        <div className="flex flex-col gap-1 w-full mb-4">
+          <label className="text-base font-medium" htmlFor="seller-name">
+            Seller Name
+          </label>
+          <input
+            id="seller-name"
+            type="text"
+            placeholder="Enter your store or business name"
+            className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+            onChange={(e) => setSellerName(e.target.value)}
+            value={sellerName}
+            required
+          />
+        </div>
+        <div className="flex flex-wrap gap-4 mb-4">
+          <div className="flex flex-col gap-1 w-48">
+            <label className="text-base font-medium" htmlFor="brand">
+              Brand
+            </label>
+            <input
+              id="brand"
+              type="text"
+              placeholder="Brand name"
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+              onChange={(e) => setBrand(e.target.value)}
+              value={brand}
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-1 w-48">
+            <label className="text-base font-medium" htmlFor="color">
+              Color
+            </label>
+            <input
+              id="color"
+              type="text"
+              placeholder="Product color"
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+              onChange={(e) => setColor(e.target.value)}
+              value={color}
               required
             />
           </div>

@@ -1,6 +1,8 @@
 'use client'
 import React, { useEffect, useState } from "react";
 import { assets, productsDummyData } from "@/assets/assets";
+import toast from "react-hot-toast";
+import axios from "axios";
 import Image from "next/image";
 import { useAppContext } from "@/context/AppContext";
 import Footer from "@/components/seller/Footer";
@@ -8,18 +10,33 @@ import Loading from "@/components/Loading";
 
 const ProductList = () => {
 
-  const { router } = useAppContext()
+  const { router, getToken, user } = useAppContext()
 
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
 
   const fetchSellerProduct = async () => {
-    setProducts(productsDummyData)
-    setLoading(false)
-  }
+    try {
+      const token = await getToken()
 
+      const { data } = await axios.get('/api/product/seller-list',{headers:{Authorization: `Bearer ${token}`}})
+
+      if (data.success){
+        setProducts(data.products)
+        setLoading(false)
+      } else {
+        toast.error(data.message)
+      }
+
+  } catch(error){
+    toast.error(error.message)
+  }
+}
+   
   useEffect(() => {
-    fetchSellerProduct();
+    if (user){
+      fetchSellerProduct()
+    }
   }, [])
 
   return (
@@ -44,7 +61,7 @@ const ProductList = () => {
                   <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
                     <div className="bg-gray-500/10 rounded p-2">
                       <Image
-                        src={product.image[0]}
+                        src={product.images[0]}
                         alt="product Image"
                         className="w-16"
                         width={1280}

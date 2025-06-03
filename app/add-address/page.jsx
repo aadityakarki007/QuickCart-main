@@ -4,21 +4,55 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import { useState } from "react";
+import { useAppContext } from "@/context/AppContext";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const AddAddress = () => {
+
+    const { getToken, router } = useAppContext()
 
     const [address, setAddress] = useState({
         fullName: '',
         phoneNumber: '',
-        pincode: '',
+        zipcode: '',
         area: '',
         city: '',
-        state: '',
+        province: '',
     })
 
     const onSubmitHandler = async (e) => {
         e.preventDefault();
 
+        // Validate form fields
+        if (!address.fullName || !address.phoneNumber || !address.zipcode || !address.area || !address.city || !address.province) {
+            toast.error("Please fill in all required fields");
+            return;
+        }
+
+        try{
+            const token = await getToken()
+            const {data} = await axios.post('/api/user/add-address', {addressData: address}, {headers:{Authorization: `Bearer ${token}`}})
+          
+            if(data.success){
+                toast.success(data.message)
+                // Reset form after successful submission
+                setAddress({
+                    fullName: '',
+                    phoneNumber: '',
+                    zipcode: '',
+                    area: '',
+                    city: '',
+                    province: '',
+                });
+                router.push('/cart')
+            } else { 
+                toast.error(data.message)
+            }
+        }catch(error){
+            console.error("Error adding address:", error);
+            toast.error(error.response?.data?.message || error.message || "An error occurred")
+        }
     }
 
     return (
@@ -47,9 +81,9 @@ const AddAddress = () => {
                         <input
                             className="px-2 py-2.5 focus:border-orange-500 transition border border-gray-500/30 rounded outline-none w-full text-gray-500"
                             type="text"
-                            placeholder="Pin code"
-                            onChange={(e) => setAddress({ ...address, pincode: e.target.value })}
-                            value={address.pincode}
+                            placeholder="Zip code"
+                            onChange={(e) => setAddress({ ...address, zipcode: e.target.value })}
+                            value={address.zipcode}
                         />
                         <textarea
                             className="px-2 py-2.5 focus:border-orange-500 transition border border-gray-500/30 rounded outline-none w-full text-gray-500 resize-none"
@@ -70,9 +104,9 @@ const AddAddress = () => {
                             <input
                                 className="px-2 py-2.5 focus:border-orange-500 transition border border-gray-500/30 rounded outline-none w-full text-gray-500"
                                 type="text"
-                                placeholder="State"
-                                onChange={(e) => setAddress({ ...address, state: e.target.value })}
-                                value={address.state}
+                                placeholder="Province"
+                                onChange={(e) => setAddress({ ...address, province: e.target.value })}
+                                value={address.province}
                             />
                         </div>
                     </div>

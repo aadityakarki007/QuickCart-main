@@ -1,17 +1,32 @@
 import { addressDummyData } from "@/assets/assets";
 import { useAppContext } from "@/context/AppContext";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 const OrderSummary = () => {
 
-  const { currency, router, getCartCount, getCartAmount } = useAppContext()
+  const { currency, router, getCartCount, getCartAmount, getToken, user, cartItems, setCartItems } = useAppContext()
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const [userAddresses, setUserAddresses] = useState([]);
 
   const fetchUserAddresses = async () => {
-    setUserAddresses(addressDummyData);
+    try {
+      const token = await getToken()
+      const {data} = await axios.get('/api/user/get-address', {headers:{Authorization: `Bearer ${token}`}})
+      if(data.success){
+        setUserAddresses(data.addresses)
+        if (data.addresses.length > 0) {
+          setSelectedAddress(data.addresses[0]);
+        }
+      } else {
+        toast.error(data.message)
+      }
+    }catch(error){
+      toast.error(error.message)
+    }
   }
 
   const handleAddressSelect = (address) => {
@@ -45,7 +60,7 @@ const OrderSummary = () => {
             >
               <span>
                 {selectedAddress
-                  ? `${selectedAddress.fullName}, ${selectedAddress.area}, ${selectedAddress.city}, ${selectedAddress.state}`
+                  ? `${selectedAddress.fullName}, ${selectedAddress.area}, ${selectedAddress.city}, ${selectedAddress.province}`
                   : "Select Address"}
               </span>
               <svg className={`w-5 h-5 inline float-right transition-transform duration-200 ${isDropdownOpen ? "rotate-0" : "-rotate-90"}`}
@@ -63,7 +78,7 @@ const OrderSummary = () => {
                     className="px-4 py-2 hover:bg-gray-500/10 cursor-pointer"
                     onClick={() => handleAddressSelect(address)}
                   >
-                    {address.fullName}, {address.area}, {address.city}, {address.state}
+                    {address.fullName}, {address.area}, {address.city}, {address.province}
                   </li>
                 ))}
                 <li

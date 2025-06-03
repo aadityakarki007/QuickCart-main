@@ -2,6 +2,7 @@ import { Inngest } from "inngest";
 import connectDB from "./db";
 import User from "@/models/user";
 
+
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "quickcart-inngest" });
 
@@ -9,16 +10,29 @@ export const inngest = new Inngest({ id: "quickcart-inngest" });
 export const syncUserData = inngest.createFunction(
   { id: 'quickcart-next-sync-user-from-clerk' },
   { event: 'clerk.user.created' },
-  async ({ event }) => {
-    const { id, first_name, last_name, email_addresses, image_url } = event.data;
-    const userData = {
-      _id: id,
-      email: email_addresses[0].email_address,
-      name: first_name + " " + last_name,
-      imageUrl: image_url
-    };
-    await connectDB();
-    await User.create(userData);
+  async ({ event, step }) => {
+    try {
+      const { id, first_name, last_name, email_addresses, image_url } = event.data;
+      const userData = {
+        _id: id,
+        email: email_addresses[0].email_address,
+        name: first_name + " " + last_name,
+        imageUrl: image_url
+      };
+      
+      await step.run('connect-to-db', async () => {
+        await connectDB();
+      });
+      
+      await step.run('create-user', async () => {
+        await User.create(userData);
+      });
+      
+      return { success: true, userId: id };
+    } catch (error) {
+      console.error('Error in syncUserData:', error);
+      return { success: false, error: error.message };
+    }
   }
 );
 
@@ -26,16 +40,29 @@ export const syncUserData = inngest.createFunction(
 export const updateUserData = inngest.createFunction(
   { id: 'quickcart-next-update-user-from-clerk' },
   { event: 'clerk.user.updated' },
-  async ({ event }) => {
-    const { id, first_name, last_name, email_addresses, image_url } = event.data;
-    const userData = {
-      _id: id,
-      email: email_addresses[0].email_address,
-      name: first_name + " " + last_name,
-      imageUrl: image_url
-    };
-    await connectDB();
-    await User.findByIdAndUpdate(id, userData);
+  async ({ event, step }) => {
+    try {
+      const { id, first_name, last_name, email_addresses, image_url } = event.data;
+      const userData = {
+        _id: id,
+        email: email_addresses[0].email_address,
+        name: first_name + " " + last_name,
+        imageUrl: image_url
+      };
+      
+      await step.run('connect-to-db', async () => {
+        await connectDB();
+      });
+      
+      await step.run('update-user', async () => {
+        await User.findByIdAndUpdate(id, userData, { new: true, upsert: true });
+      });
+      
+      return { success: true, userId: id };
+    } catch (error) {
+      console.error('Error in updateUserData:', error);
+      return { success: false, error: error.message };
+    }
   }
 );
 
@@ -43,9 +70,54 @@ export const updateUserData = inngest.createFunction(
 export const deleteUserData = inngest.createFunction(
   { id: 'quickcart-next-delete-user-with-clerk' },
   { event: 'clerk.user.deleted' },
-  async ({ event }) => {
-    const { id } = event.data;
-    await connectDB();
-    await User.findByIdAndDelete(id);
+  async ({ event, step }) => {
+    try {
+      const { id } = event.data;
+      
+      await step.run('connect-to-db', async () => {
+        await connectDB();
+      });
+      
+      await step.run('delete-user', async () => {
+        await User.findByIdAndDelete(id);
+      });
+      
+      return { success: true, userId: id };
+    } catch (error) {
+      console.error('Error in deleteUserData:', error);
+      return { success: false, error: error.message };
+    }
   }
-);
+)
+
+//Inngest function to create user's order in database
+export const createOrder = inngest.createFunction(
+  { id: 'create-user-order', 
+    batchEvents: {
+      maxSize: 25,
+      timeout: '5s',
+}
+
+  },
+  {event: 'order/created'},
+  async ({events, step}) => {
+   
+    const orders = events.map((event) => {
+      return{
+        userId:event.data.userId,
+        items: event.data.items,
+        amount: event.data.amount,
+        address: event.data.address,
+        date: Date.now()
+      }
+    })
+  
+      await connectDB();
+      await Order.insertMany(orders);
+
+    
+    return { success: true,processed: orders.length };
+  }
+    
+)
+
