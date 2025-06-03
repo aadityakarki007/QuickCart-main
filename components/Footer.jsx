@@ -41,14 +41,15 @@ const Footer = () => {
           <div>
             <h2 className="font-medium text-gray-900 mb-5">Get in touch</h2>
             <div className="text-sm space-y-2">
-              <p>+977 9828086387</p>
-              <p>aadityakarki98280@Gmail.com</p>
+              <p>+9779828086387</p>
+              <p>+977840186285</p>
+              <p>service.eshopnepal@gmail.com</p>
             </div>
           </div>
         </div>
       </div>
       <p className="py-4 text-center text-xs md:text-sm">
-        Copyright 2025 © EShop All Rights Reserved.
+        Copyright 2025 © eShop All Rights Reserved.
       </p>
     </footer>
   );

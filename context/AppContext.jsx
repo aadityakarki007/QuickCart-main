@@ -101,8 +101,6 @@ export const AppContextProvider = (props) => {
                 toast.error(error.message)
             }
         }
-            
-        
     }
 
     const updateCartQuantity = async (itemId, quantity) => {

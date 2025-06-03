@@ -7,10 +7,12 @@ import { useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useClerk } from "@clerk/clerk-react";
 
 const AddAddress = () => {
 
     const { getToken, router } = useAppContext()
+    const { openSignIn } = useClerk()
 
     const [address, setAddress] = useState({
         fullName: '',
@@ -30,12 +32,27 @@ const AddAddress = () => {
             return;
         }
 
-        try{
-            const token = await getToken()
-            const {data} = await axios.post('/api/user/add-address', {addressData: address}, {headers:{Authorization: `Bearer ${token}`}})
+        try {
+            const token = await getToken();
+            if (!token) {
+                toast.error("Please sign up or log in to add your delivery address");
+                openSignIn();
+                return;
+            }
+
+            const { data } = await axios.post(
+                '/api/user/add-address', 
+                { addressData: address }, 
+                { 
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
           
-            if(data.success){
-                toast.success(data.message)
+            if (data.success) {
+                toast.success(data.message);
                 // Reset form after successful submission
                 setAddress({
                     fullName: '',
@@ -45,13 +62,18 @@ const AddAddress = () => {
                     city: '',
                     province: '',
                 });
-                router.push('/cart')
+                router.push('/cart');
             } else { 
-                toast.error(data.message)
+                toast.error(data.message);
             }
-        }catch(error){
+        } catch (error) {
             console.error("Error adding address:", error);
-            toast.error(error.response?.data?.message || error.message || "An error occurred")
+            if (error.response?.status === 401) {
+                toast.error("Please sign up or log in to add your delivery address");
+                openSignIn();
+            } else {
+                toast.error(error.response?.data?.message || "Failed to add address. Please try again.");
+            }
         }
     }
 

@@ -273,6 +273,7 @@ const ManageProducts = () => {
                   <option value="Women's Fashion">Women's Fashion</option>
                   <option value="Health & Beauty">Health & Beauty</option>
                   <option value="Babies & Toys">Babies & Toys</option>
+                  <option value="Gifts & Decorations">Gifts & Decorations</option>
                 </select>
               </div>
 

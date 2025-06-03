@@ -6,11 +6,18 @@ import Address from "@/models/address"
 
 export async function POST(request){
     try {
+        await connectDB()
 
         const { userId } = getAuth(request)
-        const {addressData} = await request.json()
+        if (!userId) {
+            return NextResponse.json({success: false, message: "Please sign up or log in to add your delivery address"}, {status: 401})
+        }
 
-        await connectDB()
+        const {addressData} = await request.json()
+        if (!addressData) {
+            return NextResponse.json({success: false, message: "Address data is required"}, {status: 400})
+        }
+
         const newAddress = await Address.create({
             userId,
             fullName: addressData.fullName,
@@ -24,6 +31,10 @@ export async function POST(request){
         return NextResponse.json({success: true, message: "Address added successfully", newAddress})
         
     } catch (error) {
-        return NextResponse.json({success: false, message: error.message});
+        console.error('Error adding address:', error)
+        return NextResponse.json({
+            success: false, 
+            message: error.message || "Error adding address"
+        }, {status: 500});
     }
 }
