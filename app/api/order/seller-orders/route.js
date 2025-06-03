@@ -5,10 +5,13 @@ import connectDB from "@/config/db";
 import Order from "@/models/Order";
 import Address from "@/models/address";
 
-
+                
 export async function GET(request){
     try {
         const {userId} = getAuth(request)
+        if (!userId) {
+            return NextResponse.json({success: false, message: "Not authenticated"}, {status: 401})
+        }
 
         const isSeller = await authSeller(userId)
         if (!isSeller) {
@@ -16,11 +19,11 @@ export async function GET(request){
         }
 
         await connectDB()
-         Address.length
 
-        const orders = await Order.find({}).populate('items.product')
+        const orders = await Order.find({}).populate('items.product').populate('address')
         return NextResponse.json({success: true, orders})
     } catch (error) {
-        return NextResponse.json({success: false, message: error.message})
+        console.error("Error in seller-orders:", error)
+        return NextResponse.json({success: false, message: error.message}, {status: 500})
     }
 }
