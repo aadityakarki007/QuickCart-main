@@ -1,6 +1,6 @@
-import mangoose from "mongoose";
+import mongoose from "mongoose";
 
-const userSchema = new mangoose.Schema({ 
+const userSchema = new mongoose.Schema({ 
      _id:{ type: String, required: true },
      name: { type: String, required: true },
      email: { type: String, required: true, unique: true },
@@ -8,7 +8,7 @@ const userSchema = new mangoose.Schema({
      cartItems: { type: Object, default: {} }
 }, {minimize: false})
 
-const User = mangoose.models.User || mangoose.model('User', userSchema)
+const User = mongoose.models.User || mongoose.model('User', userSchema)
 
 
 export default User;

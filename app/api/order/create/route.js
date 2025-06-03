@@ -15,7 +15,11 @@ export async function POST(request){
             return NextResponse.json({success: false, message: "Unauthorized"}, {status: 401})
         }
 
-        const { address, items } = await request.json();
+        const { address, items, paymentMethod } = await request.json()
+
+    if (!paymentMethod || !['esewa', 'khalti'].includes(paymentMethod)) {
+      return NextResponse.json({ success: false, message: "Invalid payment method" }, { status: 400 })
+    };
         if(!items || items.length === 0){
             return NextResponse.json({success: false, message: "No items in cart"}, {status: 400})
         }
@@ -93,7 +97,9 @@ export async function POST(request){
                 province: address.province
             }),
             status: 'Order Placed',
-            date: Date.now()
+            amount,
+            date: Date.now(),
+            paymentMethod
         });
 
         // Create order event

@@ -5,29 +5,94 @@ import Image from "next/image";
 import { useAppContext } from "@/context/AppContext";
 import Footer from "@/components/seller/Footer";
 import Loading from "@/components/Loading";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const Orders = () => {
 
-    const { currency } = useAppContext();
+    const { currency, getToken, user } = useAppContext();
 
     const [orders, setOrders] = useState([]);
+    const [filteredOrders, setFilteredOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
 
     const fetchSellerOrders = async () => {
-        setOrders(orderDummyData);
+        try{
+
+            const token = await getToken()
+            const {data} = await axios.get('/api/order/seller-orders', {headers:{Authorization: `Bearer ${token}`}})
+
+            if(data.success){
+                setOrders(data.orders)
+                setFilteredOrders(data.orders)
+                setLoading(false)
+            } else {
+                toast.error(data.message)
+            }
+
+        } catch(error){
+            toast.error(error.message)
+        }
+            
         setLoading(false);
     }
 
     useEffect(() => {
-        fetchSellerOrders();
-    }, []);
+        if(user){
+            fetchSellerOrders();
+        }
+
+    }, [user]);
+
+    const handleSearch = (query) => {
+        setSearchQuery(query);
+        if (!query.trim()) {
+            setFilteredOrders(orders);
+            return;
+        }
+
+        const searchTerm = query.toLowerCase();
+        const filtered = orders.filter(order => {
+            // Search by customer name
+            const customerName = order.address.fullName.toLowerCase();
+            if (customerName.includes(searchTerm)) return true;
+
+            // Search by product names
+            const productNames = order.items.map(item => item.product.name.toLowerCase());
+            if (productNames.some(name => name.includes(searchTerm))) return true;
+
+            // Search by date
+            const orderDate = new Date(order.date).toLocaleDateString().toLowerCase();
+            if (orderDate.includes(searchTerm)) return true;
+
+            // Search by amount
+            const amount = order.amount.toString();
+            if (amount.includes(searchTerm)) return true;
+
+            return false;
+        });
+
+        setFilteredOrders(filtered);
+    };
 
     return (
         <div className="flex-1 h-screen overflow-scroll flex flex-col justify-between text-sm">
             {loading ? <Loading /> : <div className="md:p-10 p-4 space-y-5">
-                <h2 className="text-lg font-medium">Orders</h2>
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <h2 className="text-lg font-medium">Orders</h2>
+                    <div className="w-full md:w-96">
+                        <input
+                            type="text"
+                            placeholder="Search by customer name, product, date, or amount..."
+                            value={searchQuery}
+                            onChange={(e) => handleSearch(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:border-orange-500 transition-colors"
+                        />
+                    </div>
+                </div>
                 <div className="max-w-4xl rounded-md">
-                    {orders.map((order, index) => (
+                    {filteredOrders.map((order, index) => (
                         <div key={index} className="flex flex-col md:flex-row gap-5 justify-between p-5 border-t border-gray-300">
                             <div className="flex-1 flex gap-5 max-w-80">
                                 <Image

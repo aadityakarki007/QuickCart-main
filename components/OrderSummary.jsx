@@ -1,4 +1,4 @@
-import { addressDummyData } from "@/assets/assets";
+import { addressDummyData, assets } from "@/assets/assets";
 import { useAppContext } from "@/context/AppContext";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -9,8 +9,14 @@ const OrderSummary = () => {
   const { currency, router, getCartCount, getCartAmount, getToken, user, cartItems, setCartItems } = useAppContext()
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null);
 
   const [userAddresses, setUserAddresses] = useState([]);
+
+  const paymentMethods = [
+    { id: 'esewa', name: 'eSewa', image: assets.esewa.src },
+    { id: 'khalti', name: 'Khalti', image: assets.khalti.src },
+  ];
 
   const fetchUserAddresses = async () => {
     try {
@@ -40,6 +46,10 @@ const OrderSummary = () => {
         return toast.error("Please select an address")
       }
 
+      if (!selectedPayment) {
+        return toast.error("Please select a payment method")
+      }
+
       let cartItemsArray = Object.keys(cartItems).map((key) => ({product: key, quantity: cartItems[key] }))
       cartItemsArray = cartItemsArray.filter((item) => item.quantity > 0)
       
@@ -51,7 +61,8 @@ const OrderSummary = () => {
 
       const response = await axios.post('/api/order/create', {
         address: selectedAddress,  // Send the full address object
-        items: cartItemsArray
+        items: cartItemsArray,
+        paymentMethod: selectedPayment
       }, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -145,6 +156,23 @@ const OrderSummary = () => {
         </div>
 
         <hr className="border-gray-500/30 my-5" />
+
+        <div className="mb-6">
+          <label className="text-base font-medium uppercase text-gray-600 block mb-3">
+            Select Payment Method
+          </label>
+          <div className="grid grid-cols-2 gap-4">
+            {paymentMethods.map((method) => (
+              <button
+                key={method.id}
+                onClick={() => setSelectedPayment(method.id)}
+                className={`border rounded-lg flex items-center justify-center hover:border-orange-500 transition-colors h-24 ${selectedPayment === method.id ? 'border-orange-500' : 'border-gray-200'}`}
+              >
+                <img src={method.image} alt={method.name} className="w-[90%] h-[90%] object-contain" />
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="space-y-4">
           <div className="flex justify-between text-base font-medium">
