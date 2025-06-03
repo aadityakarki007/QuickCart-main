@@ -14,17 +14,21 @@
     "cloudinary": "^2.6.1",
     "lucide-react": "^0.511.0",
     "mongoose": "^8.15.1",
-    "next": "^15.2.3",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "next": "^14.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-hot-toast": "^2.5.1",
     "inngest": "^3.38.0"
   },
   "devDependencies": {
+    "@types/node": "^20.11.24",
+    "@types/react": "^18.2.61",
+    "@types/react-dom": "^18.2.19",
     "@eslint/eslintrc": "^3.0.0",
     "eslint": "^9.0.0",
-    "eslint-config-next": "^15.2.3",
+    "eslint-config-next": "^14.1.0",
     "postcss": "^8.4.35",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3"
   }
 }
