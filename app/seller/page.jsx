@@ -21,8 +21,10 @@ const AddProduct = () => {
   const [shippingFee, setShippingFee] = useState('0');
   const [deliveryCharge, setDeliveryCharge] = useState('0');
   const [sellerName, setSellerName] = useState('');
-  const [brand, setBrand] = useState('Generic');
-  const [color, setColor] = useState('Multi');
+  const [brand, setBrand] = useState('');
+  const [color, setColor] = useState('');
+  const [isPopular, setIsPopular] = useState(false);
+  const [deliveryDate, setDeliveryDate] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,8 +39,10 @@ const AddProduct = () => {
     formData.append('shippingFee',shippingFee)
     formData.append('deliveryCharge',deliveryCharge)
     formData.append('sellerName',sellerName)
-    formData.append('brand',brand)
-    formData.append('color',color)
+    formData.append('brand', brand || '')
+    formData.append('color', color || '')
+    formData.append('isPopular', String(isPopular))
+    formData.append('deliveryDate', deliveryDate || '')
 
     for (let i = 0; i < files.length; i++) {
       formData.append('images',files[i])
@@ -61,8 +65,10 @@ const AddProduct = () => {
         setShippingFee('0');
         setDeliveryCharge('0');
         setSellerName('');
-        setBrand('Generic');
-        setColor('Multi');
+        setBrand('');
+        setColor('');
+        setIsPopular(false);
+        setDeliveryDate('');
 
       } else {
         toast.error(data.message)
@@ -83,6 +89,7 @@ const AddProduct = () => {
       <div className="p-4 flex justify-between items-center border-b">
         <h1 className="text-xl font-semibold">Seller Dashboard</h1>
         <Link href="/seller/manage-products" className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
+          {/* @ts-ignore */}
           <ListFilter size={18} className="mr-2" />
           Manage Products
         </Link>
@@ -262,11 +269,12 @@ const AddProduct = () => {
             <input
               id="brand"
               type="text"
-              placeholder="Brand name"
+              placeholder="Enter brand name"
               className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
               onChange={(e) => setBrand(e.target.value)}
               value={brand}
               required
+              autoComplete="off"
             />
           </div>
           <div className="flex flex-col gap-1 w-48">
@@ -276,14 +284,45 @@ const AddProduct = () => {
             <input
               id="color"
               type="text"
-              placeholder="Product color"
+              placeholder="Enter product color"
               className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
               onChange={(e) => setColor(e.target.value)}
               value={color}
               required
+              autoComplete="off"
             />
           </div>
         </div>
+
+        <div className="flex flex-col gap-4 mb-4">
+          <div className="flex flex-col gap-1 w-full">
+            <label className="text-base font-medium" htmlFor="delivery-date">
+              Delivery Date
+            </label>
+            <input
+              id="delivery-date"
+              type="text"
+              placeholder="e.g. 7-10 days, 2 weeks, etc."
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+              onChange={(e) => setDeliveryDate(e.target.value)}
+              value={deliveryDate}
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              id="is-popular"
+              type="checkbox"
+              className="w-4 h-4 text-blue-600"
+              checked={isPopular}
+              onChange={(e) => setIsPopular(e.target.checked)}
+            />
+            <label className="text-base font-medium" htmlFor="is-popular">
+              Mark as Popular Product
+            </label>
+          </div>
+        </div>
+
         <button type="submit" className="px-8 py-2.5 bg-orange-600 text-white font-medium rounded">
           ADD
         </button>

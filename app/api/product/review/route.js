@@ -24,8 +24,8 @@ export async function POST(request) {
         // Connect to database
         await connectDB();
         
-        // Find the product
-        const product = await Product.findById(productId);
+        // Find the product (with .exec())
+        const product = await /** @type {any} */ (Product).findById(productId).exec();
         if (!product) {
             return NextResponse.json({ 
                 success: false, 

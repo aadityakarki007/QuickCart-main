@@ -2,61 +2,51 @@ import React from 'react'
 import { assets } from '@/assets/assets'
 import Image from 'next/image';
 import { useAppContext } from '@/context/AppContext';
+import QRCode from 'qrcode';
+import { useEffect, useState } from 'react';
 
 const ProductCard = ({ product }) => {
-
     const { currency, router } = useAppContext()
+    const [qrUrl, setQrUrl] = useState('');
+
+    useEffect(() => {
+        if (product._id) {
+            QRCode.toDataURL(product._id)
+                .then(url => setQrUrl(url))
+                .catch(err => console.error('QR Code generation error:', err));
+        }
+    }, [product._id]);
 
     return (
-        <div
+        <div 
+            className="flex flex-col w-full cursor-pointer border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
             onClick={() => { router.push('/product/' + product._id); scrollTo(0, 0) }}
-            className="flex flex-col items-start gap-0.5 max-w-[200px] w-full cursor-pointer"
         >
-            <div className="cursor-pointer group relative bg-gray-500/10 rounded-lg w-full h-52 flex items-center justify-center">
+            <div className="relative w-full aspect-square bg-gray-50 rounded-lg mb-3 overflow-hidden">
                 <Image
                     src={product.images && product.images.length > 0 ? product.images[0] : assets.product_image1}
                     alt={product.name}
-                    className="group-hover:scale-105 transition object-cover w-4/5 h-4/5 md:w-full md:h-full"
-                    width={800}
-                    height={800}
+                    className="object-contain hover:scale-105 transition duration-300"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
-                <button className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md">
-                    <Image
-                        className="h-3 w-3"
-                        src={assets.heart_icon}
-                        alt="heart_icon"
-                    />
-                </button>
             </div>
 
-            <p className="md:text-base font-medium pt-2 w-full truncate">{product.name}</p>
-            <p className="w-full text-xs text-gray-500/70 max-sm:hidden truncate">{product.description}</p>
-            <div className="flex items-center gap-2">
-                <p className="text-xs">{4.5}</p>
-                <div className="flex items-center gap-0.5">
-                    {Array.from({ length: 5 }).map((_, index) => (
-                        <Image
-                            key={index}
-                            className="h-3 w-3"
-                            src={
-                                index < Math.floor(4)
-                                    ? assets.star_icon
-                                    : assets.star_dull_icon
-                            }
-                            alt="star_icon"
-                        />
-                    ))}
+            <div className="space-y-2">
+                <div className="h-12">
+                    <h3 className="text-sm font-medium line-clamp-2">{product.name}</h3>
                 </div>
-            </div>
 
-            <div className="flex items-end justify-between w-full mt-1">
-                <p className="text-base font-medium">{currency}{product.offerPrice}</p>
-                <button className=" max-sm:hidden px-4 py-1.5 text-gray-500 border border-gray-500/20 rounded-full text-xs hover:bg-slate-50 transition">
-                    Buy now
-                </button>
+                <div className="flex items-baseline gap-2">
+                    <span className="text-lg font-medium">Rs. {product.offerPrice}</span>
+                    <span className="text-sm text-gray-500 line-through">Rs. {product.price}</span>
+                    <span className="text-xs text-green-600">
+                        {Math.round(((product.price - product.offerPrice) / product.price) * 100)}% off
+                    </span>
+                </div>
             </div>
         </div>
     )
 }
 
-export default ProductCard
+export default ProductCard;

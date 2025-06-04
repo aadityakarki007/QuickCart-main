@@ -1,12 +1,41 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { authMiddleware } from '@clerk/nextjs/server';
+import { NextResponse } from "next/server";
 
-export default clerkMiddleware();
+export default authMiddleware({
+  beforeAuth: (req) => {
+    const authHeader = req.headers.get('Authorization');
+    if (authHeader?.startsWith('Bearer ')) {
+      return NextResponse.next();
+    }
+    return NextResponse.next();
+  },
+  publicRoutes: [
+    "/",
+    "/all-products",
+    "/product/(.*)",
+    "/api/product/list",
+    "/api/product/all",
+    "/api/product/(.*)",
+    "/api/webhook/(.*)",
+    "/api/user/(.*)",
+    "/sign-in(.*)",
+    "/sign-up(.*)"
+  ],
+  ignoredRoutes: [
+    "/((?!api|trpc))(_next|.+\\..+)(.*)", // Ignore static files
+    "/_next/static/(.*)",
+    "/_next/image/(.*)",
+    "/favicon.ico",
+    "/favicon.e0ef1da5.ico", // if your app requests this specifically
+    "/assets/(.*)"
+  ]
+});
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)',
-  ],
+    '/((?!.+\\.[\\w]+$|_next).*)', // Exclude static files
+    '/',                          // Include root path
+    '/(api|trpc)(.*)',            // Include API and tRPC routes
+    '/((?!.*\\.).*)'              // Include non-static files
+  ]
 };

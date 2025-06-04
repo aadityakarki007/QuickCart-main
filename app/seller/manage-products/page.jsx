@@ -27,20 +27,24 @@ const ManageProducts = () => {
   const [brand, setBrand] = useState('');
   const [color, setColor] = useState('');
   const [files, setFiles] = useState([]);
+  const [isPopular, setIsPopular] = useState(false);
+  const [deliveryDate, setDeliveryDate] = useState('');
 
   // Fetch seller's products
   const fetchProducts = async () => {
     try {
       setLoading(true);
       const token = await getToken();
-      const { data } = await axios.get('/api/product/seller-list', {
-        headers: { Authorization: `Bearer ${token}` }
+      // Get all products instead of just seller's products
+      const response = await axios.get('/api/product/all', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
-
-      if (data.success) {
-        setProducts(data.products);
+      if (response.data.success) {
+        setProducts(response.data.products);
       } else {
-        toast.error(data.message || "Failed to fetch products");
+        toast.error(response.data.message || "Failed to fetch products");
       }
     } catch (error) {
       toast.error(error.message || "An error occurred while fetching products");
@@ -91,6 +95,8 @@ const ManageProducts = () => {
     setBrand(product.brand);
     setColor(product.color);
     setFiles([]);
+    setIsPopular(product.isPopular || false);
+    setDeliveryDate(product.deliveryDate || '');
     setIsEditing(true);
   };
 
@@ -110,6 +116,8 @@ const ManageProducts = () => {
     formData.append('sellerName', sellerName);
     formData.append('brand', brand);
     formData.append('color', color);
+    formData.append('isPopular', isPopular.toString());
+    formData.append('deliveryDate', deliveryDate);
 
     // Add images if any
     for (let i = 0; i < files.length; i++) {
@@ -120,8 +128,12 @@ const ManageProducts = () => {
 
     try {
       const token = await getToken();
+      // Send the update request with proper headers
       const { data } = await axios.put('/api/product/update', formData, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Accept': 'application/json'
+        }
       });
 
       if (data.success) {
@@ -132,7 +144,12 @@ const ManageProducts = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message || "Failed to update product");
+      console.error('Update error:', error.response?.data || error);
+      toast.error(
+        error.response?.data?.message || 
+        error.message || 
+        "Failed to update product. Please check your seller permissions."
+      );
     }
   };
 
@@ -145,11 +162,8 @@ const ManageProducts = () => {
   return (
     <div className="flex-1 min-h-screen p-4 md:p-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Manage Your Products</h1>
-        <Link href="/seller" className="flex items-center text-blue-600 hover:text-blue-800">
-          <ArrowLeft size={16} className="mr-1" />
-          Back to Add Product
-        </Link>
+        <h1 className="text-2xl font-bold">Manage All Products</h1>
+        <p className="text-sm text-gray-600">As a seller, you can view and manage all products</p>
       </div>
 
       {isEditing ? (
@@ -364,9 +378,36 @@ const ManageProducts = () => {
                   onChange={(e) => setDeliveryCharge(e.target.value)}
                 />
               </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-base font-medium" htmlFor="edit-delivery-date">
+                  Delivery Date
+                </label>
+                <input
+                  id="edit-delivery-date"
+                  type="text"
+                  placeholder="e.g. 7-10 days, 2 weeks, etc."
+                  className="outline-none py-2.5 px-3 rounded border border-gray-500/40"
+                  value={deliveryDate}
+                  onChange={(e) => setDeliveryDate(e.target.value)}
+                />
+              </div>
+
+              <div className="flex items-center gap-2 mt-4">
+                <input
+                  id="edit-is-popular"
+                  type="checkbox"
+                  className="w-4 h-4 text-blue-600"
+                  checked={isPopular}
+                  onChange={(e) => setIsPopular(e.target.checked)}
+                />
+                <label className="text-base font-medium" htmlFor="edit-is-popular">
+                  Mark as Popular Product
+                </label>
+              </div>
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-3 pt-4">
               <button
                 type="submit"
                 className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
@@ -414,7 +455,11 @@ const ManageProducts = () => {
                   </div>
                   <div className="p-4">
                     <h3 className="text-lg font-semibold truncate">{product.name}</h3>
-                    <p className="text-gray-600 text-sm mb-2">{product.category}</p>
+                    <p className="text-gray-600 text-sm mb-1">{product.category}</p>
+                    <div className="flex gap-2 text-sm text-gray-600 mb-2">
+                      <span>{product.brand}</span>
+                      {product.color && <span>• {product.color}</span>}
+                    </div>
                     <div className="flex items-center justify-between mb-3">
                       <div>
                         <span className="text-lg font-bold">${product.offerPrice}</span>
@@ -423,11 +468,24 @@ const ManageProducts = () => {
                         )}
                       </div>
                     </div>
+                    <div className="flex flex-col gap-1 mb-3">
+                      {product.isPopular && (
+                        <span className="text-sm text-blue-600 font-medium">
+                          ⭐ Popular Product
+                        </span>
+                      )}
+                      {product.deliveryDate && (
+                        <span className="text-sm text-gray-600">
+                          Delivery: {product.deliveryDate}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex justify-between">
                       <button
                         onClick={() => handleEdit(product)}
                         className="flex items-center text-blue-600 hover:text-blue-800"
                       >
+                        {/* @ts-ignore */}
                         <Pencil size={16} className="mr-1" />
                         Edit
                       </button>
@@ -435,6 +493,7 @@ const ManageProducts = () => {
                         onClick={() => handleDelete(product._id)}
                         className="flex items-center text-red-600 hover:text-red-800"
                       >
+                        {/* @ts-ignore */}
                         <Trash2 size={16} className="mr-1" />
                         Delete
                       </button>

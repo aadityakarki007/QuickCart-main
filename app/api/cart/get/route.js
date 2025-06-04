@@ -12,7 +12,7 @@ export async function GET(request) {
         }
 
         await connectDB()
-        const user = await User.findById(userId)
+        const user = await /** @type {any} */ (User).findById(userId)
         
         if (!user) {
             return NextResponse.json({ success: false, error: "User not found" }, { status: 404 })

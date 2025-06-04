@@ -39,9 +39,7 @@ export async function PUT(request) {
             return NextResponse.json({ success: false, message: "Product not found" }, { status: 404 });
         }
 
-        if (product.userId !== userId) {
-            return NextResponse.json({ success: false, message: "Not authorized to update this product" }, { status: 403 });
-        }
+      
 
         // Update product fields
         const updateData = {

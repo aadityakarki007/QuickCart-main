@@ -6,12 +6,14 @@ import axios from "axios";
 
 const OrderSummary = () => {
 
-  const { currency, router, getCartCount, getCartAmount, getToken, user, cartItems, setCartItems } = useAppContext()
+  const { currency, router, getCartCount, getCartAmount, getToken, user, cartItems, setCartItems, products } = useAppContext()
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
 
   const [userAddresses, setUserAddresses] = useState([]);
+  const [totalShippingFee, setTotalShippingFee] = useState(0);
+  const [totalDeliveryCharge, setTotalDeliveryCharge] = useState(0);
 
   const paymentMethods = [
     { id: 'esewa', name: 'eSewa', image: assets.esewa.src },
@@ -50,7 +52,16 @@ const OrderSummary = () => {
         return toast.error("Please select a payment method")
       }
 
-      let cartItemsArray = cartItems.filter(item => item.quantity > 0)
+      // Convert cart items object to array of items with quantity > 0
+      let cartItemsArray = [];
+      
+      // Safely process cart items
+      if (cartItems && typeof cartItems === 'object') {
+        cartItemsArray = Object.entries(cartItems).map(([id, quantity]) => ({
+          product: id,
+          quantity: Number(quantity)
+        })).filter(item => item.quantity > 0);
+      }
       
       if(cartItemsArray.length === 0){
         return toast.error("Your cart is empty")
@@ -71,7 +82,12 @@ const OrderSummary = () => {
 
       if(response.data.success){
         toast.success(response.data.message)
-        setCartItems({})
+        
+        // The cart is already cleared in the order creation API
+        // Just update the local state to reflect this
+        setCartItems({});
+        
+        // Navigate to order placed page
         router.push('/order-placed')
       } else {
         toast.error(response.data.message)
@@ -84,9 +100,37 @@ const OrderSummary = () => {
 
   }
 
+  // Calculate shipping fee and delivery charge from products in cart
+  const calculateFees = () => {
+    if (!products || !cartItems) return { shippingFee: 0, deliveryCharge: 0 };
+    
+    let shippingFee = 0;
+    let deliveryCharge = 0;
+    
+    Object.entries(cartItems).forEach(([productId, quantity]) => {
+      const product = products.find(p => p._id === productId);
+      if (product) {
+        // Add shipping fee if available
+        if (product.shippingFee) {
+          shippingFee += product.shippingFee * quantity;
+        }
+        
+        // Add delivery charge if available
+        if (product.deliveryCharge) {
+          deliveryCharge += product.deliveryCharge * quantity;
+        }
+      }
+    });
+    
+    return { shippingFee, deliveryCharge };
+  };
+
   useEffect(() => {
     fetchUserAddresses();
-  }, [])
+    const { shippingFee, deliveryCharge } = calculateFees();
+    setTotalShippingFee(shippingFee);
+    setTotalDeliveryCharge(deliveryCharge);
+  }, [products, cartItems])
 
   return (
     <div className="w-full md:w-96 bg-gray-500/5 p-5">
@@ -188,19 +232,19 @@ const OrderSummary = () => {
         <div className="space-y-4">
           <div className="flex justify-between text-base font-medium">
             <p className="uppercase text-gray-600">Items {getCartCount()}</p>
-            <p className="text-gray-800">{currency}{getCartAmount()}</p>
+            <p className="text-gray-800">Rs. {getCartAmount()}</p>
           </div>
           <div className="flex justify-between">
             <p className="text-gray-600">Shipping Fee</p>
-            <p className="font-medium text-gray-800">Free</p>
+            <p className="font-medium text-gray-800">Rs. {totalShippingFee}</p>
           </div>
           <div className="flex justify-between">
-            <p className="text-gray-600">Tax (2%)</p>
-            <p className="font-medium text-gray-800">{currency}{Math.floor(getCartAmount() * 0.02)}</p>
+            <p className="text-gray-600">Delivery Charge</p>
+            <p className="font-medium text-gray-800">Rs. {totalDeliveryCharge}</p>
           </div>
           <div className="flex justify-between text-lg md:text-xl font-medium border-t pt-3">
             <p>Total</p>
-            <p>{currency}{getCartAmount() + Math.floor(getCartAmount() * 0.02)}</p>
+            <p>Rs. {getCartAmount() + totalShippingFee + totalDeliveryCharge}</p>
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import React from 'react';
 import logo from "./logo.png";
 import search_icon from "./search_icon.svg";
 import user_icon from "./user_icon.svg";

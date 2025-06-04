@@ -12,6 +12,7 @@ async function connectDB() {
   }
 
   if (!cached.promise) {
+    /** @type {mongoose.ConnectOptions} */
     const opts = {
       bufferCommands: false,
       serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds

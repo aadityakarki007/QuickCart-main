@@ -49,7 +49,7 @@ const Footer = () => {
         </div>
       </div>
       <p className="py-4 text-center text-xs md:text-sm">
-        Copyright 2025 © eShop All Rights Reserved.
+        Copyright 2025 © QuickCart. All Rights Reserved.
       </p>
     </footer>
   );

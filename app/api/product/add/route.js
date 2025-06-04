@@ -91,7 +91,7 @@ export async function POST(request) {
         
         // Connect to database and create product
         await connectDB();
-        const newProduct = await Product.create({
+        const newProduct = await /** @type {any} */ (Product).create({
             userId,
             sellerName: sellerName || "",
             name,

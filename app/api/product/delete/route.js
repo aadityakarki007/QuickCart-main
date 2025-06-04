@@ -30,7 +30,7 @@ export async function DELETE(request) {
         }
 
         // Find the product and check if it belongs to the seller
-        const product = await Product.findById(productId);
+        const product = await /** @type {any} */ (Product).findById(productId);
         if (!product) {
             return NextResponse.json({ success: false, message: "Product not found" }, { status: 404 });
         }
@@ -40,7 +40,7 @@ export async function DELETE(request) {
         }
 
         // Delete the product
-        await Product.findByIdAndDelete(productId);
+        await /** @type {any} */ (Product).findByIdAndDelete(productId);
 
         return NextResponse.json({ 
             success: true, 

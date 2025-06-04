@@ -8,7 +8,8 @@ import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-export const AppContext = createContext({
+/** @type {import('react').Context<AppContextType>} */
+export const AppContext = createContext(/** @type {AppContextType} */ ({
   cart: [],
   setCart: (cart) => {},
   loading: false,
@@ -19,14 +20,37 @@ export const AppContext = createContext({
   router: null,
   isSeller: false,
   setIsSeller: (isSeller) => {},
-  cartItems: [],
+  cartItems: {},
   setCartItems: (items) => {},
   products: [],
   setProducts: (products) => {},
   getCartCount: () => 0,
   getCartAmount: () => 0,
   getToken: async () => "",
-});
+}));
+
+/**
+ * @typedef {Object} AppContextType
+ * @property {any[]} cart - The cart items
+ * @property {(cart: any) => void} setCart - Function to update cart
+ * @property {boolean} loading - Loading state
+ * @property {(loading: boolean) => void} setLoading - Function to update loading state
+ * @property {any} user - Current user
+ * @property {(user: any) => void} setUser - Function to update user
+ * @property {string} currency - Currency code
+ * @property {any} router - Next.js router
+ * @property {boolean} isSeller - Whether user is a seller
+ * @property {(isSeller: boolean) => void} setIsSeller - Function to update seller status
+ * @property {Record<string, number>} cartItems - Cart items
+ * @property {(items: Record<string, number>) => void} setCartItems - Function to update cart items
+ * @property {any[]} products - Product list
+ * @property {(products: any[]) => void} setProducts - Function to update products
+ * @property {() => number} getCartCount - Function to get cart item count
+ * @property {() => number} getCartAmount - Function to get cart total amount
+ * @property {() => Promise<string>} getToken - Function to get auth token
+ * @property {(itemId: string) => Promise<void>} addToCart - Function to add item to cart
+ * @property {(itemId: string, quantity: number) => Promise<void>} updateCartQuantity - Function to update cart item quantity
+ */
 
 export const useAppContext = () => {
     return useContext(AppContext);
@@ -53,7 +77,7 @@ export const AppContextProvider = ({ children }) => {
     const [isSeller, setIsSeller] = useState(false);
     const [userData, setUserData] = useState(null);
     const [products, setProducts] = useState([]);
-    const [cartItems, setCartItems] = useState([]);
+    const [cartItems, setCartItems] = useState({});
 
     const fetchProductData = async () => {
         try {
@@ -63,48 +87,82 @@ export const AppContextProvider = ({ children }) => {
             } else {
                 toast.error(data.message)
             }
-        }catch(error){
-            toast.error(error.message)
+        } catch (error) {
+            console.error('Error in fetchUserData:', error);
+            if (error.response) {
+                console.error('Response data:', error.response.data);
+                console.error('Response status:', error.response.status);
+                toast.error(error.response.data?.message || error.message);
+            } else {
+                toast.error(error.message);
+            }
+        } finally {
+            setLoading(false);
         }
     }
 
-    //this one
     const fetchUserData = async () => {
         try {
-
-            if (user.publicMetadata.role === 'seller') {
-                setIsSeller(true)
+            setLoading(true);
+            let token;
+            
+            // First try to get Clerk token
+            if (user) {
+                try {
+                    token = await getToken();
+                    console.log('Got Clerk token:', !!token);
+                } catch (tokenError) {
+                    console.error('Error getting Clerk token:', tokenError);
+                }
             }
 
-            const token = await getToken()
+            // Fallback to user ID if no token
+            if (!token && user?.id) {
+                token = user.id;
+                console.log('Using user ID as token:', token);
+            }
 
-            const {data} = await axios.get('/api/user/data',{ headers:{Authorization: `Bearer ${token}`}})
+            if (!token) {
+                console.error('No token or user ID available');
+                return;
+            }
+            
+            // Check if user exists and has metadata
+            if (user?.publicMetadata?.role === 'seller') {
+                setIsSeller(true);
+            }
 
-            if(data.success){
-                setUserData(data.user)
+            console.log('Fetching user data with token...');
+            const { data } = await axios.get('/api/user/data', { 
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            console.log('User data response:', data);
+
+            if (data.success) {
+                setUserData(data.user);
                 
                 // Fetch cart items separately
                 try {
                     const cartResponse = await axios.get('/api/cart/get', {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    })
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
                     
-                    if(cartResponse.data.success) {
-                        setCartItems(cartResponse.data.cartItems || {})
+                    if (cartResponse.data.success) {
+                        setCartItems(cartResponse.data.cartItems || {});
                     }
                 } catch (cartError) {
-                    console.error("Error fetching cart:", cartError)
+                    console.error('Error fetching cart:', cartError);
                     // Fallback to user's cart items if cart API fails
-                    setCartItems(data.user.cartItems || {})
+                    setCartItems(data.user.cartItems || {});
+                } finally {
+                    setLoading(false);
                 }
             } else {
-                toast.error(data.message)
+                toast.error(data.message);
             }
-
         } catch (error) {
-            toast.error(error.message)
+            console.error('Error fetching user data:', error);
+            toast.error(error.response?.data?.message || error.message);
         }
     }
 
@@ -132,24 +190,44 @@ export const AppContextProvider = ({ children }) => {
     }
 
     const updateCartQuantity = async (itemId, quantity) => {
-        let cartData = structuredClone(cartItems);
-        if (quantity === 0) {
-            delete cartData[itemId];
-        } else {
-            cartData[itemId] = quantity;
-        }
-        setCartItems(cartData);
-        if(user){ 
-            try {
-                const token = await getToken()
-                
-                await axios.post('/api/cart/update',{cartData},{headers:{Authorization: `Bearer ${token}`}})
-
-                toast.success('Cart updated')
-                
-            } catch(error){
-                toast.error(error.message)
+        try {
+            // Create a new cart object instead of mutating the existing one
+            let cartData = {...cartItems};
+            
+            // Handle item removal
+            if (quantity <= 0) {
+                delete cartData[itemId];
+                toast.success('Item removed from cart');
+            } else {
+                // Ensure quantity is a number
+                cartData[itemId] = Number(quantity);
             }
+            
+            // Update local state first for immediate UI feedback
+            setCartItems(cartData);
+            
+            // If user is logged in, update the server
+            if(user){ 
+                try {
+                    const token = await getToken();
+                    
+                    const response = await axios.post('/api/cart/update', 
+                        {cartData}, 
+                        {headers: {Authorization: `Bearer ${token}`}}
+                    );
+                    
+                    if (!response.data.success) {
+                        console.error('Failed to update cart on server');
+                        toast.error('Failed to sync cart with server');
+                    }
+                } catch(error) {
+                    console.error('Cart update error:', error);
+                    toast.error(error.message || 'Error updating cart');
+                }
+            }
+        } catch (error) {
+            console.error('Cart update error:', error);
+            toast.error('Failed to update cart');
         }
 
     }
@@ -185,8 +263,9 @@ export const AppContextProvider = ({ children }) => {
         }
     }, [user]);
 
+    /** @type {AppContextType} */
     const value = {
-        cart: cartItems,
+        cart: Object.values(cartItems),
         setCart: setCartItems,
         loading,
         setLoading,
@@ -200,12 +279,11 @@ export const AppContextProvider = ({ children }) => {
         setCartItems,
         products,
         setProducts,
-        getCartCount: () => cartItems.reduce((a, b) => a + (b.quantity || 0), 0),
-        getCartAmount: () => cartItems.reduce((total, item) => {
-            const product = products.find(p => p._id === item.productId);
-            return total + (product ? product.price * (item.quantity || 0) : 0);
-        }, 0),
-        getToken
+        getCartCount,
+        getCartAmount,
+        getToken,
+        addToCart,
+        updateCartQuantity
     };
 
     return (
