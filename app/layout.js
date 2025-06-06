@@ -10,19 +10,19 @@ const outfit = Outfit({ subsets: ['latin'], weight: ["300", "400", "500"] });
 
 export const metadata = {
   metadataBase: new URL("https://hamroeshop.com"),
-  title: "EShop - Your choice to buy",
-  description: "EShop - Your choice to buy. The best online shopping experience.",
+  title: "Hamro eShop - Your choice to buy",
+  description: "Hamro eShop - Your choice to buy. The best online shopping experience.",
   openGraph: {
     title: "EShop - Your choice to buy",
     description: "EShop - The best online shopping experience in Nepal.",
     url: "https://hamroeshop.com",
-    siteName: "Hamro EShop",
+    siteName: "Hamro eShop",
     images: [
       {
         url: "/og.png", // must be inside public/
         width: 1200,
         height: 630,
-        alt: "Hamro EShop - Your best shopping partner"
+        alt: "Hamro eShop - Your best shopping partner"
       },
     ],
     locale: "en_US",
@@ -30,8 +30,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "EShop - Your choice to buy",
-    description: "Hamro EShop - The best shopping experience in Nepal.",
+    title: "Hamro eShop - Your choice to buy",
+    description: "Hamro eShop - The best shopping experience in Nepal.",
     images: ["/og.png"],
   },
 };
