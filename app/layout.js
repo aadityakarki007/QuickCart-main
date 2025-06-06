@@ -19,7 +19,7 @@ export const metadata = {
     siteName: "Hamro eShop",
     images: [
       {
-        url: "/og.png", // must be inside public/
+        url: "/og.webp", // must be inside public/
         width: 1200,
         height: 630,
         alt: "Hamro eShop - Your best shopping partner"
@@ -32,7 +32,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Hamro eShop - Your choice to buy",
     description: "Hamro eShop - The best shopping experience in Nepal.",
-    images: ["/og.png"],
+    images: ["/og.webp"],
   },
 };
 
