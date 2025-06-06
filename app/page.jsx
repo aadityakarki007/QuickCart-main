@@ -7,11 +7,14 @@ import NewsLetter from "@/components/NewsLetter";
 import FeaturedProduct from "@/components/FeaturedProduct";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Toaster } from "react-hot-toast";
 
 const Home = () => {
   return (
     <>
       <Navbar/>
+      <Toaster /> 
+      
       <div className="px-6 md:px-16 lg:px-32">
         <HeaderSlider />
         <HomeProducts />

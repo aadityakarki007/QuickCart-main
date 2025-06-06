@@ -53,6 +53,8 @@ export async function PUT(request) {
             sellerName: formData.get('sellerName') || product.sellerName,
             brand: formData.get('brand') || product.brand,
             color: formData.get('color') || product.color,
+            isPopular: formData.get('isPopular') === 'true',
+            deliveryDate: formData.get('deliveryDate') || product.deliveryDate,
         };
 
         // Handle image uploads if provided

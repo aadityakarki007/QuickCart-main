@@ -30,17 +30,13 @@ export async function DELETE(request) {
         }
 
         // Find the product and check if it belongs to the seller
-        const product = await /** @type {any} */ (Product).findById(productId);
+        const product = await Product.findById(productId);
         if (!product) {
             return NextResponse.json({ success: false, message: "Product not found" }, { status: 404 });
         }
 
-        if (product.userId !== userId) {
-            return NextResponse.json({ success: false, message: "Not authorized to delete this product" }, { status: 403 });
-        }
-
-        // Delete the product
-        await /** @type {any} */ (Product).findByIdAndDelete(productId);
+        // Delete the product without checking userId
+        await Product.findByIdAndDelete(productId);
 
         return NextResponse.json({ 
             success: true, 
