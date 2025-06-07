@@ -117,8 +117,6 @@ const Navbar = () => {
                   <option value="Babies & Toys">Babies & Toys</option>
                   <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
                   <option value="Groceries & Pets">Groceries & Pets</option>
-                  <option value="all-products">All Products</option>
-                  
                 </select>
               </div>
               {user && (
@@ -222,7 +220,6 @@ const Navbar = () => {
           <option value="Babies & Toys">Babies & Toys</option>
           <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
           <option value="Groceries & Pets">Groceries & Pets</option>
-          <option value="all-products">All Products</option>
         </select>
         {isSeller && (
           <button
