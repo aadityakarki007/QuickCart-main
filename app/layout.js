@@ -13,14 +13,14 @@ export const metadata = {
   description: "EShop - Your choice to buy. The best online shopping experience.",
 };
 
+
 export default async function RootLayout({ children }) {
-  // Get headers for Clerk to handle server components properly
   const headersList = headers();
   
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${outfit.className} antialiased text-gray-700`}>
-        <ClerkProvider headers={headersList}>
+        <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
           <Toaster />
           <AppContextProvider>
             {children}
