@@ -5,6 +5,7 @@ import "./globals.css";
 import { AppContextProvider } from "@/context/AppContext";
 import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from '@clerk/nextjs';
+import MobileNavBar from '@/components/MobileNavBar';  // Import the navbar component
 
 const outfit = Outfit({ subsets: ['latin'], weight: ["300", "400", "500"] });
 
@@ -13,13 +14,13 @@ export const metadata = {
   title: "Hamro eShop - Your choice to buy",
   description: "Hamro eShop - Your choice to buy. The best online shopping experience.",
   openGraph: {
-    title: "EShop - Your choice to buy",
+    title: "Hamro eShop - Your choice to buy",
     description: "EShop - The best online shopping experience in Nepal.",
     url: "https://hamroeshop.com",
     siteName: "Hamro eShop",
     images: [
       {
-        url: "/og.webp", // must be inside public/
+        url: "/og.webp",
         width: 1200,
         height: 630,
         alt: "Hamro eShop - Your best shopping partner"
@@ -44,6 +45,7 @@ export default function RootLayout({ children }) {
           <Toaster />
           <AppContextProvider>
             {children}
+            <MobileNavBar />  {/* Add MobileNavBar here */}
           </AppContextProvider>
         </ClerkProvider>
       </body>
