@@ -39,8 +39,8 @@ export async function PUT(request) {
             return NextResponse.json({ success: false, message: "Product not found" }, { status: 404 });
         }
 
-      
-
+        const isPopular = formData.get('isPopular') === 'true';
+        
         // Update product fields
         const updateData = {
             name: formData.get('name') || product.name,
@@ -53,7 +53,7 @@ export async function PUT(request) {
             sellerName: formData.get('sellerName') || product.sellerName,
             brand: formData.get('brand') || product.brand,
             color: formData.get('color') || product.color,
-            isPopular: formData.get('isPopular') === 'true',
+            isPopular: isPopular,
             deliveryDate: formData.get('deliveryDate') || product.deliveryDate,
         };
 

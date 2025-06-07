@@ -9,6 +9,7 @@ import { useClerk, UserButton } from "@clerk/clerk-react";
 import { HomeIcon, ShoppingBag, Menu } from "lucide-react";
 import { BoxIcon } from "lucide-react";
 import { useEffect } from "react";
+import ApplyForSeller from "./applyforseller";
 
 const Navbar = () => {
   const { isSeller, user } = useAppContext();
@@ -74,6 +75,7 @@ const Navbar = () => {
               </button>
             )}
           </div>
+          <ApplyForSeller />
         </div>
 
         {/* Mobile Menu */}
@@ -119,6 +121,7 @@ const Navbar = () => {
                   <option value="Groceries & Pets">Groceries & Pets</option>
                 </select>
               </div>
+              <ApplyForSeller /> 
               {user && (
                 <>
                   <button
@@ -185,6 +188,7 @@ const Navbar = () => {
           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
         </Link>
       </div>
+      {}
 
       {/* Desktop Menu */}
       <ul className="hidden md:flex items-center gap-4">
@@ -221,13 +225,15 @@ const Navbar = () => {
           <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
           <option value="Groceries & Pets">Groceries & Pets</option>
         </select>
-        {isSeller && (
+        {isSeller ? (
           <button
             onClick={() => router.push("/seller")}
             className="text-xs border px-4 py-1.5 rounded-full"
           >
             Seller Dashboard
           </button>
+        ) : (
+          <ApplyForSeller />
         )}
         {user ? (
           <UserButton>

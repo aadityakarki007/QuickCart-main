@@ -40,7 +40,9 @@ export async function POST(request) {
         const sellerName = formData.get('sellerName');
         const brand = formData.get('brand');
         const color = formData.get('color');
-        
+        const isPopular = formData.get('isPopular') === 'true';
+        const deliveryDate = formData.get('deliveryDate');
+
         // Get image files
         const files = formData.getAll('images');
         if (!files || files.length === 0) {
@@ -93,7 +95,7 @@ export async function POST(request) {
         
         // Connect to database and create product
         await connectDB();
-        const newProduct = await /** @type {any} */ (Product).create({
+        const newProduct = await Product.create({
             userId,
             sellerName: sellerName || "",
             name,
@@ -106,12 +108,13 @@ export async function POST(request) {
             shippingFee: Number(shippingFee || 0),
             deliveryCharge: Number(deliveryCharge || 0),
             images,
-            isPopular: formData.get('isPopular') === 'true',
-            deliveryDate: formData.get('deliveryDate') || '',
+            isPopular: isPopular,
+            deliveryDate: deliveryDate || '',
             reviews: [],
             averageRating: 0,
             date: Date.now()
         });
+        console.log('Saved product:', newProduct);
 
         return NextResponse.json({ 
             success: true, 

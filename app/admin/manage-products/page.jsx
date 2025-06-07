@@ -6,8 +6,9 @@ import toast from "react-hot-toast";
 import Image from "next/image";
 import Link from "next/link";
 import { Pencil, Trash2 } from "lucide-react";
+import PopularProductManager from '@/components/PopularProductManager';
 
-const SellerManageProducts = () => {
+const ManageProducts = () => {
   const { getToken } = useAppContext();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,32 +30,53 @@ const SellerManageProducts = () => {
   const [files, setFiles] = useState([]);
   const [isPopular, setIsPopular] = useState(false);
   const [deliveryDate, setDeliveryDate] = useState('');
-
-  // Fetch only seller's products
+  
   const fetchProducts = async () => {
     try {
       setLoading(true);
       const token = await getToken();
-      const response = await axios.get('/api/product/seller-list', {
+      
+      const response = await axios.get('/api/product/all', {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          'Cache-Control': 'no-cache'
         }
       });
+
       if (response.data.success) {
         setProducts(response.data.products);
       } else {
-        toast.error(response.data.message);
+        toast.error(response.data.message || "Failed to fetch products");
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error?.response?.data?.message || "Error fetching products");
     } finally {
       setLoading(false);
     }
   };
 
+  // Use useEffect with proper cleanup
   useEffect(() => {
-    fetchProducts();
+    let mounted = true;
+
+    const loadProducts = async () => {
+      try {
+        await fetchProducts();
+      } catch (error) {
+        if (mounted) {
+          console.error('Error loading products:', error);
+        }
+      }
+    };
+
+    loadProducts();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
+
+  
 
   // Handle delete product
   const handleDelete = async (productId) => {
@@ -182,13 +204,8 @@ const SellerManageProducts = () => {
   return (
     <div className="flex-1 min-h-screen p-4 md:p-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Manage Your Products</h1>
-        <Link 
-          href="/seller" 
-          className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition"
-        >
-          Add New Product
-        </Link>
+        <h1 className="text-2xl font-bold">Manage All Products</h1>
+        <p className="text-sm text-gray-600">As a seller, you can view and manage all products</p>
       </div>
 
       {isEditing ? (
@@ -418,7 +435,18 @@ const SellerManageProducts = () => {
                 />
               </div>
 
-              
+              <div className="flex items-center gap-2 mt-4">
+                <input
+                  id="edit-is-popular"
+                  type="checkbox"
+                  className="w-4 h-4 text-blue-600"
+                  checked={isPopular}
+                  onChange={(e) => setIsPopular(e.target.checked)}
+                />
+                <label className="text-base font-medium" htmlFor="edit-is-popular">
+                  Mark as Popular Product
+                </label>
+              </div>
             </div>
 
             <div className="flex gap-3 pt-4">
@@ -511,8 +539,20 @@ const SellerManageProducts = () => {
                             Delete
                           </button>
                       </div>
+                      <PopularProductManager product={product} />
                     </div>
-                    
+                    <div className="flex items-center gap-2 mt-2">
+                      <button
+                        onClick={() => togglePopular(product._id, product.isPopular)}
+                        className={`px-3 py-1 rounded text-sm ${
+                            product.isPopular 
+                                ? 'bg-orange-100 text-orange-600' 
+                                : 'bg-gray-100 text-gray-600'
+                        }`}
+                      >
+                        {product.isPopular ? '★ Popular' : '☆ Mark Popular'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -524,4 +564,4 @@ const SellerManageProducts = () => {
   );
 };
 
-export default SellerManageProducts;
+export default ManageProducts;
