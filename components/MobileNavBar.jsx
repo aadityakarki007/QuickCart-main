@@ -14,6 +14,7 @@ const MobileNavBar = () => {
     const [showCategories, setShowCategories] = useState(false);
 
     const mainCategories = [
+        "All Products",
         "Men's Fashion",
         "Women's Fashion",
         "Electronic Devices",
@@ -37,15 +38,25 @@ const MobileNavBar = () => {
     };
 
     const handleCategorySelect = (category) => {
-        router.push(`/all-products?category=${encodeURIComponent(category)}`);
+        if (category === 'All Products') {
+            router.push('/all-products');
+        } else {
+            router.push(`/all-products?category=${encodeURIComponent(category)}`);
+        }
         setShowCategories(false);
     };
 
     return (
         <>
             {showCategories && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={() => setShowCategories(false)}>
-                    <div className="fixed bottom-16 left-0 right-0 bg-white p-4 max-h-[60vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 z-50"
+                    onClick={() => setShowCategories(false)}
+                >
+                    <div
+                        className="fixed bottom-16 left-0 right-0 bg-white p-4 max-h-[60vh] overflow-y-auto"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <h3 className="text-lg font-semibold mb-4 text-gray-800">Select Category</h3>
                         <div className="grid grid-cols-2 gap-3">
                             {mainCategories.map((category) => (
@@ -64,14 +75,14 @@ const MobileNavBar = () => {
             <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
                 <div className="flex justify-around items-center h-16">
                     {navItems.map((item) => (
-                        <Link 
+                        <Link
                             key={item.name}
                             href={item.path}
                             className={`flex flex-col items-center justify-center w-full h-full ${
                                 pathname === item.path ? 'text-orange-500' : 'text-gray-600'
                             }`}
                         >
-                            <item.icon className={`text-2xl ${pathname === item.path ? 'text-orange-500' : 'text-gray-600'}`} />
+                            <item.icon className="text-2xl" />
                             <span className="text-xs mt-1">{item.name}</span>
                         </Link>
                     ))}
@@ -81,7 +92,7 @@ const MobileNavBar = () => {
                             showCategories ? 'text-orange-500' : 'text-gray-600'
                         }`}
                     >
-                        <BiCategory className={`text-2xl ${showCategories ? 'text-orange-500' : 'text-gray-600'}`} />
+                        <BiCategory className="text-2xl" />
                         <span className="text-xs mt-1">Categories</span>
                     </button>
                 </div>
