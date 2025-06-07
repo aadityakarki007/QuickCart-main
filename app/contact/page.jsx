@@ -21,7 +21,7 @@ const Contact = () => {
       'service_291kqy7',
       'template_kid4ojn',
       form.current,
-      'YOUR_PUBLIC_KEY' // <-- Replace with your real public key
+      '0qhSgoALyaytQ2spp' // <-- Replace with your real public key
     )
       .then(
         () => {
