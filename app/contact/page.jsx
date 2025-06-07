@@ -44,55 +44,82 @@ const Contact = () => {
           <div className="w-16 h-0.5 bg-orange-600 rounded-full mt-1 ml-16"></div>
         </div>
 
-        <div className="max-w-lg mx-auto bg-white border border-gray-200 rounded-xl shadow-lg p-8 transition hover:shadow-xl">
-          <form ref={form} onSubmit={sendEmail} className="space-y-6">
+        {/* Flex container for form and contact info */}
+        <div className="flex flex-col lg:flex-row gap-8 max-w-5xl mx-auto">
+          
+          {/* Contact Form - Left Side */}
+          <div className="flex-1 bg-white border border-gray-200 rounded-xl shadow-lg p-8">
+            <form ref={form} onSubmit={sendEmail} className="space-y-6">
+              <div>
+                <label htmlFor="user_name" className="block mb-2">Name</label>
+                <input
+                  type="text"
+                  id="user_name"
+                  name="user_name"
+                  required
+                  className="w-full border border-gray-300 rounded-md p-2"
+                  placeholder="Your name"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="user_email" className="block mb-2">Email</label>
+                <input
+                  type="email"
+                  id="user_email"
+                  name="user_email"
+                  required
+                  className="w-full border border-gray-300 rounded-md p-2"
+                  placeholder="Your email"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="message" className="block mb-2">Message</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={4}
+                  required
+                  className="w-full border border-gray-300 rounded-md p-2 resize-none"
+                  placeholder="Your message"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition"
+              >
+                {loading ? "Sending..." : "Send Message"}
+              </button>
+
+              {success && <p className="text-green-600 mt-4">{success}</p>}
+              {error && <p className="text-red-600 mt-4">{error}</p>}
+            </form>
+          </div>
+
+          {/* Contact Info - Right Side */}
+          <div className="flex-1 bg-gray-50 border border-gray-200 rounded-xl shadow-lg p-8 space-y-6">
+            <h2 className="text-xl font-semibold mb-4">Get in Touch</h2>
+
             <div>
-              <label htmlFor="user_name" className="block mb-2">Name</label>
-              <input
-                type="text"
-                id="user_name"
-                name="user_name"
-                required
-                className="w-full border border-gray-300 rounded-md p-2"
-                placeholder="Your name"
-              />
+              <p className="font-medium text-gray-700 mb-1">📞 Phone:</p>
+              <p className="text-gray-600">+977 9828086387</p>
+              <p className="text-gray-600">+977 9840186285</p>
             </div>
 
             <div>
-              <label htmlFor="user_email" className="block mb-2">Email</label>
-              <input
-                type="email"
-                id="user_email"
-                name="user_email"
-                required
-                className="w-full border border-gray-300 rounded-md p-2"
-                placeholder="Your email"
-              />
+              <p className="font-medium text-gray-700 mb-1">📧 Email:</p>
+              <p className="text-gray-600">service.ehopnepal@gmail.com</p>
+              
             </div>
 
             <div>
-              <label htmlFor="message" className="block mb-2">Message</label>
-              <textarea
-                id="message"
-                name="message"
-                rows={4}
-                required
-                className="w-full border border-gray-300 rounded-md p-2 resize-none"
-                placeholder="Your message"
-              />
+              <p className="font-medium text-gray-700 mb-1">🏠 Address:</p>
+              <p className="text-gray-600">Kathmandu, Nepal</p>
             </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition"
-            >
-              {loading ? "Sending..." : "Send Message"}
-            </button>
-
-            {success && <p className="text-green-600 mt-4">{success}</p>}
-            {error && <p className="text-red-600 mt-4">{error}</p>}
-          </form>
+          </div>
         </div>
       </div>
       <Footer />
