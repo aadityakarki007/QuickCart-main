@@ -6,9 +6,10 @@ import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import { useClerk, UserButton } from "@clerk/clerk-react";
-import { HomeIcon, ShoppingBag, Menu } from "lucide-react";
-import { BoxIcon } from "lucide-react";
 import { useEffect } from "react";
+import { HomeIcon, ShoppingBag, Menu, BoxIcon, Phone } from "lucide-react";
+
+
 
 const Navbar = () => {
   const { isSeller, user } = useAppContext();
@@ -78,81 +79,67 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 py-4 px-6 shadow-lg z-50">
-            <div className="flex flex-col gap-4">
-              <button
-                onClick={() => handleMobileNavigation("/")}
-                className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-              >
-                {/* @ts-ignore */}
-                <HomeIcon className="w-5 h-5" />
-                Home
-              </button>
-              <button
-                onClick={() => handleMobileNavigation("/all-products")}
-                className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-              >
-                {/* @ts-ignore */}
-                <BoxIcon className="w-5 h-5" />
-                All Products
-              </button>
-              <div className="relative group">
-                <select
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      handleMobileNavigation(`/all-products?category=${encodeURIComponent(e.target.value)}`);
-                    }
-                  }}
-                  className="w-full p-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  defaultValue=""
-                >
-                  <option value="">Select Category</option>
-                  <option value="Men's Fashion">Men's Fashion</option>
-                  <option value="Women's Fashion">Women's Fashion</option>
-                  <option value="Electronic Devices">Electronic Devices</option>
-                  <option value="Gifts & Decorations">Gifts & Decorations</option>
-                  <option value="Home & Lifestyle">Home & Lifestyle</option>
-                  <option value="Sports & Outdoor">Sports & Outdoor</option>
-                  <option value="Health & Beauty">Health & Beauty</option>
-                  <option value="Babies & Toys">Babies & Toys</option>
-                  <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
-                  <option value="Groceries & Pets">Groceries & Pets</option>
-                </select>
-              </div>
-              {user && (
-                <>
-                  <button
-                    onClick={() => handleMobileNavigation("/cart")}
-                    className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-                  >
-                    <div className="w-5 h-5">
-                      <CartIcon />
-                    </div>
-                    Cart
-                  </button>
-                  <button
-                    onClick={() => handleMobileNavigation("/my-orders")}
-                    className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-                  >
-                    {/* @ts-ignore */}
-                    <ShoppingBag className="w-5 h-5" />
-                    My Orders
-                  </button>
-                </>
-              )}
-              {isSeller && (
-                <button
-                  onClick={() => handleMobileNavigation("/seller")}
-                  className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-                >
-                  {/* @ts-ignore */}
-                  <BoxIcon className="w-5 h-5" />
-                  Seller Dashboard
-                </button>
-              )}
+  <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 py-4 px-6 shadow-lg z-50">
+    <div className="flex flex-col gap-4">
+      <button
+        onClick={() => handleMobileNavigation("/")}
+        className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+      >
+        <HomeIcon className="w-5 h-5" />
+        Home
+      </button>
+      <button
+        onClick={() => handleMobileNavigation("/all-products")}
+        className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+      >
+        <BoxIcon className="w-5 h-5" />
+        All Products
+      </button>
+      {/* category select dropdown here */}
+      {user && (
+        <>
+          <button
+            onClick={() => handleMobileNavigation("/cart")}
+            className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+          >
+            <div className="w-5 h-5">
+              <CartIcon />
             </div>
-          </div>
-        )}
+            Cart
+          </button>
+          <button
+            onClick={() => handleMobileNavigation("/my-orders")}
+            className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+          >
+            <ShoppingBag className="w-5 h-5" />
+            My Orders
+          </button>
+        </>
+      )}
+      {isSeller && (
+        <button
+          onClick={() => handleMobileNavigation("/seller")}
+          className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+        >
+          <BoxIcon className="w-5 h-5" />
+          Seller Dashboard
+        </button>
+      )}
+      {/* Add Contact Us button here */}
+      <button
+        onClick={() => handleMobileNavigation("/contact")}
+        className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+      >
+        <Phone className="w-5 h-5" />
+        Contact
+      </button>
+    </div>
+  </div>
+)}
+
+
+
+      {/* Mobile Menu Ender */}
         <form onSubmit={handleSearch} className="relative md:hidden w-full">
           <input
             type="text"
