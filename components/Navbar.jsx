@@ -117,6 +117,8 @@ const Navbar = () => {
                   <option value="Babies & Toys">Babies & Toys</option>
                   <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
                   <option value="Groceries & Pets">Groceries & Pets</option>
+                  <option value="all-products">All Products</option>
+                  
                 </select>
               </div>
               {user && (
@@ -180,7 +182,7 @@ const Navbar = () => {
           About Us
           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
         </Link>
-        <Link href="/" className="hover:text-orange-500 hover:scale-105 transition-all duration-200 relative group">
+        <Link href="/contact" className="hover:text-orange-500 hover:scale-105 transition-all duration-200 relative group">
           Contact
           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
         </Link>
@@ -220,6 +222,7 @@ const Navbar = () => {
           <option value="Babies & Toys">Babies & Toys</option>
           <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
           <option value="Groceries & Pets">Groceries & Pets</option>
+          <option value="all-products">All Products</option>
         </select>
         {isSeller && (
           <button
