@@ -18,23 +18,21 @@ const Contact = () => {
     setError(null);
 
     emailjs.sendForm(
-      'service_291kqy7',
-      'template_kid4ojn',
+      'service_tnbvvb6',               // ✅ updated service ID
+      'template_axr0n9t',              // ✅ updated template ID
       form.current,
-      '0qhSgoALyaytQ2spp' // <-- Replace with your real public key
+      'DFAbCJPUHm3j6PS8y'              // ✅ updated public key
     )
-      .then(
-        () => {
-          setSuccess("Message sent successfully!");
-          setLoading(false);
-          e.target.reset();
-        },
-        (err) => {
-          setError("Failed to send message, please try again.");
-          setLoading(false);
-          console.error(err);
-        }
-      );
+      .then(() => {
+        setSuccess("✅ Message sent successfully!");
+        setLoading(false);
+        e.target.reset();
+      })
+      .catch((err) => {
+        console.error("❌ EmailJS Error:", err);
+        setError("❌ Failed to send message. Please try again.");
+        setLoading(false);
+      });
   };
 
   return (
