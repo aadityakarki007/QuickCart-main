@@ -5,9 +5,9 @@ import { useAppContext } from "@/context/AppContext";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import Link from "next/link";
-import { Pencil, Trash2, ArrowLeft } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
-const ManageProducts = () => {
+const SellerManageProducts = () => {
   const { getToken } = useAppContext();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,13 +30,12 @@ const ManageProducts = () => {
   const [isPopular, setIsPopular] = useState(false);
   const [deliveryDate, setDeliveryDate] = useState('');
 
-  // Fetch seller's products
+  // Fetch only seller's products
   const fetchProducts = async () => {
     try {
       setLoading(true);
       const token = await getToken();
-      // Get all products instead of just seller's products
-      const response = await axios.get('/api/product/all', {
+      const response = await axios.get('/api/product/seller-list', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -44,10 +43,10 @@ const ManageProducts = () => {
       if (response.data.success) {
         setProducts(response.data.products);
       } else {
-        toast.error(response.data.message || "Failed to fetch products");
+        toast.error(response.data.message);
       }
     } catch (error) {
-      toast.error(error.message || "An error occurred while fetching products");
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -159,11 +158,37 @@ const ManageProducts = () => {
     setSelectedProduct(null);
   };
 
+  const togglePopular = async (productId, currentStatus) => {
+    try {
+      const token = await getToken();
+      const response = await axios.put('/api/product/set-popular', 
+        { 
+          productId, 
+          isPopular: !currentStatus 
+        },
+        { headers: { Authorization: `Bearer ${token}` }}
+      );
+      
+      if (response.data.success) {
+        toast.success(response.data.message);
+        fetchProducts(); // Refresh product list
+      }
+    } catch (error) {
+      console.error('Toggle popular error:', error);
+      toast.error('Failed to update popular status');
+    }
+  };
+
   return (
     <div className="flex-1 min-h-screen p-4 md:p-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Manage All Products</h1>
-        <p className="text-sm text-gray-600">As a seller, you can view and manage all products</p>
+        <h1 className="text-2xl font-bold">Manage Your Products</h1>
+        <Link 
+          href="/seller" 
+          className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition"
+        >
+          Add New Product
+        </Link>
       </div>
 
       {isEditing ? (
@@ -393,18 +418,7 @@ const ManageProducts = () => {
                 />
               </div>
 
-              <div className="flex items-center gap-2 mt-4">
-                <input
-                  id="edit-is-popular"
-                  type="checkbox"
-                  className="w-4 h-4 text-blue-600"
-                  checked={isPopular}
-                  onChange={(e) => setIsPopular(e.target.checked)}
-                />
-                <label className="text-base font-medium" htmlFor="edit-is-popular">
-                  Mark as Popular Product
-                </label>
-              </div>
+              
             </div>
 
             <div className="flex gap-3 pt-4">
@@ -480,24 +494,25 @@ const ManageProducts = () => {
                         </span>
                       )}
                     </div>
-                    <div className="flex justify-between">
-                      <button
-                        onClick={() => handleEdit(product)}
-                        className="flex items-center text-blue-600 hover:text-blue-800"
-                      >
-                        {/* @ts-ignore */}
-                        <Pencil size={16} className="mr-1" />
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(product._id)}
-                        className="flex items-center text-red-600 hover:text-red-800"
-                      >
-                        {/* @ts-ignore */}
-                        <Trash2 size={16} className="mr-1" />
-                        Delete
-                      </button>
+                    <div className="flex justify-between items-center">
+                      <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEdit(product)}
+                            className="flex items-center text-blue-600 hover:text-blue-800"
+                          >
+                            <Pencil size={16} className="mr-1" />
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(product._id)}
+                            className="flex items-center text-red-600 hover:text-red-800"
+                          >
+                            <Trash2 size={16} className="mr-1" />
+                            Delete
+                          </button>
+                      </div>
                     </div>
+                    
                   </div>
                 </div>
               ))}
@@ -509,4 +524,4 @@ const ManageProducts = () => {
   );
 };
 
-export default ManageProducts;
+export default SellerManageProducts;

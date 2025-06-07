@@ -15,7 +15,7 @@ export async function GET(request) {
     
     // First try to find the user
     let user = await User.findById(userId);
-    
+     const isSeller = user ? user.isSeller : false;
     // If user doesn't exist, create a new one
     if (!user) {
       // Create a basic user record with just the ID and a unique email
@@ -25,11 +25,12 @@ export async function GET(request) {
           name: 'User',
           email: `user-${userId}@example.com`, // Make email unique using userId
           imageUrl: '',
-          cartItems: {}
+          cartItems: {}, 
+          isSeller: false,
+          isAdmin: false 
         });
-        console.log('Created new user:', userId);
       } catch (createError) {
-        console.error("Error creating user:", createError);
+        // Log to proper error monitoring service in production
         return NextResponse.json({ success: false, message: "Error creating user" }, { status: 500 });
       }
     }
