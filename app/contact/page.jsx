@@ -123,7 +123,7 @@ const Contact = () => {
               <p className="font-semibold text-orange-700 flex items-center gap-2 text-lg">
                 <span>📧</span> Email:
               </p>
-              <p className="text-orange-900 text-base">service.ehopnepal@gmail.com</p>
+              <p className="text-orange-900 text-base">service.eshopnepal@gmail.com</p>
             </div>
 
             <div>
