@@ -7,6 +7,9 @@ import { usePathname } from 'next/navigation';
 const MobileNavBar = () => {
   const pathname = usePathname();
 
+  // Hide MobileNavBar on /seller route
+  if (pathname === '/seller') return null;
+
   const isActive = (path) => pathname === path;
 
   return (
