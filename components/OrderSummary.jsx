@@ -211,32 +211,13 @@ const OrderSummary = () => {
         <hr className="border-gray-500/30 my-5" />
 
         {/* Payment Method */}
-        <div>
-          <label className="text-base font-medium uppercase text-gray-600 block mb-3">
-            Select Payment Method
-          </label>
-          <div className="grid grid-cols-2 gap-4">
-            {paymentMethods.map((method) => (
-              <button
-                key={method.id}
-                onClick={() => setSelectedPaymentMethod(method.id)}
-                className={`border rounded-lg flex items-center justify-center h-24 transition-colors ${
-                  selectedPaymentMethod === method.id
-                    ? "border-orange-500"
-                    : "border-gray-200 hover:border-orange-300"
-                }`}
-              >
-                <img
-                  src={method.image}
-                  alt={method.name}
-                  className="w-[90%] h-[90%] object-contain"
-                />
-
-
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Payment Method */}
+<div>
+  <label className="text-base font-medium uppercase text-gray-600 block mb-3">
+    Payment Method
+  </label>
+  <p className="text-gray-700">Cash on Delivery</p>
+</div>
 
         {/* Price Summary */}
         <div className="space-y-4">
