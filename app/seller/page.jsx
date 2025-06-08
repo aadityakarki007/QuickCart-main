@@ -28,6 +28,7 @@ const AddProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const formData = new FormData()
 
     formData.append('name',name)
@@ -40,7 +41,7 @@ const AddProduct = () => {
     formData.append('sellerName',sellerName)
     formData.append('brand', brand || '')
     formData.append('color', color || '')
-    formData.append('isPopular' , false); 
+    formData.append('isPopular', String(isPopular))
     formData.append('deliveryDate', deliveryDate || '')
 
     for (let i = 0; i < files.length; i++) {
@@ -308,7 +309,18 @@ const AddProduct = () => {
             />
           </div>
 
-      
+          <div className="flex items-center gap-2">
+            <input
+              id="is-popular"
+              type="checkbox"
+              className="w-4 h-4 text-blue-600"
+              checked={isPopular}
+              onChange={(e) => setIsPopular(e.target.checked)}
+            />
+            <label className="text-base font-medium" htmlFor="is-popular">
+              Mark as Popular Product
+            </label>
+          </div>
         </div>
 
         <button type="submit" className="px-8 py-2.5 bg-orange-600 text-white font-medium rounded">

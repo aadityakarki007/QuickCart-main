@@ -23,12 +23,9 @@ const productSchema = new mongoose.Schema({
     category: { type: String, required: true },
     reviews: [reviewSchema],
     averageRating: { type: Number, default: 0 },
-    date: { type: Number, required: true }, 
-    isPopular: {
-        type: Boolean,
-        default: false
-    }
+    date: { type: Number, required: true }
 });
 
 const Product = mongoose.models.Product || mongoose.model("Product", productSchema);
-export default Product
+
+export default Product;

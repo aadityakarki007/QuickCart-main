@@ -12,13 +12,12 @@ import React from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import QRCode from "qrcode";
-import { Pencil, Trash2, Star } from 'lucide-react';
-import ErrorBoundary  from "@/components/ErrorBoundary";
-import ConfirmationDialog from "@/components/ConfirmationDialog";
 
 const Product = () => {
+
     const { id } = useParams();
-    const { router, user, getToken, cartItems, setCartItems } = useAppContext();
+
+    const { products, router, user, getToken, cartItems, setCartItems } = useAppContext()
 
     const [mainImage, setMainImage] = useState(null);
     const [productData, setProductData] = useState(null);
@@ -26,95 +25,6 @@ const Product = () => {
     const [reviewComment, setReviewComment] = useState('');
     const [submittingReview, setSubmittingReview] = useState(false);
     const [qrUrl, setQrUrl] = useState('');
-    const [userRole, setUserRole] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [isTogglingPopular, setIsTogglingPopular] = useState(false);
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
-    const handleTogglePopular = async () => {
-        try {
-            setIsTogglingPopular(true);
-            const token = await getToken();
-            const { data } = await axios.post(
-                '/api/product/popular/manage',
-                { 
-                    productId: id,
-                    action: productData.isPopular ? 'remove' : 'add'
-                },
-                { headers: { Authorization: `Bearer ${token}` }}
-            );
-
-            if (data.success) {
-                toast.success(data.message);
-                fetchProductData(); // Refresh the product data
-            }
-        } catch (error) {
-            toast.error('Failed to update popular status');
-            console.error('Toggle popular error:', error);
-        } finally {
-            setIsTogglingPopular(false);
-        }
-    };
-
-    const handleDeleteProduct = async () => {
-        try {
-            setIsDeleting(true);
-            const token = await getToken();
-            const { data } = await axios.delete(`/api/product/delete?id=${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            if (data.success) {
-                toast.success('Product deleted successfully');
-                router.push('/all-products');
-            }
-        } catch (error) {
-            toast.error('Failed to delete product');
-            console.error('Delete error:', error);
-        } finally {
-            setIsDeleting(false);
-        }
-    };
-
-    const handleEditProduct = () => {
-        // Ensure userRole is an array and check for admin role
-        const roles = Array.isArray(userRole) ? userRole : [];
-        const isAdmin = roles.includes('admin');
-    
-        const route = isAdmin ? '/admin' : '/seller';
-        console.log('Edit route:', route); // Debug log
-        router.push(`${route}/manage-products?edit=${id}`);
-    };
-
-    // Check user role
-    const checkUserRole = async () => {
-        if (!user) {
-            setUserRole([]);
-            return [];
-        }
-
-        try {
-            const token = await getToken();
-            const { data } = await axios.get('/api/user/check-admin', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            
-            // Get roles from the user's metadata
-            const roles = user?.publicMetadata?.role ? 
-                user.publicMetadata.role.split(',').map(role => role.trim()) :
-                [];
-            
-
-            setUserRole(roles);
-
-            return roles;
-        } catch (error) {
-            console.error('Error checking user role:', error);
-            setUserRole([]);
-            return [];
-        }
-    };
 
     const addToCart = async (itemId) => {
         let cartData = structuredClone(cartItems);
@@ -136,38 +46,13 @@ const Product = () => {
     };
 
     const fetchProductData = async () => {
-        try {
-            setLoading(true);
-            const { data } = await axios.get(`/api/product/${id}`);
-            if (data.success) {
-                setProductData(data.product);
-                setMainImage(data.product.images?.[0] || null);
-            } else {
-                toast.error('Failed to load product');
-            }
-        } catch (error) {
-            console.error('Error fetching product:', error);
-            toast.error('Failed to load product details');
-        } finally {
-            setLoading(false);
-        }
-    };
+        const product = products.find(product => product._id === id);
+        setProductData(product);
+    }
 
     useEffect(() => {
-        const init = async () => {
-            try {
-                await fetchProductData();
-                if (user) {
-                    const roles = await checkUserRole();
-                    setUserRole(roles);
-                }
-            } catch (error) {
-                console.error('Initialization error:', error);
-                toast.error('Failed to initialize page');
-            }
-        };
-        init();
-    }, [id, user?.id, user?.publicMetadata?.role]); // Also watch for role changes in metadata
+        fetchProductData();
+    }, [id, products.length]);
 
     useEffect(() => {
         if (productData?._id) {
@@ -226,63 +111,14 @@ const Product = () => {
         }
     }
 
-    const canManageProduct = (() => {
-        if (!Array.isArray(userRole) || !productData) return false;
-        
-        // Admin can manage all products
-        if (userRole.includes('admin')) return true;
-        
-        // Seller can only manage their own products
-        return userRole.includes('seller') && productData.sellerId === user?.id;
-    })();
-
-    if (loading) return <Loading />;
-    if (!productData) return <div>Product not found</div>;
+    if (!productData) {
+        return <Loading />;
+    }
 
     return (
-        <ErrorBoundary>
+        <>
             <Navbar />
             <div className="px-6 md:px-16 lg:px-32 pt-14 space-y-10">
-                {/* Admin/Seller Controls */}
-                {(canManageProduct || (Array.isArray(userRole) && userRole.includes('admin'))) && (
-                    <div className="flex justify-end gap-2">
-                        {Array.isArray(userRole) && userRole.includes('admin') && (
-                            <button
-                                onClick={handleTogglePopular}
-                                disabled={isTogglingPopular}
-                                className={`flex items-center gap-2 px-4 py-2 rounded ${
-                                    productData.isPopular 
-                                        ? 'bg-yellow-100 text-yellow-700' 
-                                        : 'bg-gray-100 text-gray-700'
-                                } ${isTogglingPopular ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            >
-                                <Star className={`w-4 h-4 ${isTogglingPopular ? 'animate-spin' : ''}`} />
-                                {isTogglingPopular ? 'Updating...' : (productData.isPopular ? 'Remove Popular' : 'Set Popular')}
-                            </button>
-                        )}
-                        {canManageProduct && (
-                            <>
-                                <button
-                                    onClick={handleEditProduct}
-                                    disabled={isDeleting}
-                                    className={`flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                >
-                                    <Pencil className="w-4 h-4" />
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => setShowDeleteConfirm(true)}
-                                    disabled={isDeleting}
-                                    className={`flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                >
-                                    <Trash2 className={`w-4 h-4 ${isDeleting ? 'animate-spin' : ''}`} />
-                                    {isDeleting ? 'Deleting...' : 'Delete'}
-                                </button>
-                            </>
-                        )}
-                    </div>
-                )}
-
                 {/* Main product section with image on left and details on right */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Left column - Product images */}
@@ -476,7 +312,7 @@ const Product = () => {
                 </div>
             </div>
 
-            {/* Featured Products Section
+            {/* Featured Products Section */}
             <div className="flex flex-col items-center">
                 <div className="flex flex-col items-center mb-4 mt-16">
                     <p className="text-3xl font-medium">Featured <span className="font-medium text-orange-600">Products</span></p>
@@ -488,21 +324,10 @@ const Product = () => {
                 <button className="px-8 py-2 mb-16 border rounded text-gray-500/70 hover:bg-slate-50/90 transition">
                     See more
                 </button>
-            </div> */}
+            </div>
             <Footer />
-
-            <ConfirmationDialog
-                isOpen={showDeleteConfirm}
-                onClose={() => setShowDeleteConfirm(false)}
-                onConfirm={handleDeleteProduct}
-                title="Delete Product"
-                message="Are you sure you want to delete this product? This action cannot be undone."
-                confirmLabel="Delete Product"
-                cancelLabel="Cancel"
-                variant="danger"
-            />
-        </ErrorBoundary>
+        </>
     );
-};
+}
 
 export default Product;
