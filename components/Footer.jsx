@@ -25,9 +25,9 @@ const Footer = () => {
             <h2 className="font-medium text-gray-900 mb-5">Company</h2>
             <ul className="text-sm space-y-2">
               <li><a className="hover:underline transition" href="#">Home</a></li>
-              <li><a className="hover:underline transition" href="#">About us</a></li>
+              <li><a className="hover:underline transition" href="/about-us">About us</a></li>
               <li><a className="hover:underline transition" href="/contact">Contact us</a></li>
-              <li><a className="hover:underline transition" href="#">Privacy policy</a></li>
+              <li><a className="hover:underline transition" href="/privacy-policy">Privacy policy</a></li>
             </ul>
           </div>
         </div>
@@ -66,9 +66,9 @@ const Footer = () => {
             <h2 className="font-medium text-gray-900 mb-4">Company</h2>
             <ul className="text-sm space-y-1">
               <li><a className="hover:underline transition" href="#">Home</a></li>
-              <li><a className="hover:underline transition" href="#">About us</a></li>
+              <li><a className="hover:underline transition" href="/about-us">About us</a></li>
               <li><a className="hover:underline transition" href="/contact">Contact us</a></li>
-              <li><a className="hover:underline transition" href="#">Privacy policy</a></li>
+              <li><a className="hover:underline transition" href="/privacy-policy">Privacy policy</a></li>
             </ul>
           </div>
 
