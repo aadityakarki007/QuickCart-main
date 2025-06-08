@@ -6,11 +6,9 @@ import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import { useClerk, UserButton } from "@clerk/clerk-react";
+import { HomeIcon, ShoppingBag, Menu, Box as BoxIcon } from "lucide-react";
 import { useEffect } from "react";
-import { HomeIcon, ShoppingBag, Menu, BoxIcon, Phone } from "lucide-react";
-
-
-
+import ApplyForSeller from "@/components/applyforseller";
 const Navbar = () => {
   const { isSeller, user } = useAppContext();
   const router = useRouter();
@@ -33,6 +31,7 @@ const Navbar = () => {
 
   return (
     <nav className="flex flex-col md:flex-row items-center gap-4 md:gap-0 justify-between px-6 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-gray-700 sticky top-0 bg-white z-50">
+      {/* Logo and Mobile Controls */}
       <div className="flex flex-col md:block w-full md:w-auto gap-3">
         <div className="flex items-center justify-between md:justify-start">
           <Image
@@ -47,7 +46,6 @@ const Navbar = () => {
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               aria-label="Toggle mobile menu"
             >
-              {/* @ts-ignore */}
               <Menu className="w-6 h-6" />
             </button>
             {user ? (
@@ -79,67 +77,78 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-  <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 py-4 px-6 shadow-lg z-50">
-    <div className="flex flex-col gap-4">
-      <button
-        onClick={() => handleMobileNavigation("/")}
-        className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-      >
-        <HomeIcon className="w-5 h-5" />
-        Home
-      </button>
-      <button
-        onClick={() => handleMobileNavigation("/all-products")}
-        className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-      >
-        <BoxIcon className="w-5 h-5" />
-        All Products
-      </button>
-      {/* category select dropdown here */}
-      {user && (
-        <>
-          <button
-            onClick={() => handleMobileNavigation("/cart")}
-            className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-          >
-            <div className="w-5 h-5">
-              <CartIcon />
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 py-4 px-6 shadow-lg z-50">
+            <div className="flex flex-col gap-4">
+              <button
+                onClick={() => handleMobileNavigation("/")}
+                className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+              >
+                <HomeIcon className="w-5 h-5" />
+                Home
+              </button>
+              <button
+                onClick={() => handleMobileNavigation("/all-products")}
+                className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+              >
+                <BoxIcon className="w-5 h-5" />
+                All Products
+              </button>
+              <div className="relative group">
+                <select
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      handleMobileNavigation(`/all-products?category=${encodeURIComponent(e.target.value)}`);
+                    }
+                  }}
+                  className="w-full p-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  defaultValue=""
+                >
+                  <option value="">Select Category</option>
+                  <option value="Smartphones">Smartphones</option>
+                  <option value="Laptops">Laptops</option>
+                  <option value="Audio">Audio</option>
+                  <option value="Cameras">Cameras</option>
+                  <option value="Gaming">Gaming</option>
+                  <option value="Accessories">Accessories</option>
+                  <option value="Tablets">Tablets</option>
+                  <option value="Wearables">Wearables</option>
+                </select>
+              </div>
+              <ApplyForSeller />
+              {user && (
+                <>
+                  <button
+                    onClick={() => handleMobileNavigation("/cart")}
+                    className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+                  >
+                    <div className="w-5 h-5">
+                      <CartIcon />
+                    </div>
+                    Cart
+                  </button>
+                  <button
+                    onClick={() => handleMobileNavigation("/my-orders")}
+                    className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+                  >
+                    <ShoppingBag className="w-5 h-5" />
+                    My Orders
+                  </button>
+                </>
+              )}
+              {isSeller && (
+                <button
+                  onClick={() => handleMobileNavigation("/seller")}
+                  className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+                >
+                  <BoxIcon className="w-5 h-5" />
+                  Seller Dashboard
+                </button>
+              )}
             </div>
-            Cart
-          </button>
-          <button
-            onClick={() => handleMobileNavigation("/my-orders")}
-            className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-          >
-            <ShoppingBag className="w-5 h-5" />
-            My Orders
-          </button>
-        </>
-      )}
-      {isSeller && (
-        <button
-          onClick={() => handleMobileNavigation("/seller")}
-          className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-        >
-          <BoxIcon className="w-5 h-5" />
-          Seller Dashboard
-        </button>
-      )}
-      {/* Add Contact Us button here */}
-      <button
-        onClick={() => handleMobileNavigation("/contact")}
-        className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-      >
-        <Phone className="w-5 h-5" />
-        Contact
-      </button>
-    </div>
-  </div>
-)}
-
-
-
-      {/* Mobile Menu Ender */}
+          </div>
+        )}
+        
+        {/* Mobile Search */}
         <form onSubmit={handleSearch} className="relative md:hidden w-full">
           <input
             type="text"
@@ -154,7 +163,8 @@ const Navbar = () => {
         </form>
       </div>
 
-      <div className="flex items-center gap-4 lg:gap-8 max-md:hidden">
+      {/* Desktop Navigation Links */}
+      <div className="hidden md:flex items-center gap-4 lg:gap-8">
         <Link href="/" className="hover:text-orange-500 hover:scale-105 transition-all duration-200 relative group">
           Home
           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
@@ -167,13 +177,13 @@ const Navbar = () => {
           About Us
           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
         </Link>
-        <Link href="/contact" className="hover:text-orange-500 hover:scale-105 transition-all duration-200 relative group">
+        <Link href="/" className="hover:text-orange-500 hover:scale-105 transition-all duration-200 relative group">
           Contact
           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
         </Link>
       </div>
 
-      {/* Desktop Menu */}
+      {/* Desktop Actions */}
       <ul className="hidden md:flex items-center gap-4">
         <form onSubmit={handleSearch} className="relative flex items-center">
           <input
@@ -197,24 +207,24 @@ const Navbar = () => {
           defaultValue=""
         >
           <option value="">Select Category</option>
-          <option value="Men's Fashion">Men's Fashion</option>
-          <option value="Women's Fashion">Women's Fashion</option>
-          <option value="Electronic Devices">Electronic Devices</option>
-          <option value="Gifts & Decorations">Gifts & Decorations</option>
-          <option value="Home & Lifestyle">Home & Lifestyle</option>
-          <option value="Sports & Outdoor">Sports & Outdoor</option>
-          <option value="Health & Beauty">Health & Beauty</option>
-          <option value="Babies & Toys">Babies & Toys</option>
-          <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
-          <option value="Groceries & Pets">Groceries & Pets</option>
+          <option value="Smartphones">Smartphones</option>
+          <option value="Laptops">Laptops</option>
+          <option value="Audio">Audio</option>
+          <option value="Cameras">Cameras</option>
+          <option value="Gaming">Gaming</option>
+          <option value="Accessories">Accessories</option>
+          <option value="Tablets">Tablets</option>
+          <option value="Wearables">Wearables</option>
         </select>
-        {isSeller && (
+        {isSeller ? (
           <button
             onClick={() => router.push("/seller")}
-            className="text-xs border px-4 py-1.5 rounded-full"
+            className="text-xs border px-4 py-1.5 rounded-full hover:bg-gray-50 transition-colors"
           >
             Seller Dashboard
           </button>
+        ) : (
+          <ApplyForSeller />
         )}
         {user ? (
           <UserButton>
@@ -229,7 +239,6 @@ const Navbar = () => {
                 labelIcon={<BoxIcon />}
                 onClick={() => router.push("/all-products")}
               />
-
               <UserButton.Action
                 label="Cart"
                 labelIcon={<CartIcon />}
