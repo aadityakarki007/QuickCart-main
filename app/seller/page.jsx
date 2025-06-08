@@ -46,7 +46,6 @@ const AddProduct = () => {
 
     for (let i = 0; i < files.length; i++) {
       formData.append('images',files[i])
-    
     }
 
     try {
@@ -77,11 +76,7 @@ const AddProduct = () => {
     
     catch (error) {
       toast.error(error.message)
-      
     }
-
-    
-
   };
 
   return (
@@ -247,68 +242,58 @@ const AddProduct = () => {
             />
           </div>
         </div>
-        <div className="flex flex-col gap-1 w-full mb-4">
+
+        <div className="flex flex-col gap-1 max-w-md">
           <label className="text-base font-medium" htmlFor="seller-name">
             Seller Name
           </label>
           <input
             id="seller-name"
             type="text"
-            placeholder="Enter your store or business name"
+            placeholder="Type here"
             className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
             onChange={(e) => setSellerName(e.target.value)}
             value={sellerName}
             required
           />
         </div>
-        <div className="flex flex-wrap gap-4 mb-4">
-          <div className="flex flex-col gap-1 w-48">
-            <label className="text-base font-medium" htmlFor="brand">
-              Brand
-            </label>
-            <input
-              id="brand"
-              type="text"
-              placeholder="Enter brand name"
-              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
-              onChange={(e) => setBrand(e.target.value)}
-              value={brand}
-              required
-              autoComplete="off"
-            />
-          </div>
-          <div className="flex flex-col gap-1 w-48">
-            <label className="text-base font-medium" htmlFor="color">
-              Color
-            </label>
-            <input
-              id="color"
-              type="text"
-              placeholder="Enter product color"
-              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
-              onChange={(e) => setColor(e.target.value)}
-              value={color}
-              required
-              autoComplete="off"
-            />
-          </div>
+        <div className="flex flex-col gap-1 max-w-md">
+          <label className="text-base font-medium" htmlFor="brand-name">
+            Brand
+          </label>
+          <input
+            id="brand-name"
+            type="text"
+            placeholder="Type here"
+            className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+            onChange={(e) => setBrand(e.target.value)}
+            value={brand}
+          />
         </div>
-
-        <div className="flex flex-col gap-4 mb-4">
-          <div className="flex flex-col gap-1 w-full">
-            <label className="text-base font-medium" htmlFor="delivery-date">
-              Delivery Date
-            </label>
-            <input
-              id="delivery-date"
-              type="text"
-              placeholder="e.g. 7-10 days, 2 weeks, etc."
-              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
-              onChange={(e) => setDeliveryDate(e.target.value)}
-              value={deliveryDate}
-            />
-          </div>
-
+        <div className="flex flex-col gap-1 max-w-md">
+          <label className="text-base font-medium" htmlFor="color">
+            Color
+          </label>
+          <input
+            id="color"
+            type="text"
+            placeholder="Type here"
+            className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+            onChange={(e) => setColor(e.target.value)}
+            value={color}
+          />
+        </div>
+        <label className="text-base font-medium" htmlFor="delivery-date">
+            Delivery Date 
+          </label>
+          <input
+            id="delivery-date"
+            type="string"
+            className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+            onChange={(e) => setDeliveryDate(e.target.value)}
+            value={deliveryDate}
+          />
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <input
               id="is-popular"
@@ -321,17 +306,17 @@ const AddProduct = () => {
               Mark as Popular Product
             </label>
           </div>
+
+          <button
+            type="submit"
+            className="px-8 py-2.5 bg-orange-600 text-white font-medium rounded"
+          >
+            ADD
+          </button>
         </div>
 
-        <button
-  type="submit"
-  className="px-8 py-2.5 bg-orange-600 text-white font-medium rounded mb-8"
->
-  ADD
-</button>
-
+        
       </form>
-      {/* <Footer /> */}
     </div>
   );
 };
