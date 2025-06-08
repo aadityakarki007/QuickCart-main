@@ -45,3 +45,8 @@
     "tailwindcss": "^3.4.1"
   }
 }
+
+"dependencies": {
+  "framer-motion": "^10.12.16",
+  ...
+}
