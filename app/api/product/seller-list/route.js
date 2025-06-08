@@ -6,28 +6,30 @@ import Product from "@/models/product";
 
 export async function GET(request) {
     try {
-        // Get user ID from Clerk
         const { userId } = getAuth(request);
         if (!userId) {
             return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
         }
 
-        // Check if user is a seller
         const isSeller = await authSeller(userId);
         if (!isSeller) {
             return NextResponse.json({ success: false, message: "Not authorized as seller" }, { status: 403 });
         }
 
-        // Connect to database and fetch products
         await connectDB();
+        // Only fetch products belonging to the seller
         const products = await Product.find({ userId }).sort({ date: -1 });
 
-        return NextResponse.json({ success: true, products })
+        return NextResponse.json({ 
+            success: true, 
+            products 
+        });
+
     } catch (error) {
         console.error("Error fetching seller products:", error);
         return NextResponse.json({ 
             success: false, 
-            message: error.message || "An error occurred while fetching products" 
+            message: error.message 
         }, { status: 500 });
     }
 }

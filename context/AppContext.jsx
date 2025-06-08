@@ -7,6 +7,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { set } from "mongoose";
 
 /** @type {import('react').Context<AppContextType>} */
 export const AppContext = createContext(/** @type {AppContextType} */ ({
@@ -78,28 +79,42 @@ export const AppContextProvider = ({ children }) => {
     const [userData, setUserData] = useState(null);
     const [products, setProducts] = useState([]);
     const [cartItems, setCartItems] = useState({});
+    const [isAdmin , setIsAdmin] = useState(false); 
 
-    const fetchProductData = async () => {
-        try {
-            const {data} = await axios.get('/api/product/list')
-            if(data.success){
-                setProducts(data.products)
-            } else {
-                toast.error(data.message)
-            }
-        } catch (error) {
-            console.error('Error in fetchUserData:', error);
-            if (error.response) {
-                console.error('Response data:', error.response.data);
-                console.error('Response status:', error.response.status);
-                toast.error(error.response.data?.message || error.message);
-            } else {
-                toast.error(error.message);
-            }
-        } finally {
-            setLoading(false);
+
+const fetchProductData = async () => {
+    try {
+        setLoading(true);
+        const { data } = await axios.get('/api/product/list');
+        if (data.success) {
+            setProducts(data.products);
+        } else {
+            toast.error(data.message);
         }
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        toast.error(error.response?.data?.message || error.message);
+    } finally {
+        setLoading(false);
     }
+};
+
+const fetchPopularProducts = async () => {
+    try{ 
+        const {data} = await axios.get('/api/product/popular')
+        if(data.success) {
+            // Filter and update products list with popular items
+            const updatedProducts = products.map(product => {
+                const popularProduct = data.products.find(p => p._id === product._id);
+                return popularProduct || product;
+            });
+            setProducts(updatedProducts);
+        }
+    } catch(error){
+        console.error('Error fetching popular products:', error);
+        toast.error(error.response?.data?.message || error.message);
+    }
+}
 
     const fetchUserData = async () => {
         try {
@@ -128,16 +143,20 @@ export const AppContextProvider = ({ children }) => {
             }
             
             // Check if user exists and has metadata
-            if (user?.publicMetadata?.role === 'seller') {
+            if (user?.publicMetadata.role === 'seller') {
                 setIsSeller(true);
+            }
+            if(user?.publicMetadata.role === 'admin') {
+                setIsSeller(true);
+                setIsAdmin(true); 
+            
             }
 
             console.log('Fetching user data with token...');
             const { data } = await axios.get('/api/user/data', { 
                 headers: { Authorization: `Bearer ${token}` }
             });
-            console.log('User data response:', data);
-
+          
             if (data.success) {
                 setUserData(data.user);
                 
@@ -255,6 +274,7 @@ export const AppContextProvider = ({ children }) => {
 
     useEffect(() => {
         fetchProductData();
+        fetchPopularProducts();
     }, []);
 
     useEffect(() => {
