@@ -79,67 +79,67 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-  <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 py-4 px-6 shadow-lg z-50">
-    <div className="flex flex-col gap-4">
-      <button
-        onClick={() => handleMobileNavigation("/")}
-        className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-      >
-        <HomeIcon className="w-5 h-5" />
-        Home
-      </button>
-      <button
-        onClick={() => handleMobileNavigation("/all-products")}
-        className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-      >
-        <BoxIcon className="w-5 h-5" />
-        All Products
-      </button>
-      {/* category select dropdown here */}
-      {user && (
-        <>
-          <button
-            onClick={() => handleMobileNavigation("/cart")}
-            className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-          >
-            <div className="w-5 h-5">
-              <CartIcon />
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 py-4 px-6 shadow-lg z-50">
+            <div className="flex flex-col gap-4">
+              <button
+                onClick={() => handleMobileNavigation("/")}
+                className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+              >
+                <HomeIcon className="w-5 h-5" />
+                Home
+              </button>
+              <button
+                onClick={() => handleMobileNavigation("/all-products")}
+                className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+              >
+                <BoxIcon className="w-5 h-5" />
+                All Products
+              </button>
+              {/* category select dropdown here */}
+              {user && (
+                <>
+                  <button
+                    onClick={() => handleMobileNavigation("/cart")}
+                    className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+                  >
+                    <div className="w-5 h-5">
+                      <CartIcon />
+                    </div>
+                    Cart
+                  </button>
+                  <button
+                    onClick={() => handleMobileNavigation("/my-orders")}
+                    className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+                  >
+                    <ShoppingBag className="w-5 h-5" />
+                    My Orders
+                  </button>
+                </>
+              )}
+              {isSeller && (
+                <button
+                  onClick={() => handleMobileNavigation("/seller")}
+                  className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+                >
+                  <BoxIcon className="w-5 h-5" />
+                  Seller Dashboard
+                </button>
+              )}
+              {/* Add Contact Us button here */}
+              <button
+                onClick={() => handleMobileNavigation("/contact")}
+                className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+              >
+                <Phone className="w-5 h-5" />
+                Contact
+              </button>
             </div>
-            Cart
-          </button>
-          <button
-            onClick={() => handleMobileNavigation("/my-orders")}
-            className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-          >
-            <ShoppingBag className="w-5 h-5" />
-            My Orders
-          </button>
-        </>
-      )}
-      {isSeller && (
-        <button
-          onClick={() => handleMobileNavigation("/seller")}
-          className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-        >
-          <BoxIcon className="w-5 h-5" />
-          Seller Dashboard
-        </button>
-      )}
-      {/* Add Contact Us button here */}
-      <button
-        onClick={() => handleMobileNavigation("/contact")}
-        className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-      >
-        <Phone className="w-5 h-5" />
-        Contact
-      </button>
-    </div>
-  </div>
-)}
+          </div>
+        )}
 
 
 
-      {/* Mobile Menu Ender */}
+        {/* Mobile Menu Ender */}
         <form onSubmit={handleSearch} className="relative md:hidden w-full">
           <input
             type="text"
@@ -163,10 +163,14 @@ const Navbar = () => {
           Shop
           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
         </Link>
-        <Link href="/" className="hover:text-orange-500 hover:scale-105 transition-all duration-200 relative group">
+        <Link
+          href="/about-us"
+          className="hover:text-orange-500 hover:scale-105 transition-all duration-200 relative group"
+        >
           About Us
           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
         </Link>
+
         <Link href="/contact" className="hover:text-orange-500 hover:scale-105 transition-all duration-200 relative group">
           Contact
           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
