@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import { useClerk, UserButton } from "@clerk/clerk-react";
+import { HomeIcon, ShoppingBag, Menu, Box as BoxIcon } from "lucide-react";
 import { useEffect } from "react";
-import { ShoppingBag , Menu  , HomeIcon , BoxIcon } from "lucide-react";
 import ApplyForSeller from "./applyforseller";
 const Navbar = () => {
   const { isSeller, user } = useAppContext();
@@ -31,6 +31,7 @@ const Navbar = () => {
 
   return (
     <nav className="flex flex-col md:flex-row items-center gap-4 md:gap-0 justify-between px-6 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-gray-700 sticky top-0 bg-white z-50">
+      {/* Logo and Mobile Controls */}
       <div className="flex flex-col md:block w-full md:w-auto gap-3">
         <div className="flex items-center justify-between md:justify-start">
           <Image
@@ -45,7 +46,6 @@ const Navbar = () => {
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               aria-label="Toggle mobile menu"
             >
-              {/* @ts-ignore */}
               <Menu className="w-6 h-6" />
             </button>
             {user ? (
@@ -73,7 +73,6 @@ const Navbar = () => {
               </button>
             )}
           </div>
-          <ApplyForSeller />
         </div>
 
         {/* Mobile Menu */}
@@ -84,7 +83,6 @@ const Navbar = () => {
                 onClick={() => handleMobileNavigation("/")}
                 className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
               >
-                {/* @ts-ignore */}
                 <HomeIcon className="w-5 h-5" />
                 Home
               </button>
@@ -92,7 +90,6 @@ const Navbar = () => {
                 onClick={() => handleMobileNavigation("/all-products")}
                 className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
               >
-                {/* @ts-ignore */}
                 <BoxIcon className="w-5 h-5" />
                 All Products
               </button>
@@ -107,18 +104,17 @@ const Navbar = () => {
                   defaultValue=""
                 >
                   <option value="">Select Category</option>
-                  <option value="Men's Fashion">Men's Fashion</option>
-                  <option value="Women's Fashion">Women's Fashion</option>
-                  <option value="Electronic Devices">Electronic Devices</option>
-                  <option value="Gifts & Decorations">Gifts & Decorations</option>
-                  <option value="Home & Lifestyle">Home & Lifestyle</option>
-                  <option value="Sports & Outdoor">Sports & Outdoor</option>
-                  <option value="Health & Beauty">Health & Beauty</option>
-                  <option value="Babies & Toys">Babies & Toys</option>
-                  <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
-                  <option value="Groceries & Pets">Groceries & Pets</option>
+                  <option value="Smartphones">Smartphones</option>
+                  <option value="Laptops">Laptops</option>
+                  <option value="Audio">Audio</option>
+                  <option value="Cameras">Cameras</option>
+                  <option value="Gaming">Gaming</option>
+                  <option value="Accessories">Accessories</option>
+                  <option value="Tablets">Tablets</option>
+                  <option value="Wearables">Wearables</option>
                 </select>
               </div>
+              <ApplyForSeller />
               {user && (
                 <>
                   <button
@@ -134,7 +130,6 @@ const Navbar = () => {
                     onClick={() => handleMobileNavigation("/my-orders")}
                     className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
                   >
-                    {/* @ts-ignore */}
                     <ShoppingBag className="w-5 h-5" />
                     My Orders
                   </button>
@@ -145,7 +140,6 @@ const Navbar = () => {
                   onClick={() => handleMobileNavigation("/seller")}
                   className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
                 >
-                  {/* @ts-ignore */}
                   <BoxIcon className="w-5 h-5" />
                   Seller Dashboard
                 </button>
@@ -153,6 +147,8 @@ const Navbar = () => {
             </div>
           </div>
         )}
+        
+        {/* Mobile Search */}
         <form onSubmit={handleSearch} className="relative md:hidden w-full">
           <input
             type="text"
@@ -167,7 +163,8 @@ const Navbar = () => {
         </form>
       </div>
 
-      <div className="flex items-center gap-4 lg:gap-8 max-md:hidden">
+      {/* Desktop Navigation Links */}
+      <div className="hidden md:flex items-center gap-4 lg:gap-8">
         <Link href="/" className="hover:text-orange-500 hover:scale-105 transition-all duration-200 relative group">
           Home
           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
@@ -180,14 +177,13 @@ const Navbar = () => {
           About Us
           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
         </Link>
-        <Link href="/contact" className="hover:text-orange-500 hover:scale-105 transition-all duration-200 relative group">
+        <Link href="/" className="hover:text-orange-500 hover:scale-105 transition-all duration-200 relative group">
           Contact
           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
         </Link>
       </div>
-      {}
 
-      {/* Desktop Menu */}
+      {/* Desktop Actions */}
       <ul className="hidden md:flex items-center gap-4">
         <form onSubmit={handleSearch} className="relative flex items-center">
           <input
@@ -211,21 +207,19 @@ const Navbar = () => {
           defaultValue=""
         >
           <option value="">Select Category</option>
-          <option value="Men's Fashion">Men's Fashion</option>
-          <option value="Women's Fashion">Women's Fashion</option>
-          <option value="Electronic Devices">Electronic Devices</option>
-          <option value="Gifts & Decorations">Gifts & Decorations</option>
-          <option value="Home & Lifestyle">Home & Lifestyle</option>
-          <option value="Sports & Outdoor">Sports & Outdoor</option>
-          <option value="Health & Beauty">Health & Beauty</option>
-          <option value="Babies & Toys">Babies & Toys</option>
-          <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
-          <option value="Groceries & Pets">Groceries & Pets</option>
+          <option value="Smartphones">Smartphones</option>
+          <option value="Laptops">Laptops</option>
+          <option value="Audio">Audio</option>
+          <option value="Cameras">Cameras</option>
+          <option value="Gaming">Gaming</option>
+          <option value="Accessories">Accessories</option>
+          <option value="Tablets">Tablets</option>
+          <option value="Wearables">Wearables</option>
         </select>
         {isSeller ? (
           <button
             onClick={() => router.push("/seller")}
-            className="text-xs border px-4 py-1.5 rounded-full"
+            className="text-xs border px-4 py-1.5 rounded-full hover:bg-gray-50 transition-colors"
           >
             Seller Dashboard
           </button>
@@ -245,7 +239,6 @@ const Navbar = () => {
                 labelIcon={<BoxIcon />}
                 onClick={() => router.push("/all-products")}
               />
-
               <UserButton.Action
                 label="Cart"
                 labelIcon={<CartIcon />}

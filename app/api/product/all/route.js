@@ -6,11 +6,10 @@ import Product from "@/models/product";
 
 export async function GET(request) {
     try {
-        // Check admin status
-
+      
         await connectDB();
         const products = await Product.find({}).sort({ date: -1 });
-            
+         
         return NextResponse.json({ success: true, products });
     } catch (error) {
         return NextResponse.json({ 

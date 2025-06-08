@@ -8,16 +8,29 @@ const HomeProducts = () => {
   const { router } = useAppContext();
   const [loading, setLoading] = useState(true);
   const [popularProducts, setPopularProducts] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchPopularProducts = async () => {
       try {
-        const { data } = await axios.get('/api/product/popular');
+        setLoading(true);
+     
+        const { data } = await axios.get('/api/product/list', {
+          params: {
+            limit: 100 
+          }
+        });
+        
         if (data.success) {
-          setPopularProducts(data.products);
+          // Filter for popular products
+          const popular = data.products.filter(product => product.isPopular === true);
+          setPopularProducts(popular);
+        } else {
+          setError(data.message || 'Failed to fetch products');
         }
       } catch (error) {
         console.error('Error fetching popular products:', error);
+        setError(error.message || 'Failed to fetch products');
       } finally {
         setLoading(false);
       }
@@ -27,6 +40,11 @@ const HomeProducts = () => {
   }, []);
 
   if (loading) return <Loading />;
+  
+  if (error) {
+    console.error('Error in HomeProducts:', error);
+    return null;
+  }
 
   // Only render if there are popular products
   if (!popularProducts?.length) {
@@ -37,8 +55,8 @@ const HomeProducts = () => {
     <div className="flex flex-col items-center pt-14">
       <p className="text-2xl font-medium text-left w-full">Popular products</p>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-col items-center gap-6 mt-6 pb-14 w-full">
-        {popularProducts.map((product, index) => (
-          <ProductCard key={product._id || index} product={product} />
+        {popularProducts.map((product) => (
+          <ProductCard key={product._id} product={product} />
         ))}
       </div>
       <button 
