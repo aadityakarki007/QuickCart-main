@@ -8,14 +8,7 @@ import Image from "next/image";
 import { useClerk, UserButton } from "@clerk/clerk-react";
 import { HomeIcon, ShoppingBag, Menu, Box as BoxIcon } from "lucide-react";
 import { useEffect } from "react";
-<<<<<<< HEAD
-import ApplyForSeller from "./applyforseller";
-=======
-import { HomeIcon, ShoppingBag, Menu, BoxIcon, Phone } from "lucide-react";
-
-
-
->>>>>>> upstream/main
+import ApplyForSeller from "@/components/applyforseller";
 const Navbar = () => {
   const { isSeller, user } = useAppContext();
   const router = useRouter();
@@ -84,7 +77,6 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-<<<<<<< HEAD
           <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 py-4 px-6 shadow-lg z-50">
             <div className="flex flex-col gap-4">
               <button
@@ -157,69 +149,6 @@ const Navbar = () => {
         )}
         
         {/* Mobile Search */}
-=======
-  <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 py-4 px-6 shadow-lg z-50">
-    <div className="flex flex-col gap-4">
-      <button
-        onClick={() => handleMobileNavigation("/")}
-        className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-      >
-        <HomeIcon className="w-5 h-5" />
-        Home
-      </button>
-      <button
-        onClick={() => handleMobileNavigation("/all-products")}
-        className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-      >
-        <BoxIcon className="w-5 h-5" />
-        All Products
-      </button>
-      {/* category select dropdown here */}
-      {user && (
-        <>
-          <button
-            onClick={() => handleMobileNavigation("/cart")}
-            className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-          >
-            <div className="w-5 h-5">
-              <CartIcon />
-            </div>
-            Cart
-          </button>
-          <button
-            onClick={() => handleMobileNavigation("/my-orders")}
-            className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-          >
-            <ShoppingBag className="w-5 h-5" />
-            My Orders
-          </button>
-        </>
-      )}
-      {isSeller && (
-        <button
-          onClick={() => handleMobileNavigation("/seller")}
-          className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-        >
-          <BoxIcon className="w-5 h-5" />
-          Seller Dashboard
-        </button>
-      )}
-      {/* Add Contact Us button here */}
-      <button
-        onClick={() => handleMobileNavigation("/contact")}
-        className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-      >
-        <Phone className="w-5 h-5" />
-        Contact
-      </button>
-    </div>
-  </div>
-)}
-
-
-
-      {/* Mobile Menu Ender */}
->>>>>>> upstream/main
         <form onSubmit={handleSearch} className="relative md:hidden w-full">
           <input
             type="text"
@@ -287,13 +216,15 @@ const Navbar = () => {
           <option value="Tablets">Tablets</option>
           <option value="Wearables">Wearables</option>
         </select>
-        {isSeller && (
+        {isSeller ? (
           <button
             onClick={() => router.push("/seller")}
             className="text-xs border px-4 py-1.5 rounded-full hover:bg-gray-50 transition-colors"
           >
             Seller Dashboard
           </button>
+        ) : (
+          <ApplyForSeller />
         )}
         {user ? (
           <UserButton>
