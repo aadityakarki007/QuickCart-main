@@ -86,7 +86,7 @@ const Footer = () => {
 
       {/* Footer Bottom Text */}
       <p className="py-4 text-center text-xs md:text-sm">
-        Copyright 2025 © Hamro eShop. All Rights Reserved.
+        © 2025 Hamro eShop. All Rights Reserved.
       </p>
     </footer>
   );

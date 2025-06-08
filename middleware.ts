@@ -1,76 +1,41 @@
-import { authMiddleware, clerkClient } from "@clerk/nextjs/server";
+import { authMiddleware } from '@clerk/nextjs/server';
 import { NextResponse } from "next/server";
-import { parseRoles, hasRequiredRole } from "@/lib/roleUtils.ts";
- 
+
 export default authMiddleware({
-  // Public routes that don't require authentication
+  beforeAuth: (req) => {
+    const authHeader = req.headers.get('Authorization');
+    if (authHeader?.startsWith('Bearer ')) {
+      return NextResponse.next();
+    }
+    return NextResponse.next();
+  },
   publicRoutes: [
     "/",
     "/all-products",
     "/product/(.*)",
     "/api/product/list",
-    "/api/product/popular",
+    "/api/product/all",
     "/api/product/(.*)",
-    "/cart",
-    "/_next/(.*)",
+    "/api/webhook/(.*)",
+    "/api/user/(.*)",
+    "/sign-in(.*)",
+    "/sign-up(.*)"
   ],
-
-  async afterAuth(auth, req) {
-    const { userId } = auth;
-    const isAdminRoute = req.nextUrl.pathname.startsWith('/7879');
-    const isSellerRoute = req.nextUrl.pathname.startsWith('/seller');
-    const isProtectedApi = req.nextUrl.pathname.startsWith('/api/admin') || 
-                          req.nextUrl.pathname.startsWith('/api/seller') ||
-                          req.nextUrl.pathname.includes('/popular/manage');
-
-    // Allow public routes
-    if (!isAdminRoute && !isSellerRoute && !isProtectedApi) {
-      return NextResponse.next();
-    }
-
-    // If not signed in and trying to access protected route
-    if (!userId) {
-      const signInUrl = new URL('/sign-in', req.url);
-      signInUrl.searchParams.set('redirect_url', req.url);
-      return NextResponse.redirect(signInUrl);
-    }
-
-    try {
-      // Get user metadata from Clerk and parse roles
-      const user = await clerkClient.users.getUser(userId);
-      const userRoles = parseRoles(user?.publicMetadata?.role);
-
-      // Check permissions - admin has access to everything
-      if (userRoles.includes('admin')) {
-        return NextResponse.next();
-      }
-
-      // For non-admin users, check specific permissions
-      if (isAdminRoute) {
-        return NextResponse.redirect(new URL('/', req.url));
-      }
-
-      if (isSellerRoute && !hasRequiredRole(userRoles, 'seller')) {
-        return NextResponse.redirect(new URL('/', req.url));
-      }
-
-      if (isProtectedApi) {
-        if (req.nextUrl.pathname.startsWith('/api/seller') && !hasRequiredRole(userRoles, 'seller')) {
-          return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-        }
-        if (req.nextUrl.pathname.includes('/popular/manage')) {
-          return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-        }
-      }
-
-      return NextResponse.next();
-    } catch (error) {
-      // Log to proper error monitoring in production
-      return NextResponse.redirect(new URL('/', req.url));
-    }
-  },
+  ignoredRoutes: [
+    "/((?!api|trpc))(_next|.+\\..+)(.*)", // Ignore static files
+    "/_next/static/(.*)",
+    "/_next/image/(.*)",
+    "/favicon.ico",
+    "/favicon.e0ef1da5.ico", // if your app requests this specifically
+    "/assets/(.*)"
+  ]
 });
 
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: [
+    '/((?!.+\\.[\\w]+$|_next).*)', // Exclude static files
+    '/',                          // Include root path
+    '/(api|trpc)(.*)',            // Include API and tRPC routes
+    '/((?!.*\\.).*)'              // Include non-static files
+  ]
 };
