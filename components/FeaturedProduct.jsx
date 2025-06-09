@@ -59,52 +59,30 @@ const FeaturedProduct = () => {
       </div>
 
       {/* Mobile layout */}
-      <div className="sm:hidden mt-12 px-4 flex flex-col items-center gap-6">
-        {/* Top row: two products */}
-        <div className="flex w-full gap-4">
-          {[0, 1].map((i) => {
-            const { id, image, title, description } = products[i];
-            return (
-              <div
-                key={id}
-                className="relative group flex-1 max-w-[48%] scale-90"
-              >
-                <Image
-                  src={image}
-                  alt={title}
-                  className="group-hover:brightness-75 transition duration-300 w-full h-auto object-cover"
-                />
-                <div className="group-hover:-translate-y-4 transition duration-300 absolute bottom-6 left-4 text-white space-y-1.5">
-                  <p className="font-medium text-lg">{title}</p>
-                  <p className="text-xs leading-4 max-w-[90%]">{description}</p>
-                  <a href="https://www.hamroeshop.com/all-products?search=headphones" target="_blank" rel="noopener noreferrer">
-                    <button className="flex items-center gap-1 bg-orange-600 px-3 py-1.5 rounded text-sm">
-                      Buy now{" "}
-                      <Image
-                        className="h-3 w-3"
-                        src={assets.redirect_icon}
-                        alt="Redirect Icon"
-                      />
-                    </button>
-                  </a>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Bottom row */}
-        <div className="relative group max-w-[60%] scale-90">
+<div className="sm:hidden mt-12 px-4 flex flex-col items-center gap-6">
+  {/* Top row: two products */}
+  <div className="flex w-full gap-4">
+    {[0, 1].map((i) => {
+      const { id, image, title, description } = products[i];
+      return (
+        <div
+          key={id}
+          className="relative group flex-1 max-w-[48%] scale-90"
+        >
           <Image
-            src={products[2].image}
-            alt={products[2].title}
-            className="group-hover:brightness-75 transition duration-300 w-full h-auto object-cover"
+            src={image}
+            alt={title}
+            className="group-hover:brightness-75 transition duration-300 w-full h-auto object-cover rounded-md"
           />
-          <div className="group-hover:-translate-y-4 transition duration-300 absolute bottom-6 left-4 text-white space-y-1.5">
-            <p className="font-medium text-lg">{products[2].title}</p>
-            <p className="text-xs leading-4 max-w-[90%]">{products[2].description}</p>
-            <a href="https://www.hamroeshop.com/all-products?search=headphones" target="_blank" rel="noopener noreferrer">
-              <button className="flex items-center gap-1 bg-orange-600 px-3 py-1.5 rounded text-sm">
+          <div className="group-hover:-translate-y-3 transition duration-300 absolute bottom-4 left-3 text-white space-y-1">
+            <p className="font-medium text-[13px] leading-[1rem]">{title}</p>
+            <p className="text-[10px] leading-[0.875rem] max-w-[90%]">{description}</p>
+            <a
+              href="https://www.hamroeshop.com/all-products?search=headphones"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <button className="flex items-center gap-1 bg-orange-600 px-2 py-1 rounded text-[10px]">
                 Buy now{" "}
                 <Image
                   className="h-3 w-3"
@@ -115,8 +93,40 @@ const FeaturedProduct = () => {
             </a>
           </div>
         </div>
-      </div>
+      );
+    })}
+  </div>
+
+  {/* Bottom row */}
+  <div className="relative group max-w-[60%] scale-90">
+    <Image
+      src={products[2].image}
+      alt={products[2].title}
+      className="group-hover:brightness-75 transition duration-300 w-full h-auto object-cover rounded-md"
+    />
+    <div className="group-hover:-translate-y-3 transition duration-300 absolute bottom-4 left-3 text-white space-y-1">
+      <p className="font-medium text-[13px] leading-[1rem]">{products[2].title}</p>
+      <p className="text-[10px] leading-[0.875rem] max-w-[90%]">{products[2].description}</p>
+      <a
+        href="https://www.hamroeshop.com/all-products?search=headphones"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <button className="flex items-center gap-1 bg-orange-600 px-2 py-1 rounded text-[10px]">
+          Buy now{" "}
+          <Image
+            className="h-3 w-3"
+            src={assets.redirect_icon}
+            alt="Redirect Icon"
+          />
+        </button>
+      </a>
     </div>
+  </div>
+</div>
+
+      </div>
+   
   );
 };
 
