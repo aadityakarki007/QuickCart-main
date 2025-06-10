@@ -56,7 +56,7 @@ const Product = () => {
 
     useEffect(() => {
         if (productData?._id) {
-            QRCode.toDataURL(`https://www.hamroeshop.com/product/${product._id}`)
+            QRCode.toDataURL(product._id)
                 .then(url => setQrUrl(url))
                 .catch(err => console.error('QR Code generation error:', err));
         }
