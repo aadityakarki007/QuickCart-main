@@ -36,12 +36,12 @@ const OrderSummary = () => {
     "eShopA823": 1,  // 1% discount
     "eShopA492": 12, // 12% discount
     "eShopA192": 18, // 18% discount
-    "eShopA765": 40,  // 5% discount
+    "eShopA765": 40, // 40% discount
     "eShopA318": 24, // 24% discount
     "eShopA654": 10, // 10% discount
     "eShopA105": 8,  // 8% discount
     "eShopA907": 22, // 22% discount
-    "eShopA231": 5, // 40% discount
+    "eShopA231": 5,  // 5% discount
     "eShopA379": 15, // 15% discount
   };
 
@@ -52,6 +52,27 @@ const OrderSummary = () => {
       image: "/cod.jpg", // Correct for public folder
     },
   ];
+
+  // Function to get cart amount using original prices (for promo code calculation)
+  const getCartAmountWithOriginalPrices = () => {
+    if (!products || !cartItems) return 0;
+
+    let totalAmount = 0;
+    Object.entries(cartItems).forEach(([productId, quantity]) => {
+      const product = products.find((p) => p._id === productId);
+      if (product && quantity > 0) {
+        // Use original price instead of offer price
+        totalAmount += (product.price || 0) * quantity;
+      }
+    });
+
+    return totalAmount;
+  };
+
+  // Function to get the appropriate cart amount based on promo code status
+  const getApplicableCartAmount = () => {
+    return isPromoApplied ? getCartAmountWithOriginalPrices() : getCartAmount();
+  };
   
   const fetchUserAddresses = async () => {
     try {
@@ -98,14 +119,16 @@ const OrderSummary = () => {
 
   // Apply promo code function
   const applyPromoCode = () => {
-    const itemsTotal = getCartAmount();
+    const itemsTotal = getCartAmount(); // Use offer price for eligibility check
     
     // Check if promo code exists in valid codes
     if (validPromoCodes.hasOwnProperty(promoCode)) {
       // Check if items total (without shipping/delivery) is more than 2000
       if (itemsTotal > 2000) {
         const promoDiscountPercent = validPromoCodes[promoCode];
-        const totalBeforeDiscount = itemsTotal + totalShippingFee + totalDeliveryCharge;
+        // Use original prices for discount calculation
+        const originalPricesTotal = getCartAmountWithOriginalPrices();
+        const totalBeforeDiscount = originalPricesTotal + totalShippingFee + totalDeliveryCharge;
         const discountAmount = Math.round(totalBeforeDiscount * (promoDiscountPercent / 100));
         
         setDiscount(discountAmount);
@@ -137,7 +160,8 @@ const OrderSummary = () => {
 
   // Calculate final total
   const getFinalTotal = () => {
-    const baseTotal = getCartAmount() + totalShippingFee + totalDeliveryCharge;
+    const cartAmount = getApplicableCartAmount();
+    const baseTotal = cartAmount + totalShippingFee + totalDeliveryCharge;
     return Math.max(0, baseTotal - discount);
   };
 
@@ -316,8 +340,10 @@ const OrderSummary = () => {
         {/* Price Summary */}
         <div className="space-y-4">
           <div className="flex justify-between text-base font-medium">
-            <p className="uppercase text-gray-600">Items {getCartCount()}</p>
-            <p className="text-gray-800">Rs. {getCartAmount()}</p>
+            <p className="uppercase text-gray-600">
+              Items {getCartCount()} {isPromoApplied && <span className="text-sm normal-case">(Original Price)</span>}
+            </p>
+            <p className="text-gray-800">Rs. {getApplicableCartAmount()}</p>
           </div>
           <div className="flex justify-between">
             <p className="text-gray-600">Shipping Fee</p>
@@ -332,7 +358,7 @@ const OrderSummary = () => {
           {isPromoApplied && (
             <div className="flex justify-between text-gray-600">
               <p>Subtotal</p>
-              <p>Rs. {getCartAmount() + totalShippingFee + totalDeliveryCharge}</p>
+              <p>Rs. {getApplicableCartAmount() + totalShippingFee + totalDeliveryCharge}</p>
             </div>
           )}
           
