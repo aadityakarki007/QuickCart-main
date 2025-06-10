@@ -31,7 +31,8 @@ const FeaturedProduct = () => {
         <div className="w-28 h-0.5 bg-orange-600 mt-2"></div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-14 mt-12 md:px-14 px-4">
+      {/* Desktop layout */}
+      <div className="hidden sm:grid grid-cols-3 gap-14 mt-12 md:px-14 px-4">
         {products.map(({ id, image, title, description }) => (
           <div key={id} className="relative group">
             <Image
@@ -41,17 +42,91 @@ const FeaturedProduct = () => {
             />
             <div className="group-hover:-translate-y-4 transition duration-300 absolute bottom-8 left-8 text-white space-y-2">
               <p className="font-medium text-xl lg:text-2xl">{title}</p>
-              <p className="text-sm lg:text-base leading-5 max-w-60">
-                {description}
-              </p>
-              <button className="flex items-center gap-1.5 bg-orange-600 px-4 py-2 rounded">
-                Buy now <Image className="h-3 w-3" src={assets.redirect_icon} alt="Redirect Icon" />
-              </button>
+              <p className="text-sm lg:text-base leading-5 max-w-60">{description}</p>
+              <a href="https://www.hamroeshop.com/all-products?search=headphones" target="_blank" rel="noopener noreferrer">
+                <button className="flex items-center gap-1.5 bg-orange-600 px-4 py-2 rounded">
+                  Buy now{" "}
+                  <Image
+                    className="h-3 w-3"
+                    src={assets.redirect_icon}
+                    alt="Redirect Icon"
+                  />
+                </button>
+              </a>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Mobile layout */}
+<div className="sm:hidden mt-12 px-4 flex flex-col items-center gap-6">
+  {/* Top row: two products */}
+  <div className="flex w-full gap-4">
+    {[0, 1].map((i) => {
+      const { id, image, title, description } = products[i];
+      return (
+        <div
+          key={id}
+          className="relative group flex-1 max-w-[48%] scale-90"
+        >
+          <Image
+            src={image}
+            alt={title}
+            className="group-hover:brightness-75 transition duration-300 w-full h-auto object-cover rounded-md"
+          />
+          <div className="group-hover:-translate-y-3 transition duration-300 absolute bottom-4 left-3 text-white space-y-1">
+            <p className="font-medium text-[13px] leading-[1rem]">{title}</p>
+            <p className="text-[10px] leading-[0.875rem] max-w-[90%]">{description}</p>
+            <a
+              href="https://www.hamroeshop.com/all-products?search=headphones"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <button className="flex items-center gap-1 bg-orange-600 px-2 py-1 rounded text-[10px]">
+                Buy now{" "}
+                <Image
+                  className="h-3 w-3"
+                  src={assets.redirect_icon}
+                  alt="Redirect Icon"
+                />
+              </button>
+            </a>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+
+  {/* Bottom row */}
+  <div className="relative group max-w-[60%] scale-90">
+    <Image
+      src={products[2].image}
+      alt={products[2].title}
+      className="group-hover:brightness-75 transition duration-300 w-full h-auto object-cover rounded-md"
+    />
+    <div className="group-hover:-translate-y-3 transition duration-300 absolute bottom-4 left-3 text-white space-y-1">
+      <p className="font-medium text-[13px] leading-[1rem]">{products[2].title}</p>
+      <p className="text-[10px] leading-[0.875rem] max-w-[90%]">{products[2].description}</p>
+      <a
+        href="https://www.hamroeshop.com/all-products?search=headphones"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <button className="flex items-center gap-1 bg-orange-600 px-2 py-1 rounded text-[10px]">
+          Buy now{" "}
+          <Image
+            className="h-3 w-3"
+            src={assets.redirect_icon}
+            alt="Redirect Icon"
+          />
+        </button>
+      </a>
     </div>
+  </div>
+</div>
+
+      </div>
+   
   );
 };
 

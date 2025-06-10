@@ -113,9 +113,9 @@ const Orders = () => {
                                     <br />
                                     <span >{order.address.area}</span>
                                     <br />
-                                    <span>{`${order.address.city}, ${order.address.state}`}</span>
+                                    <span>{`${order.address.city}, ${order.address.province}`}</span>
                                     <br />
-                                    <span>{order.address.phoneNumber}</span>
+                                    <span>{order.address.PhoneNumber}</span>
                                 </p>
                             </div>
                             <p className="font-medium my-auto">{currency}{order.amount}</p>

@@ -8,29 +8,13 @@ interface OrderItem {
   quantity: number;
 }
 
-interface Order {
+interface OrderData {
   userId: string;
   items: OrderItem[];
   amount: number;
   address: any;
   date: number;
   status: string;
-  paymentMethod: 'esewa' | 'khalti';
-}
-
-interface OrderItem {
-  product: string;
-  quantity: number;
-}
-
-interface Order {
-  userId: string;
-  items: OrderItem[];
-  amount: number;
-  address: any;
-  date: number;
-  status: string;
-  paymentMethod: 'esewa' | 'khalti';
 }
 
 
@@ -149,20 +133,10 @@ export const createOrder = inngest.createFunction(
         await connectDB();
       });
 
-      await step.run('create-orders', async () => {
-        const formattedOrders = orders.map(order => ({
-          userId: order.userId,
-          items: order.items.map(item => ({
-            product: item.product,
-            quantity: item.quantity
-          })),
-          amount: order.amount,
-          address: order.address,
-          date: order.date,
-          status: 'pending' as const,
-          paymentMethod: 'esewa' as const
-        }));
-        await Order.insertMany(formattedOrders);
+      await step.run('process-orders', async () => {
+        // Since orders are already created in the API route, we're just processing them here
+        // This avoids duplicating orders in the database
+        console.log(`Processing ${orders.length} orders from event`);
       });
 
       return { success: true, processed: orders.length };

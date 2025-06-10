@@ -10,36 +10,34 @@ export async function POST(request){
     try {
         await connectDB()
 
-        const {userId} = getAuth(request)
+        const { userId } = getAuth(request)
         if (!userId) {
-            return NextResponse.json({success: false, message: "Unauthorized"}, {status: 401})
+            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 })
         }
 
-        const { address, items, paymentMethod } = await request.json()
+        const { address, items } = await request.json()
+        const paymentMethod = "cod"  // Hardcoded payment method as Cash on Delivery
 
-    if (!paymentMethod || !['esewa', 'khalti'].includes(paymentMethod)) {
-      return NextResponse.json({ success: false, message: "Invalid payment method" }, { status: 400 })
-    };
         if(!items || items.length === 0){
-            return NextResponse.json({success: false, message: "No items in cart"}, {status: 400})
+            return NextResponse.json({ success: false, message: "No items in cart" }, { status: 400 })
         }
 
         // Validate address
         if(!address || !address.fullName || !address.PhoneNumber || !address.area || !address.city || !address.province) {
-            return NextResponse.json({success: false, message: "Complete address details are required"}, {status: 400})
+            return NextResponse.json({ success: false, message: "Complete address details are required" }, { status: 400 })
         }
 
         // Find user first
         // @ts-ignore - Mongoose typing issue
         const user = await User.findById(userId).exec()
         if (!user) {
-            return NextResponse.json({success: false, message: "User not found"}, {status: 404})
+            return NextResponse.json({ success: false, message: "User not found" }, { status: 404 })
         }
 
         // Get all available products
         // @ts-ignore - Mongoose typing issue
         const allProducts = await Product.find({}).sort({ date: -1 }).exec();
-        
+
         // Map to store available products by ID for quick lookup
         const availableProducts = new Map();
         allProducts.forEach(product => {
@@ -65,10 +63,10 @@ export async function POST(request){
             await user.save();
 
             return NextResponse.json({
-                success: false, 
+                success: false,
                 message: `Your cart contains products that are no longer available. We've cleared your cart - please add available products and try again.`,
                 missingProducts
-            }, {status: 404});
+            }, { status: 404 });
         }
 
         // Calculate amount using reduce
@@ -89,7 +87,7 @@ export async function POST(request){
                 product: item.product,
                 quantity: item.quantity
             })),
-            totalAmount,
+            amount: totalAmount,
             address: {
                 userId: userId,
                 fullName: address.fullName,
@@ -103,6 +101,9 @@ export async function POST(request){
             date: Date.now(),
             paymentMethod
         });
+        
+        // Save order to database
+        await order.save();
 
         // Create order event
         await inngest.send({
@@ -126,7 +127,7 @@ export async function POST(request){
         await user.save()
 
         return NextResponse.json({
-            success: true, 
+            success: true,
             message: "Order placed successfully",
             orderId: order._id,
             orderDetails: order
@@ -135,8 +136,8 @@ export async function POST(request){
     } catch(error) {
         console.error("Error creating order:", error)
         return NextResponse.json({
-            success: false, 
+            success: false,
             message: error.message || "Failed to create order"
-        }, {status: 500})
+        }, { status: 500 })
     }
 }
