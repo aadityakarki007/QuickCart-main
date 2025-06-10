@@ -36,12 +36,12 @@ const OrderSummary = () => {
     "eShopA823": 1,  // 1% discount
     "eShopA492": 12, // 12% discount
     "eShopA192": 18, // 18% discount
-    "eShopA765": 5,  // 5% discount
+    "eShopA765": 40,  // 5% discount
     "eShopA318": 24, // 24% discount
     "eShopA654": 10, // 10% discount
     "eShopA105": 8,  // 8% discount
     "eShopA907": 22, // 22% discount
-    "eShopA231": 40, // 40% discount
+    "eShopA231": 5, // 40% discount
     "eShopA379": 15, // 15% discount
   };
 
