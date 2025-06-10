@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import axios from "axios";
 const codImg = "/cod.jpg";
 
-
 const OrderSummary = () => {
   const {
     currency,
@@ -24,8 +23,27 @@ const OrderSummary = () => {
   const [userAddresses, setUserAddresses] = useState([]);
   const [totalShippingFee, setTotalShippingFee] = useState(0);
   const [totalDeliveryCharge, setTotalDeliveryCharge] = useState(0);
-
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("cod");
+  
+  // Promo code state
+  const [promoCode, setPromoCode] = useState("");
+  const [isPromoApplied, setIsPromoApplied] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [discountPercentage, setDiscountPercentage] = useState(0);
+
+  // Valid promo codes with their fixed discount percentages
+  const validPromoCodes = {
+    "eShopA823": 1,  // 1% discount
+    "eShopA492": 12, // 12% discount
+    "eShopA192": 18, // 18% discount
+    "eShopA765": 5,  // 5% discount
+    "eShopA318": 24, // 24% discount
+    "eShopA654": 10, // 10% discount
+    "eShopA105": 8,  // 8% discount
+    "eShopA907": 22, // 22% discount
+    "eShopA231": 40, // 40% discount
+    "eShopA379": 15, // 15% discount
+  };
 
   const paymentMethods = [
     {
@@ -78,6 +96,51 @@ const OrderSummary = () => {
     setTotalDeliveryCharge(deliveryCharge);
   };
 
+  // Apply promo code function
+  const applyPromoCode = () => {
+    const itemsTotal = getCartAmount();
+    
+    // Check if promo code exists in valid codes
+    if (validPromoCodes.hasOwnProperty(promoCode)) {
+      // Check if items total (without shipping/delivery) is more than 2000
+      if (itemsTotal > 2000) {
+        const promoDiscountPercent = validPromoCodes[promoCode];
+        const totalBeforeDiscount = itemsTotal + totalShippingFee + totalDeliveryCharge;
+        const discountAmount = Math.round(totalBeforeDiscount * (promoDiscountPercent / 100));
+        
+        setDiscount(discountAmount);
+        setDiscountPercentage(promoDiscountPercent);
+        setIsPromoApplied(true);
+        toast.success(`Promo code applied! ${promoDiscountPercent}% discount on total amount.`);
+      } else {
+        toast.error("Cart total must be more than Rs. 2000 to apply this promo code.");
+        setDiscount(0);
+        setDiscountPercentage(0);
+        setIsPromoApplied(false);
+      }
+    } else {
+      toast.error("Invalid promo code.");
+      setDiscount(0);
+      setDiscountPercentage(0);
+      setIsPromoApplied(false);
+    }
+  };
+
+  // Remove promo code function
+  const removePromoCode = () => {
+    setPromoCode("");
+    setDiscount(0);
+    setDiscountPercentage(0);
+    setIsPromoApplied(false);
+    toast.success("Promo code removed.");
+  };
+
+  // Calculate final total
+  const getFinalTotal = () => {
+    const baseTotal = getCartAmount() + totalShippingFee + totalDeliveryCharge;
+    return Math.max(0, baseTotal - discount);
+  };
+
   const createOrder = async () => {
     try {
       if (!selectedAddress) return toast.error("Please select an address");
@@ -106,6 +169,10 @@ const OrderSummary = () => {
           address: selectedAddress,
           items: cartItemsArray,
           paymentMethod: selectedPaymentMethod,
+          promoCode: isPromoApplied ? promoCode : null,
+          discount: discount,
+          discountPercentage: discountPercentage,
+          finalTotal: getFinalTotal(),
         },
         {
           headers: {
@@ -135,6 +202,13 @@ const OrderSummary = () => {
   useEffect(() => {
     calculateFees();
   }, [products, cartItems]);
+
+  // Recalculate discount when cart amount or fees change
+  useEffect(() => {
+    if (isPromoApplied && validPromoCodes.hasOwnProperty(promoCode)) {
+      applyPromoCode();
+    }
+  }, [getCartAmount(), totalShippingFee, totalDeliveryCharge]);
 
   return (
     <div className="w-full md:w-96 bg-gray-500/5 p-5">
@@ -200,24 +274,44 @@ const OrderSummary = () => {
             <input
               type="text"
               placeholder="Enter promo code"
-              className="w-full p-2.5 text-gray-600 border"
+              value={promoCode}
+              onChange={(e) => setPromoCode(e.target.value)}
+              disabled={isPromoApplied}
+              className="w-full p-2.5 text-gray-600 border disabled:bg-gray-100"
             />
-            <button className="bg-orange-600 text-white px-9 py-2 hover:bg-orange-700">
-              Apply
-            </button>
+            {!isPromoApplied ? (
+              <button 
+                onClick={applyPromoCode}
+                disabled={!promoCode.trim()}
+                className="bg-orange-600 text-white px-9 py-2 hover:bg-orange-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                Apply
+              </button>
+            ) : (
+              <button 
+                onClick={removePromoCode}
+                className="bg-red-600 text-white px-9 py-2 hover:bg-red-700"
+              >
+                Remove
+              </button>
+            )}
           </div>
+          {isPromoApplied && (
+            <div className="mt-2 p-2 bg-green-100 border border-green-300 rounded text-green-700 text-sm">
+              ✓ Promo code "{promoCode}" applied - {discountPercentage}% discount!
+            </div>
+          )}
         </div>
 
         <hr className="border-gray-500/30 my-5" />
 
         {/* Payment Method */}
-        {/* Payment Method */}
-<div>
-  <label className="text-base font-medium uppercase text-gray-600 block mb-3">
-    Payment Method
-  </label>
-  <p className="text-gray-700">Cash on Delivery</p>
-</div>
+        <div>
+          <label className="text-base font-medium uppercase text-gray-600 block mb-3">
+            Payment Method
+          </label>
+          <p className="text-gray-700">Cash on Delivery</p>
+        </div>
 
         {/* Price Summary */}
         <div className="space-y-4">
@@ -233,9 +327,26 @@ const OrderSummary = () => {
             <p className="text-gray-600">Delivery Charge</p>
             <p className="font-medium text-gray-800">Rs. {totalDeliveryCharge}</p>
           </div>
+          
+          {/* Show subtotal before discount if promo is applied */}
+          {isPromoApplied && (
+            <div className="flex justify-between text-gray-600">
+              <p>Subtotal</p>
+              <p>Rs. {getCartAmount() + totalShippingFee + totalDeliveryCharge}</p>
+            </div>
+          )}
+          
+          {/* Show discount if applied */}
+          {isPromoApplied && discount > 0 && (
+            <div className="flex justify-between text-green-600">
+              <p>Discount ({discountPercentage}%)</p>
+              <p>- Rs. {discount}</p>
+            </div>
+          )}
+          
           <div className="flex justify-between text-lg md:text-xl font-medium border-t pt-3">
             <p>Total</p>
-            <p>Rs. {getCartAmount() + totalShippingFee + totalDeliveryCharge}</p>
+            <p>Rs. {getFinalTotal()}</p>
           </div>
         </div>
       </div>
