@@ -7,7 +7,7 @@ import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import { useClerk, UserButton } from "@clerk/clerk-react";
 import { useEffect } from "react";
-import { HomeIcon, ShoppingBag, Menu, BoxIcon, Phone } from "lucide-react";
+import { HomeIcon, ShoppingBag, Menu, BoxIcon, Phone, ChevronDown } from "lucide-react";
 
 
 
@@ -17,6 +17,42 @@ const Navbar = () => {
   const { openSignIn } = useClerk();
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const [currentPath, setCurrentPath] = useState("");
+
+  useEffect(() => {
+    setCurrentPath(window.location.pathname);
+  }, [router]);
+
+  const categories = [
+    "Motors, Tools & DIY",
+    "Home & Lifestyle",
+    "Sports & Outdoor",
+    "Electronic & Accessories",
+    "Groceries & Pets",
+    "Men's Fashion",
+    "Watches & Accessories",
+    "Women's Fashion",
+    "Health & Beauty",
+    "Babies & Toys",
+    "Clothing & Accessories",
+    "Sports & Outdoor Play",
+    "Gifts & Decorations",
+    "Nursery",
+    "Diapering & Potty",
+    "Pacifiers & Accessories",
+    "Feeding",
+    "Remote Control & Vehicles",
+    "Baby Gear",
+    "Baby & Toddler Toys",
+    "Toys & Games",
+    "Baby Personal Care",
+    "Soaps, Cleansers & Bodywash",
+    "Baby Bath",
+    "Bathing Tubs & Seats",
+    "Cosmetics & Skin Care",
+    "Exercise & Fitness"
+  ];
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -31,6 +67,12 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   };
 
+  const handleCategorySelect = (category) => {
+    router.push(`/all-products?category=${encodeURIComponent(category)}`);
+    setIsCategoryDropdownOpen(false);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <nav className="flex flex-col md:flex-row items-center gap-4 md:gap-0 justify-between px-6 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-gray-700 sticky top-0 bg-white z-50">
       <div className="flex flex-col md:block w-full md:w-auto gap-3">
@@ -41,39 +83,41 @@ const Navbar = () => {
             src={assets.logo}
             alt="logo"
           />
-          <div className="flex items-center gap-3 md:hidden">
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Toggle mobile menu"
-            >
-              {/* @ts-ignore */}
-              <Menu className="w-6 h-6" />
-            </button>
-            {user ? (
-              <UserButton>
-                <UserButton.MenuItems>
-                  <UserButton.Action
-                    label="Cart"
-                    labelIcon={<CartIcon />}
-                    onClick={() => router.push("/cart")}
-                  />
-                  <UserButton.Action
-                    label="My Orders"
-                    labelIcon={<ShoppingBag />}
-                    onClick={() => router.push("/my-orders")}
-                  />
-                </UserButton.MenuItems>
-              </UserButton>
-            ) : (
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 md:hidden">
               <button
-                onClick={(e) => { e.preventDefault(); openSignIn(); }}
-                className="flex items-center gap-2 hover:text-orange-500 hover:scale-105 transition-all duration-200"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="Toggle mobile menu"
               >
-                <Image src={assets.user_icon} alt="user icon" className="w-5 h-5" />
-                Account
+                {/* @ts-ignore */}
+                <Menu className="w-6 h-6" />
               </button>
-            )}
+              {user ? (
+                <UserButton>
+                  <UserButton.MenuItems>
+                    <UserButton.Action
+                      label="Cart"
+                      labelIcon={<CartIcon />}
+                      onClick={() => router.push("/cart")}
+                    />
+                    <UserButton.Action
+                      label="My Orders"
+                      labelIcon={<ShoppingBag />}
+                      onClick={() => router.push("/my-orders")}
+                    />
+                  </UserButton.MenuItems>
+                </UserButton>
+              ) : (
+                <button
+                  onClick={(e) => { e.preventDefault(); openSignIn(); }}
+                  className="flex items-center gap-2 hover:text-orange-500 hover:scale-105 transition-all duration-200"
+                >
+                  <Image src={assets.user_icon} alt="user icon" className="w-5 h-5" />
+                  Account
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -95,7 +139,37 @@ const Navbar = () => {
                 <BoxIcon className="w-5 h-5" />
                 All Products
               </button>
-              {/* category select dropdown here */}
+              
+              {/* Category Dropdown for Mobile - Only show in hamburger menu if NOT on all-products page */}
+              {currentPath !== '/all-products' && (
+                <div className="relative">
+                  <button
+                    onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                    className="flex items-center justify-between w-full text-gray-700 hover:text-orange-600"
+                  >
+                    <div className="flex items-center gap-2">
+                      <BoxIcon className="w-5 h-5" />
+                      Categories
+                    </div>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  {isCategoryDropdownOpen && (
+                    <div className="mt-2 ml-7 max-h-60 overflow-y-auto bg-gray-50 rounded-lg border border-gray-200">
+                      {categories.map((category, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleCategorySelect(category)}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                        >
+                          {category}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {user && (
                 <>
                   <button
@@ -137,21 +211,58 @@ const Navbar = () => {
           </div>
         )}
 
+        {/* Mobile Search Bar with Filter */}
+        <div className="flex items-center gap-2 md:hidden w-full">
+          <form onSubmit={handleSearch} className="relative flex-1">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search products..."
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:border-orange-500 transition-colors pr-10"
+            />
+            <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 hover:text-orange-500 transition-colors">
+              <Image className="w-4 h-4" src={assets.search_icon} alt="search icon" />
+            </button>
+          </form>
 
-
-        {/* Mobile Menu Ender */}
-        <form onSubmit={handleSearch} className="relative md:hidden w-full">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search products..."
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:border-orange-500 transition-colors pr-10"
-          />
-          <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 hover:text-orange-500 transition-colors">
-            <Image className="w-4 h-4" src={assets.search_icon} alt="search icon" />
-          </button>
-        </form>
+          {/* Category Filter - Show on Home page and All Products page */}
+          {(currentPath === '/all-products' || currentPath === '/') && (
+            <div className="relative">
+              <button
+                onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                className="flex items-center gap-1 px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg text-orange-700 hover:bg-orange-100 transition-colors text-sm whitespace-nowrap"
+              >
+                <BoxIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">Filter</span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {isCategoryDropdownOpen && (
+                <div className="absolute top-full right-0 mt-1 w-48 max-h-60 overflow-y-auto bg-white rounded-lg border border-gray-200 shadow-lg z-50">
+                  <button
+                    onClick={() => {
+                      router.push('/all-products');
+                      setIsCategoryDropdownOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors border-b border-gray-100 font-medium"
+                  >
+                    All Categories
+                  </button>
+                  {categories.map((category, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleCategorySelect(category)}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="flex items-center gap-4 lg:gap-8 max-md:hidden">
@@ -197,20 +308,13 @@ const Navbar = () => {
               router.push(`/all-products?category=${encodeURIComponent(e.target.value)}`);
             }
           }}
-          className="px-3 py-1.5 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-gray-400 transition-all cursor-pointer"
+          className={`px-3 py-1.5 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-gray-400 transition-all cursor-pointer ${currentPath !== '/all-products' ? 'hidden' : ''}`}
           defaultValue=""
         >
           <option value="">Select Category</option>
-          <option value="Men's Fashion">Men's Fashion</option>
-          <option value="Women's Fashion">Women's Fashion</option>
-          <option value="Electronic Devices">Electronic Devices</option>
-          <option value="Gifts & Decorations">Gifts & Decorations</option>
-          <option value="Home & Lifestyle">Home & Lifestyle</option>
-          <option value="Sports & Outdoor">Sports & Outdoor</option>
-          <option value="Health & Beauty">Health & Beauty</option>
-          <option value="Babies & Toys">Babies & Toys</option>
-          <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
-          <option value="Groceries & Pets">Groceries & Pets</option>
+          {categories.map((category, index) => (
+            <option key={index} value={category}>{category}</option>
+          ))}
         </select>
         {isSeller && (
           <button
