@@ -7,10 +7,13 @@ import Image from "next/image";
 import { useAppContext } from "@/context/AppContext";
 import Footer from "@/components/seller/Footer";
 import Loading from "@/components/Loading";
+import { useSearchParams } from "next/navigation";
 
 const ProductList = () => {
 
   const { router, getToken, user } = useAppContext()
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("id");
 
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -39,6 +42,23 @@ const ProductList = () => {
     }
   }, [])
 
+  useEffect(() => {
+    if (productId) {
+      fetchProduct();
+    }
+  }, [productId]);
+
+  const fetchProduct = async () => {
+    setLoading(true);
+    try {
+      const { data } = await axios.get(`/api/product/${productId}`);
+      setProduct(data.product);
+    } catch (error) {
+      toast.error("Failed to load product");
+    }
+    setLoading(false);
+  };
+
   const handleDelete = async (id) => {
     try {
       const token = await getToken()
@@ -55,12 +75,16 @@ const ProductList = () => {
     }
   }
 
+  const handleEdit = (product) => {
+    router.push(`/product/edit?id=${product._id}`);
+  }
+
   return (
     <div className="flex-1 min-h-screen flex flex-col justify-between">
       {loading ? <Loading /> : <div className="w-full md:p-10 p-4">
         <h2 className="pb-4 text-lg font-medium">All Product</h2>
-        <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
-          <table className=" table-fixed w-full overflow-hidden">
+        <div className="flex flex-col items-center max-w-5xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
+          <table className="table-fixed w-full overflow-hidden">
             <thead className="text-gray-900 text-sm text-left">
               <tr>
                 <th className="w-2/3 md:w-2/5 px-4 py-3 font-medium truncate">Product</th>
@@ -68,7 +92,7 @@ const ProductList = () => {
                 <th className="px-4 py-3 font-medium truncate">
                   Price
                 </th>
-                <th className="px-4 py-3 font-medium truncate max-sm:hidden">Action</th>
+                <th className="px-4 py-3 font-medium truncate max-sm:hidden w-64">Action</th>
               </tr>
             </thead>
             <tbody className="text-sm text-gray-500">
@@ -90,20 +114,22 @@ const ProductList = () => {
                   </td>
                   <td className="px-4 py-3 max-sm:hidden">{product.category}</td>
                   <td className="px-4 py-3">${product.offerPrice}</td>
-                  <td className="px-4 py-3 max-sm:hidden flex items-center gap-2">
+                  <td className="px-4 py-3 max-sm:hidden flex items-center gap-2 w-64">
                     <button onClick={() => router.push(`/product/${product._id}`)} className="flex items-center gap-1 px-1.5 md:px-3.5 py-2 bg-orange-600 text-white rounded-md">
                       <span className="hidden md:block">Visit</span>
-                      <Image
-                        className="h-3.5"
-                        src={assets.redirect_icon}
-                        alt="redirect_icon"
-                      />
+                      <Image className="h-3.5" src={assets.redirect_icon} alt="redirect_icon" />
                     </button>
                     <button
                       onClick={() => handleDelete(product._id)}
                       className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
                     >
                       Delete
+                    </button>
+                    <button
+                      onClick={() => handleEdit(product)}
+                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    >
+                      Edit
                     </button>
                   </td>
                 </tr>

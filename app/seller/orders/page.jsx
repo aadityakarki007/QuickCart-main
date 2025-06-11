@@ -97,8 +97,14 @@ const Orders = () => {
                             <div className="flex-1 flex gap-5 max-w-80">
                                 <Image
                                     className="max-w-16 max-h-16 object-cover"
-                                    src={assets.box_icon}
-                                    alt="box_icon"
+                                    src={
+                                        order.items[0]?.product?.images?.[0]
+                                            ? order.items[0].product.images[0]
+                                            : assets.box_icon
+                                    }
+                                    alt={order.items[0]?.product?.name || "Product image"}
+                                    width={64}
+                                    height={64}
                                 />
                                 <p className="flex flex-col gap-3">
                                     <span className="font-medium">

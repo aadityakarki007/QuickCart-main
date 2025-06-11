@@ -55,8 +55,8 @@ const MyOrders = () => {
                                     <Image
                                         className="max-w-16 max-h-16 object-cover"
                                         src={
-                                            order.items[0]?.product?.image
-                                                ? order.items[0].product.image
+                                            order.items[0]?.product?.images?.[0]
+                                                ? order.items[0].product.images[0]
                                                 : assets.box_icon
                                         }
                                         alt={order.items[0]?.product?.name || "Product image"}
