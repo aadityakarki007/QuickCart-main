@@ -39,6 +39,22 @@ const ProductList = () => {
     }
   }, [])
 
+  const handleDelete = async (id) => {
+    try {
+      const token = await getToken()
+      const { data } = await axios.delete(`/api/product/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+
+      if (data.success) {
+        toast.success(data.message)
+        setProducts(products.filter(product => product._id !== id))
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
   return (
     <div className="flex-1 min-h-screen flex flex-col justify-between">
       {loading ? <Loading /> : <div className="w-full md:p-10 p-4">
@@ -74,7 +90,7 @@ const ProductList = () => {
                   </td>
                   <td className="px-4 py-3 max-sm:hidden">{product.category}</td>
                   <td className="px-4 py-3">${product.offerPrice}</td>
-                  <td className="px-4 py-3 max-sm:hidden">
+                  <td className="px-4 py-3 max-sm:hidden flex items-center gap-2">
                     <button onClick={() => router.push(`/product/${product._id}`)} className="flex items-center gap-1 px-1.5 md:px-3.5 py-2 bg-orange-600 text-white rounded-md">
                       <span className="hidden md:block">Visit</span>
                       <Image
@@ -82,6 +98,12 @@ const ProductList = () => {
                         src={assets.redirect_icon}
                         alt="redirect_icon"
                       />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(product._id)}
+                      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                    >
+                      Delete
                     </button>
                   </td>
                 </tr>
