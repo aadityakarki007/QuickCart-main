@@ -7,7 +7,7 @@ const luckyNumbers = {
   12: 'eShopA654',
   84: 'eShopA105',
   30: 'eShopA907',
-  69: 'eShopA231',
+  62: 'eShopA231',
   44: 'eShopA379',
 };
 
@@ -46,6 +46,6 @@ export async function POST(req) {
       return Response.json({ success: false, error: 'Not a winning number.' });
     }
   } catch (error) {
-    return Response.json({ success: false, error: error.message || 'Unknown error' }, { status: 400 });
+    return Response.json({ success: false, error: error.message || 'Unknown error' }, { status: 500 });
   }
 }

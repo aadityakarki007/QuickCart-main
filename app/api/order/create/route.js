@@ -6,7 +6,7 @@ import User from "@/models/user"
 import Order from "@/models/Order"
 import { inngest } from "@/config/inngest"
 
-export async function POST(request){
+export async function POST(request) {
     try {
         await connectDB()
 
@@ -15,79 +15,76 @@ export async function POST(request){
             return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 })
         }
 
-        const { address, items } = await request.json()
-        const paymentMethod = "cod"  // Hardcoded payment method as Cash on Delivery
+        const { address, items, paymentMethod } = await request.json()
 
-        if(!items || items.length === 0){
+        if (!paymentMethod || !['esewa', 'khalti'].includes(paymentMethod)) {
+            return NextResponse.json({ success: false, message: "Invalid payment method" }, { status: 400 })
+        }
+
+        if (!items || items.length === 0) {
             return NextResponse.json({ success: false, message: "No items in cart" }, { status: 400 })
         }
 
-        // Validate address
-        if(!address || !address.fullName || !address.PhoneNumber || !address.area || !address.city || !address.province) {
+        if (
+            !address || !address.fullName || !address.PhoneNumber ||
+            !address.area || !address.city || !address.province
+        ) {
             return NextResponse.json({ success: false, message: "Complete address details are required" }, { status: 400 })
         }
 
-        // Find user first
-        // @ts-ignore - Mongoose typing issue
-        const user = await User.findById(userId).exec()
+        // Find user
+        const user = await User.findOne({ clerkId: userId }).exec();
         if (!user) {
             return NextResponse.json({ success: false, message: "User not found" }, { status: 404 })
         }
 
-        // Get all available products
-        // @ts-ignore - Mongoose typing issue
-        const allProducts = await Product.find({}).sort({ date: -1 }).exec();
+        // Fetch all products
+        const allProducts = await Product.find({}).sort({ date: -1 }).exec()
 
-        // Map to store available products by ID for quick lookup
-        const availableProducts = new Map();
+        // Store in map
+        const availableProducts = new Map()
         allProducts.forEach(product => {
-            availableProducts.set(product._id.toString(), product);
-        });
+            availableProducts.set(product._id.toString(), product)
+        })
 
-        // Validate items and map to available products
-        const products = [];
-        const missingProducts = [];
+        const products = []
+        const missingProducts = []
 
         for (const item of items) {
-            const product = availableProducts.get(item.product);
+            const product = availableProducts.get(item.product)
             if (product) {
-                products.push(product);
+                products.push(product)
             } else {
-                missingProducts.push(item.product);
+                missingProducts.push(item.product)
             }
         }
 
         if (missingProducts.length > 0) {
-            // Clear user's cart since it has invalid products
-            user.cartItems = {};
-            await user.save();
+            user.cartItems = {}
+            await user.save()
 
             return NextResponse.json({
                 success: false,
                 message: `Your cart contains products that are no longer available. We've cleared your cart - please add available products and try again.`,
                 missingProducts
-            }, { status: 404 });
+            }, { status: 404 })
         }
 
-        // Calculate amount using reduce
         const amount = items.reduce((acc, item) => {
-            const product = products.find(p => p._id.toString() === item.product);
-            return acc + (product.offerPrice || product.price) * item.quantity;
-        }, 0);
+            const product = products.find(p => p._id.toString() === item.product)
+            return acc + (product.offerPrice || product.price) * item.quantity
+        }, 0)
 
-        // Calculate tax and total amount
-        const tax = Math.floor(amount * 0.02); // 2% tax
-        const totalAmount = amount + tax;
+        const tax = Math.floor(amount * 0.02)
+        const totalAmount = amount + tax
 
-        // Create order in database
-        // @ts-ignore - Mongoose typing issue
         const order = new Order({
             userId: userId,
             items: items.map(item => ({
                 product: item.product,
                 quantity: item.quantity
             })),
-            amount: totalAmount,
+            totalAmount,
             address: {
                 userId: userId,
                 fullName: address.fullName,
@@ -100,12 +97,12 @@ export async function POST(request){
             status: 'Order Placed',
             date: Date.now(),
             paymentMethod
-        });
-        
-        // Save order to database
-        await order.save();
+        })
 
-        // Create order event
+        // ✅ Save the order to MongoDB
+        await order.save()
+
+        // Fire event to Inngest
         await inngest.send({
             name: "order/created",
             data: {
@@ -122,7 +119,6 @@ export async function POST(request){
             }
         })
 
-        // Clear user cart
         user.cartItems = {}
         await user.save()
 
@@ -133,7 +129,7 @@ export async function POST(request){
             orderDetails: order
         })
 
-    } catch(error) {
+    } catch (error) {
         console.error("Error creating order:", error)
         return NextResponse.json({
             success: false,

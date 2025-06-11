@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useUser, SignIn } from '@clerk/nextjs';
+import { useUser, SignIn } from '@clerk/nextjs'; // Keep SignIn import from HEAD
 import { Sparkles, Star, Trophy, AlertCircle, Gift, Zap, Target } from 'lucide-react';
 import Link from 'next/link';
 import { Home } from 'lucide-react';
@@ -108,8 +108,11 @@ export default function TryPromoPage() {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center">
-          <SignIn />
+        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center text-white">
+          <AlertCircle className="w-16 h-16 mx-auto mb-4 text-yellow-400" />
+          <h2 className="text-2xl font-bold mb-4">Authentication Required</h2>
+          <p className="text-gray-200 mb-6">Please sign in to participate in the lucky number promo!</p>
+          <SignIn /> {/* Keep SignIn component */}
         </div>
       </div>
     );
@@ -262,8 +265,8 @@ export default function TryPromoPage() {
             {/* Message Display */}
             {message && (
               <div className={`mt-6 p-6 rounded-2xl text-center text-lg font-semibold ${
-                gameStatus === 'won' 
-                  ? 'bg-green-500/20 text-green-300 border border-green-400/30' 
+                gameStatus === 'won'
+                  ? 'bg-green-500/20 text-green-300 border border-green-400/30'
                   : gameStatus === 'exhausted'
                   ? 'bg-red-500/20 text-red-300 border border-red-400/30'
                   : 'bg-blue-500/20 text-blue-300 border border-blue-400/30'

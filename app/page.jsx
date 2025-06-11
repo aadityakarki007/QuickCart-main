@@ -47,9 +47,10 @@ const Home = () => {
           <div className="mt-6">
             <button
               onClick={handleTryClick}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-in-out"
+              disabled={!isLoaded}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              🎲 Try
+              {!isLoaded ? '⏳ Loading...' : '🎲 Try Your Luck'}
             </button>
           </div>
         </div>
