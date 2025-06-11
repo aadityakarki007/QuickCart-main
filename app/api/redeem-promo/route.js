@@ -9,6 +9,8 @@ const luckyNumbers = {
   30: 'eShopA907',
   62: 'eShopA231',
   44: 'eShopA379',
+  62: 'eSHopB991',
+  20: 'eShopA000',
 };
 
 // In-memory stores for demo (replace with DB in production)

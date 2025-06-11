@@ -15,11 +15,7 @@ export async function POST(request) {
             return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 })
         }
 
-        const { address, items, paymentMethod } = await request.json()
-
-        if (!paymentMethod || !['esewa', 'khalti'].includes(paymentMethod)) {
-            return NextResponse.json({ success: false, message: "Invalid payment method" }, { status: 400 })
-        }
+        const { address, items } = await request.json()
 
         if (!items || items.length === 0) {
             return NextResponse.json({ success: false, message: "No items in cart" }, { status: 400 })
@@ -96,7 +92,7 @@ export async function POST(request) {
             },
             status: 'Order Placed',
             date: Date.now(),
-            paymentMethod
+            paymentMethod: "Cash on Delivery" // Hardcoded
         })
 
         // ✅ Save the order to MongoDB
@@ -115,7 +111,8 @@ export async function POST(request) {
                 amount: totalAmount,
                 tax,
                 address,
-                status: 'Order Placed'
+                status: 'Order Placed',
+                paymentMethod: "Cash on Delivery"
             }
         })
 
