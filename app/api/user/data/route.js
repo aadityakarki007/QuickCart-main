@@ -13,7 +13,7 @@ export async function GET(request) {
 
     await connectDB();
     
-    // First try to find the user
+    // First try to find the userz
     let user = await User.findById(userId);
     
     // If user doesn't exist, create a new one

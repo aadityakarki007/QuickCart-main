@@ -9,9 +9,7 @@ import { useClerk, UserButton } from "@clerk/clerk-react";
 import { useEffect } from "react";
 import { HomeIcon, ShoppingBag, Menu, BoxIcon, Phone, ChevronDown } from "lucide-react";
 
-
-
-const Navbar = () => {
+const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
   const { isSeller, user } = useAppContext();
   const router = useRouter();
   const { openSignIn } = useClerk();
@@ -73,8 +71,13 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   };
 
+  // Dynamic classes based on promo page
+  const navClasses = isPromoPage 
+    ? `${className} border-none shadow-lg text-white`
+    : "flex flex-col md:flex-row items-center gap-4 md:gap-0 justify-between px-6 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-gray-700 sticky top-0 bg-white z-50";
+
   return (
-    <nav className="flex flex-col md:flex-row items-center gap-4 md:gap-0 justify-between px-6 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-gray-700 sticky top-0 bg-white z-50">
+    <nav className={navClasses}>
       <div className="flex flex-col md:block w-full md:w-auto gap-3">
         <div className="flex items-center justify-between md:justify-start">
           <Image
@@ -85,14 +88,19 @@ const Navbar = () => {
           />
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-3 md:hidden">
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                aria-label="Toggle mobile menu"
-              >
-                {/* @ts-ignore */}
-                <Menu className="w-6 h-6" />
-              </button>
+              {!hideText && (
+                <button
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className={`p-2 rounded-lg transition-colors ${
+                    isPromoPage 
+                      ? 'hover:bg-white/20 text-white' 
+                      : 'hover:bg-gray-100'
+                  }`}
+                  aria-label="Toggle mobile menu"
+                >
+                  <Menu className="w-6 h-6" />
+                </button>
+              )}
               {user ? (
                 <UserButton>
                   <UserButton.MenuItems>
@@ -109,32 +117,46 @@ const Navbar = () => {
                   </UserButton.MenuItems>
                 </UserButton>
               ) : (
-                <button
-                  onClick={(e) => { e.preventDefault(); openSignIn(); }}
-                  className="flex items-center gap-2 hover:text-orange-500 hover:scale-105 transition-all duration-200"
-                >
-                  <Image src={assets.user_icon} alt="user icon" className="w-5 h-5" />
-                  Account
-                </button>
+                !hideText && (
+                  <button
+                    onClick={(e) => { e.preventDefault(); openSignIn(); }}
+                    className={`flex items-center gap-2 transition-all duration-200 ${
+                      isPromoPage 
+                        ? 'hover:text-yellow-300 hover:scale-105 text-white' 
+                        : 'hover:text-orange-500 hover:scale-105'
+                    }`}
+                  >
+                    <Image src={assets.user_icon} alt="user icon" className="w-5 h-5" />
+                    Account
+                  </button>
+                )
               )}
             </div>
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 py-4 px-6 shadow-lg z-50">
+        {/* Mobile Menu - Hidden on promo page when hideText is true */}
+        {isMobileMenuOpen && !hideText && (
+          <div className={`md:hidden absolute top-full left-0 right-0 py-4 px-6 shadow-lg z-50 ${
+            isPromoPage 
+              ? 'bg-purple-900/90 backdrop-blur-sm border-b border-purple-700' 
+              : 'bg-white border-b border-gray-200'
+          }`}>
             <div className="flex flex-col gap-4">
               <button
                 onClick={() => handleMobileNavigation("/")}
-                className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+                className={`flex items-center gap-2 ${
+                  isPromoPage ? 'text-white hover:text-yellow-300' : 'text-gray-700 hover:text-orange-600'
+                }`}
               >
                 <HomeIcon className="w-5 h-5" />
                 Home
               </button>
               <button
                 onClick={() => handleMobileNavigation("/all-products")}
-                className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+                className={`flex items-center gap-2 ${
+                  isPromoPage ? 'text-white hover:text-yellow-300' : 'text-gray-700 hover:text-orange-600'
+                }`}
               >
                 <BoxIcon className="w-5 h-5" />
                 All Products
@@ -145,7 +167,9 @@ const Navbar = () => {
                 <div className="relative">
                   <button
                     onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
-                    className="flex items-center justify-between w-full text-gray-700 hover:text-orange-600"
+                    className={`flex items-center justify-between w-full ${
+                      isPromoPage ? 'text-white hover:text-yellow-300' : 'text-gray-700 hover:text-orange-600'
+                    }`}
                   >
                     <div className="flex items-center gap-2">
                       <BoxIcon className="w-5 h-5" />
@@ -155,12 +179,20 @@ const Navbar = () => {
                   </button>
                   
                   {isCategoryDropdownOpen && (
-                    <div className="mt-2 ml-7 max-h-60 overflow-y-auto bg-gray-50 rounded-lg border border-gray-200">
+                    <div className={`mt-2 ml-7 max-h-60 overflow-y-auto rounded-lg border ${
+                      isPromoPage 
+                        ? 'bg-purple-800/90 border-purple-600' 
+                        : 'bg-gray-50 border-gray-200'
+                    }`}>
                       {categories.map((category, index) => (
                         <button
                           key={index}
                           onClick={() => handleCategorySelect(category)}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                          className={`block w-full text-left px-4 py-2 text-sm transition-colors ${
+                            isPromoPage 
+                              ? 'text-white hover:bg-purple-700 hover:text-yellow-300' 
+                              : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'
+                          }`}
                         >
                           {category}
                         </button>
@@ -174,7 +206,9 @@ const Navbar = () => {
                 <>
                   <button
                     onClick={() => handleMobileNavigation("/cart")}
-                    className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+                    className={`flex items-center gap-2 ${
+                      isPromoPage ? 'text-white hover:text-yellow-300' : 'text-gray-700 hover:text-orange-600'
+                    }`}
                   >
                     <div className="w-5 h-5">
                       <CartIcon />
@@ -183,7 +217,9 @@ const Navbar = () => {
                   </button>
                   <button
                     onClick={() => handleMobileNavigation("/my-orders")}
-                    className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+                    className={`flex items-center gap-2 ${
+                      isPromoPage ? 'text-white hover:text-yellow-300' : 'text-gray-700 hover:text-orange-600'
+                    }`}
                   >
                     <ShoppingBag className="w-5 h-5" />
                     My Orders
@@ -193,16 +229,19 @@ const Navbar = () => {
               {isSeller && (
                 <button
                   onClick={() => handleMobileNavigation("/seller")}
-                  className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+                  className={`flex items-center gap-2 ${
+                    isPromoPage ? 'text-white hover:text-yellow-300' : 'text-gray-700 hover:text-orange-600'
+                  }`}
                 >
                   <BoxIcon className="w-5 h-5" />
                   Seller Dashboard
                 </button>
               )}
-              {/* Add Contact Us button here */}
               <button
                 onClick={() => handleMobileNavigation("/contact")}
-                className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
+                className={`flex items-center gap-2 ${
+                  isPromoPage ? 'text-white hover:text-yellow-300' : 'text-gray-700 hover:text-orange-600'
+                }`}
               >
                 <Phone className="w-5 h-5" />
                 Contact
@@ -211,155 +250,226 @@ const Navbar = () => {
           </div>
         )}
 
-        {/* Mobile Search Bar with Filter */}
-        <div className="flex items-center gap-2 md:hidden w-full">
-          <form onSubmit={handleSearch} className="relative flex-1">
+        {/* Mobile Search Bar - Hidden on promo page when hideText is true */}
+        {!hideText && (
+          <div className="flex items-center gap-2 md:hidden w-full">
+            <form onSubmit={handleSearch} className="relative flex-1">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search products..."
+                className={`w-full px-4 py-2 border rounded-lg outline-none transition-colors pr-10 ${
+                  isPromoPage 
+                    ? 'border-purple-300 bg-white/10 text-white placeholder-white/70 focus:border-yellow-400' 
+                    : 'border-gray-300 focus:border-orange-500'
+                }`}
+              />
+              <button type="submit" className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors ${
+                isPromoPage ? 'hover:text-yellow-300' : 'hover:text-orange-500'
+              }`}>
+                <Image className="w-4 h-4" src={assets.search_icon} alt="search icon" />
+              </button>
+            </form>
+
+            {/* Category Filter - Show on Home page and All Products page */}
+            {(currentPath === '/all-products' || currentPath === '/') && (
+              <div className="relative">
+                <button
+                  onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                  className={`flex items-center gap-1 px-3 py-2 border rounded-lg transition-colors text-sm whitespace-nowrap ${
+                    isPromoPage 
+                      ? 'bg-purple-700/50 border-purple-500 text-white hover:bg-purple-600/50' 
+                      : 'bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100'
+                  }`}
+                >
+                  <BoxIcon className="w-4 h-4" />
+                  <span className="hidden sm:inline">Filter</span>
+                  <ChevronDown className={`w-3 h-3 transition-transform ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {isCategoryDropdownOpen && (
+                  <div className={`absolute top-full right-0 mt-1 w-48 max-h-60 overflow-y-auto rounded-lg border shadow-lg z-50 ${
+                    isPromoPage 
+                      ? 'bg-purple-800/90 border-purple-600' 
+                      : 'bg-white border-gray-200'
+                  }`}>
+                    <button
+                      onClick={() => {
+                        router.push('/all-products');
+                        setIsCategoryDropdownOpen(false);
+                      }}
+                      className={`block w-full text-left px-4 py-2 text-sm transition-colors border-b font-medium ${
+                        isPromoPage 
+                          ? 'text-white hover:bg-purple-700 hover:text-yellow-300 border-purple-600' 
+                          : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600 border-gray-100'
+                      }`}
+                    >
+                      All Categories
+                    </button>
+                    {categories.map((category, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleCategorySelect(category)}
+                        className={`block w-full text-left px-4 py-2 text-sm transition-colors ${
+                          isPromoPage 
+                            ? 'text-white hover:bg-purple-700 hover:text-yellow-300' 
+                            : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'
+                        }`}
+                      >
+                        {category}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Navigation Links - Hidden on promo page when hideText is true */}
+      {!hideText && (
+        <div className="flex items-center gap-4 lg:gap-8 max-md:hidden">
+          <Link href="/" className={`transition-all duration-200 relative group ${
+            isPromoPage 
+              ? 'hover:text-yellow-300 hover:scale-105' 
+              : 'hover:text-orange-500 hover:scale-105'
+          }`}>
+            Home
+            <span className={`absolute bottom-0 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-200 ${
+              isPromoPage ? 'bg-yellow-300' : 'bg-orange-500'
+            }`}></span>
+          </Link>
+          <Link href="/all-products" className={`transition-all duration-200 relative group ${
+            isPromoPage 
+              ? 'hover:text-yellow-300 hover:scale-105' 
+              : 'hover:text-orange-500 hover:scale-105'
+          }`}>
+            Shop
+            <span className={`absolute bottom-0 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-200 ${
+              isPromoPage ? 'bg-yellow-300' : 'bg-orange-500'
+            }`}></span>
+          </Link>
+          <Link
+            href="/about-us"
+            className={`transition-all duration-200 relative group ${
+              isPromoPage 
+                ? 'hover:text-yellow-300 hover:scale-105' 
+                : 'hover:text-orange-500 hover:scale-105'
+            }`}
+          >
+            About Us
+            <span className={`absolute bottom-0 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-200 ${
+              isPromoPage ? 'bg-yellow-300' : 'bg-orange-500'
+            }`}></span>
+          </Link>
+
+          <Link href="/contact" className={`transition-all duration-200 relative group ${
+            isPromoPage 
+              ? 'hover:text-yellow-300 hover:scale-105' 
+              : 'hover:text-orange-500 hover:scale-105'
+          }`}>
+            Contact
+            <span className={`absolute bottom-0 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-200 ${
+              isPromoPage ? 'bg-yellow-300' : 'bg-orange-500'
+            }`}></span>
+          </Link>
+        </div>
+      )}
+
+      {/* Desktop Menu - Hidden on promo page when hideText is true */}
+      {!hideText && (
+        <ul className="hidden md:flex items-center gap-4">
+          <form onSubmit={handleSearch} className="relative flex items-center">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search products..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:border-orange-500 transition-colors pr-10"
+              className={`w-48 px-3 py-1.5 border rounded-lg outline-none transition-all text-sm ${
+                isPromoPage 
+                  ? 'border-purple-300 bg-white/10 text-white placeholder-white/70 focus:border-yellow-400 hover:border-purple-200' 
+                  : 'border-gray-300 focus:border-orange-500 hover:border-gray-400'
+              }`}
             />
-            <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 hover:text-orange-500 transition-colors">
+            <button type="submit" className={`absolute right-2 top-1/2 -translate-y-1/2 transition-colors ${
+              isPromoPage ? 'hover:text-yellow-300' : 'hover:text-orange-500'
+            }`}>
               <Image className="w-4 h-4" src={assets.search_icon} alt="search icon" />
             </button>
           </form>
-
-          {/* Category Filter - Show on Home page and All Products page */}
-          {(currentPath === '/all-products' || currentPath === '/') && (
-            <div className="relative">
-              <button
-                onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
-                className="flex items-center gap-1 px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg text-orange-700 hover:bg-orange-100 transition-colors text-sm whitespace-nowrap"
-              >
-                <BoxIcon className="w-4 h-4" />
-                <span className="hidden sm:inline">Filter</span>
-                <ChevronDown className={`w-3 h-3 transition-transform ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {isCategoryDropdownOpen && (
-                <div className="absolute top-full right-0 mt-1 w-48 max-h-60 overflow-y-auto bg-white rounded-lg border border-gray-200 shadow-lg z-50">
-                  <button
-                    onClick={() => {
-                      router.push('/all-products');
-                      setIsCategoryDropdownOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors border-b border-gray-100 font-medium"
-                  >
-                    All Categories
-                  </button>
-                  {categories.map((category, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleCategorySelect(category)}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
-                    >
-                      {category}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+          <select
+            onChange={(e) => {
+              if (e.target.value) {
+                router.push(`/all-products?category=${encodeURIComponent(e.target.value)}`);
+              }
+            }}
+            className={`px-3 py-1.5 border rounded-md focus:outline-none focus:ring-2 transition-all cursor-pointer ${
+              isPromoPage 
+                ? 'text-white bg-purple-700/50 border-purple-500 focus:ring-yellow-400 hover:border-purple-400' 
+                : 'text-gray-700 bg-white border-gray-300 focus:ring-orange-500 hover:border-gray-400'
+            } ${currentPath !== '/all-products' ? 'hidden' : ''}`}
+            defaultValue=""
+          >
+            <option value="">Select Category</option>
+            {categories.map((category, index) => (
+              <option key={index} value={category}>{category}</option>
+            ))}
+          </select>
+          {isSeller && (
+            <button
+              onClick={() => router.push("/seller")}
+              className={`text-xs border px-4 py-1.5 rounded-full ${
+                isPromoPage 
+                  ? 'border-purple-300 hover:bg-purple-700/50 text-white' 
+                  : 'border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              Seller Dashboard
+            </button>
           )}
-        </div>
-      </div>
+          {user ? (
+            <UserButton>
+              <UserButton.MenuItems>
+                <UserButton.Action
+                  label="Home"
+                  labelIcon={<HomeIcon />}
+                  onClick={() => router.push("/")}
+                />
+                <UserButton.Action
+                  label="Products"
+                  labelIcon={<BoxIcon />}
+                  onClick={() => router.push("/all-products")}
+                />
 
-      <div className="flex items-center gap-4 lg:gap-8 max-md:hidden">
-        <Link href="/" className="hover:text-orange-500 hover:scale-105 transition-all duration-200 relative group">
-          Home
-          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
-        </Link>
-        <Link href="/all-products" className="hover:text-orange-500 hover:scale-105 transition-all duration-200 relative group">
-          Shop
-          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
-        </Link>
-        <Link
-          href="/about-us"
-          className="hover:text-orange-500 hover:scale-105 transition-all duration-200 relative group"
-        >
-          About Us
-          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
-        </Link>
-
-        <Link href="/contact" className="hover:text-orange-500 hover:scale-105 transition-all duration-200 relative group">
-          Contact
-          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-200"></span>
-        </Link>
-      </div>
-
-      {/* Desktop Menu */}
-      <ul className="hidden md:flex items-center gap-4">
-        <form onSubmit={handleSearch} className="relative flex items-center">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search products..."
-            className="w-48 px-3 py-1.5 border border-gray-300 rounded-lg outline-none focus:border-orange-500 hover:border-gray-400 transition-all text-sm"
-          />
-          <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 hover:text-orange-500 transition-colors">
-            <Image className="w-4 h-4" src={assets.search_icon} alt="search icon" />
-          </button>
-        </form>
-        <select
-          onChange={(e) => {
-            if (e.target.value) {
-              router.push(`/all-products?category=${encodeURIComponent(e.target.value)}`);
-            }
-          }}
-          className={`px-3 py-1.5 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-gray-400 transition-all cursor-pointer ${currentPath !== '/all-products' ? 'hidden' : ''}`}
-          defaultValue=""
-        >
-          <option value="">Select Category</option>
-          {categories.map((category, index) => (
-            <option key={index} value={category}>{category}</option>
-          ))}
-        </select>
-        {isSeller && (
-          <button
-            onClick={() => router.push("/seller")}
-            className="text-xs border px-4 py-1.5 rounded-full"
-          >
-            Seller Dashboard
-          </button>
-        )}
-        {user ? (
-          <UserButton>
-            <UserButton.MenuItems>
-              <UserButton.Action
-                label="Home"
-                labelIcon={<HomeIcon />}
-                onClick={() => router.push("/")}
-              />
-              <UserButton.Action
-                label="Products"
-                labelIcon={<BoxIcon />}
-                onClick={() => router.push("/all-products")}
-              />
-
-              <UserButton.Action
-                label="Cart"
-                labelIcon={<CartIcon />}
-                onClick={() => router.push("/cart")}
-              />
-              <UserButton.Action
-                label="My Orders"
-                labelIcon={<ShoppingBag />}
-                onClick={() => router.push("/my-orders")}
-              />
-            </UserButton.MenuItems>
-          </UserButton>
-        ) : (
-          <button
-            onClick={(e) => { e.preventDefault(); openSignIn(); }}
-            className="flex items-center gap-2 hover:text-orange-500 hover:scale-105 transition-all duration-200"
-          >
-            <Image src={assets.user_icon} alt="user icon" className="w-5 h-5" />
-            Account
-          </button>
-        )}
-      </ul>
+                <UserButton.Action
+                  label="Cart"
+                  labelIcon={<CartIcon />}
+                  onClick={() => router.push("/cart")}
+                />
+                <UserButton.Action
+                  label="My Orders"
+                  labelIcon={<ShoppingBag />}
+                  onClick={() => router.push("/my-orders")}
+                />
+              </UserButton.MenuItems>
+            </UserButton>
+          ) : (
+            <button
+              onClick={(e) => { e.preventDefault(); openSignIn(); }}
+              className={`flex items-center gap-2 transition-all duration-200 ${
+                isPromoPage 
+                  ? 'hover:text-yellow-300 hover:scale-105 text-white' 
+                  : 'hover:text-orange-500 hover:scale-105'
+              }`}
+            >
+              <Image src={assets.user_icon} alt="user icon" className="w-5 h-5" />
+              Account
+            </button>
+          )}
+        </ul>
+      )}
     </nav>
   );
 };
