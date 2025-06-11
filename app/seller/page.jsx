@@ -9,8 +9,7 @@ import axios from "axios";
 import { ListFilter } from "lucide-react";
 
 const AddProduct = () => {
-  
-  const { getToken } = useAppContext()
+  const { getToken } = useAppContext();
 
   const [files, setFiles] = useState([]);
   const [name, setName] = useState('');
@@ -25,37 +24,46 @@ const AddProduct = () => {
   const [color, setColor] = useState('');
   const [isPopular, setIsPopular] = useState(false);
   const [deliveryDate, setDeliveryDate] = useState('');
+  const [stock, setStock] = useState('');
+  const [warrantyDuration, setWarrantyDuration] = useState('');
+  const [returnPeriod, setReturnPeriod] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const formData = new FormData()
-
-    formData.append('name',name)
-    formData.append('description',description)
-    formData.append('category',category)
-    formData.append('price',price)
-    formData.append('offerPrice',offerPrice)
-    formData.append('shippingFee',shippingFee)
-    formData.append('deliveryCharge',deliveryCharge)
-    formData.append('sellerName',sellerName)
-    formData.append('brand', brand || '')
-    formData.append('color', color || '')
-    formData.append('isPopular', String(isPopular))
-    formData.append('deliveryDate', deliveryDate || '')
-
-    for (let i = 0; i < files.length; i++) {
-      formData.append('images',files[i])
-    
-    }
+    setIsSubmitting(true);
 
     try {
-      const token = await getToken()
+      const formData = new FormData();
 
-      const { data } = await axios.post('/api/product/add',formData,{headers:{Authorization: `Bearer ${token}`}})
+      formData.append('name', name);
+      formData.append('description', description);
+      formData.append('category', category);
+      formData.append('price', price);
+      formData.append('offerPrice', offerPrice);
+      formData.append('shippingFee', shippingFee);
+      formData.append('deliveryCharge', deliveryCharge);
+      formData.append('sellerName', sellerName);
+      formData.append('brand', brand || '');
+      formData.append('color', color || '');
+      formData.append('isPopular', false);
+      formData.append('deliveryDate', deliveryDate || '');
+      formData.append('stock', stock || '0');
+      formData.append('warrantyDuration', warrantyDuration || '');
+      formData.append('returnPeriod', returnPeriod || '');
 
-      if(data.success){
-        toast.success(data.message)
+      for (let i = 0; i < files.length; i++) {
+        formData.append('images', files[i]);
+      }
+
+      const token = await getToken();
+      const { data } = await axios.post('/api/product/add', formData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (data.success) {
+        toast.success(data.message);
+        // Reset form
         setFiles([]);
         setName('');
         setDescription('');
@@ -69,26 +77,24 @@ const AddProduct = () => {
         setColor('');
         setIsPopular(false);
         setDeliveryDate('');
-
+        setStock('');
+        setWarrantyDuration('');
+        setReturnPeriod('');
       } else {
-        toast.error(data.message)
+        toast.error(data.message);
       }
-    } 
-    
-    catch (error) {
-      toast.error(error.message)
-      
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    
-
   };
 
   return (
     <div className="flex-1 min-h-screen flex flex-col justify-between">
       <div className="p-4 flex justify-between items-center border-b">
         <h1 className="text-xl font-semibold">Seller Dashboard</h1>
-        <Link href="/seller/manage-products" className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
+        <Link href="/seller/product-list" className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
           {/* @ts-ignore */}
           <ListFilter size={18} className="mr-2" />
           Manage Products
@@ -98,7 +104,6 @@ const AddProduct = () => {
         <div>
           <p className="text-base font-medium">Product Image</p>
           <div className="flex flex-wrap items-center gap-3 mt-2">
-
             {[...Array(4)].map((_, index) => (
               <label key={index} htmlFor={`image${index}`}>
                 <input onChange={(e) => {
@@ -116,7 +121,6 @@ const AddProduct = () => {
                 />
               </label>
             ))}
-
           </div>
         </div>
         <div className="flex flex-col gap-1 max-w-md">
@@ -309,22 +313,70 @@ const AddProduct = () => {
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <input
-              id="is-popular"
-              type="checkbox"
-              className="w-4 h-4 text-blue-600"
-              checked={isPopular}
-              onChange={(e) => setIsPopular(e.target.checked)}
-            />
-            <label className="text-base font-medium" htmlFor="is-popular">
-              Mark as Popular Product
-            </label>
+          <div className="flex flex-wrap gap-4">
+            <div className="flex flex-col gap-1 flex-1 min-w-[200px]">
+              <label className="text-base font-medium" htmlFor="stock">
+                Available Stock
+              </label>
+              <input
+                id="stock"
+                type="number"
+                min="0"
+                placeholder="Number of items in stock"
+                className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+                onChange={(e) => setStock(e.target.value)}
+                value={stock}
+                required
+              />
+              <span className="text-xs text-gray-500 mt-1">Set to 0 for out of stock items</span>
+            </div>
+
+            <div className="flex flex-col gap-1 flex-1 min-w-[200px]">
+              <label className="text-base font-medium" htmlFor="warranty">
+                Warranty Duration
+              </label>
+              <input
+                id="warranty"
+                type="text"
+                pattern="^(\d+\s*(year|month|day)s?)$"
+                placeholder="e.g. 1 year, 6 months, 30 days"
+                title="Please enter duration like: 1 year, 6 months, or 30 days"
+                className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+                onChange={(e) => {
+                  const val = e.target.value.toLowerCase().trim();
+                  setWarrantyDuration(val);
+                }}
+                value={warrantyDuration}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1 flex-1 min-w-[200px]">
+              <label className="text-base font-medium" htmlFor="return">
+                Return Period
+              </label>
+              <input
+                id="return"
+                type="text"
+                pattern="^(\d+\s*(day)s?)$"
+                placeholder="e.g. 7 days, 30 days"
+                title="Please enter period in days like: 7 days, 30 days"
+                className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+                onChange={(e) => {
+                  const val = e.target.value.toLowerCase().trim();
+                  setReturnPeriod(val);
+                }}
+                value={returnPeriod}
+              />
+            </div>
           </div>
         </div>
 
-        <button type="submit" className="px-8 py-2.5 bg-orange-600 text-white font-medium rounded">
-          ADD
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={`px-8 py-2.5 bg-orange-600 text-white font-medium rounded disabled:opacity-50 disabled:cursor-not-allowed`}
+        >
+          {isSubmitting ? 'Adding...' : 'ADD'}
         </button>
       </form>
       {/* <Footer /> */}

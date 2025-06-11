@@ -21,6 +21,12 @@ const productSchema = new mongoose.Schema({
     deliveryCharge: { type: Number, default: 80 },
     images: { type: Array, required: true },
     category: { type: String, required: true },
+    // --- Add these fields ---
+    stock: { type: Number, default: 0 },
+    deliveryDate: { type: String, default: "" },
+    warrantyDuration: { type: String, default: "" },
+    returnPeriod: { type: String, default: "" },
+    // ------------------------
     reviews: [reviewSchema],
     averageRating: { type: Number, default: 0 },
     date: { type: Number, required: true }

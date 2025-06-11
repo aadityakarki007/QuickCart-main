@@ -195,7 +195,9 @@ const Product = () => {
                     <div className="space-y-2">
                         <p className="text-gray-600">
                             <span className="font-semibold">Delivery:</span>{" "}
-                            <span className="font-medium text-blue-600">{product.deliveryDate || 'N/A'}</span>
+                            <span className="font-medium text-blue-600">
+                                {product.deliveryDate && product.deliveryDate.trim() !== "" ? product.deliveryDate : "N/A"}
+                            </span>
                         </p>
                         <p className="text-gray-600">
                             <span className="font-semibold">Brand:</span>{" "}
@@ -210,14 +212,14 @@ const Product = () => {
                         <p className="text-gray-600">
                             <span className="font-semibold">Stock:</span>{" "}
                             <span className={`font-medium ${
-                                product.stock > 0 
-                                    ? product.stock <= 5 
+                                Number(product.stock) > 0 
+                                    ? Number(product.stock) <= 5 
                                         ? 'text-orange-600' 
                                         : 'text-green-600' 
                                     : 'text-red-600'
                             }`}>
-                                {product.stock > 0 
-                                    ? product.stock <= 5 
+                                {Number(product.stock) > 0 
+                                    ? Number(product.stock) <= 5 
                                         ? `Only ${product.stock} left` 
                                         : `${product.stock} available` 
                                     : 'Out of stock'}
@@ -225,11 +227,15 @@ const Product = () => {
                         </p>
                         <p className="text-gray-600">
                             <span className="font-semibold">Warranty:</span>{" "}
-                            <span className="font-medium text-gray-800">{product.warrantyDuration || 'N/A'}</span>
+                            <span className="font-medium text-gray-800">
+                                {product.warrantyDuration && product.warrantyDuration.trim() !== "" ? product.warrantyDuration : "N/A"}
+                            </span>
                         </p>
                         <p className="text-gray-600">
                             <span className="font-semibold">Return Period:</span>{" "}
-                            <span className="font-medium text-gray-800">{product.returnPeriod || 'N/A'}</span>
+                            <span className="font-medium text-gray-800">
+                                {product.returnPeriod && product.returnPeriod.trim() !== "" ? product.returnPeriod : "N/A"}
+                            </span>
                         </p>
                     </div>
                 </div>

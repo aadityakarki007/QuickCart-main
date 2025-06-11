@@ -22,6 +22,7 @@ export async function POST(request) {
 
         // Check if user is a seller
         const isSeller = await authSeller(userId);
+        console.log('Is user a seller?', isSeller);
         if (!isSeller) {
             return NextResponse.json({ success: false, message: "Not authorized as seller" }, { status: 403 });
         }
@@ -38,7 +39,12 @@ export async function POST(request) {
         const sellerName = formData.get('sellerName');
         const brand = formData.get('brand');
         const color = formData.get('color');
-        
+        const isPopular = formData.get('isPopular') === 'true';
+        const deliveryDate = formData.get('deliveryDate');
+        const stock = formData.get('stock');
+        const warrantyDuration = formData.get('warrantyDuration');
+        const returnPeriod = formData.get('returnPeriod');
+
         // Get image files
         const files = formData.getAll('images');
         if (!files || files.length === 0) {
@@ -67,7 +73,10 @@ export async function POST(request) {
                     cloudinary.uploader.upload_stream(
                         { 
                             resource_type: "auto",
-                            folder: "quickcart"
+                            folder: "test", 
+                            quality: "auto:good",
+                            fetch_format: "auto",
+                            flags: "progressive"
                         },
                         (error, result) => {
                             clearTimeout(uploadTimeout);
@@ -91,7 +100,7 @@ export async function POST(request) {
         
         // Connect to database and create product
         await connectDB();
-        const newProduct = await /** @type {any} */ (Product).create({
+        const newProduct = await Product.create({
             userId,
             sellerName: sellerName || "",
             name,
@@ -104,10 +113,17 @@ export async function POST(request) {
             shippingFee: Number(shippingFee || 0),
             deliveryCharge: Number(deliveryCharge || 0),
             images,
+            isPopular: isPopular,
+            deliveryDate: deliveryDate || '',
+            stock: Number(stock || 0),
+            warrantyDuration: warrantyDuration || '',
+            returnPeriod: returnPeriod || '',
+            sellerId: userId, // Add sellerId for proper seller management
             reviews: [],
             averageRating: 0,
             date: Date.now()
         });
+        console.log('Saved product:', newProduct);
 
         return NextResponse.json({ 
             success: true, 
