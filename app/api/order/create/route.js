@@ -1,4 +1,4 @@
-import { getAuth } from "@clerk/nextjs/server"
+import { auth } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 import connectDB from "@/config/db"
 import Product from "@/models/product"
@@ -10,7 +10,11 @@ export async function POST(request) {
     try {
         await connectDB()
 
-        const { userId } = getAuth(request)
+        // Use auth() instead of getAuth() for Next.js 15 compatibility
+        const authResult = await auth()
+        console.log("Auth result:", authResult);
+        
+        const { userId } = authResult
         if (!userId) {
             return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 })
         }
@@ -28,11 +32,58 @@ export async function POST(request) {
             return NextResponse.json({ success: false, message: "Complete address details are required" }, { status: 400 })
         }
 
-        // Find user
-        const user = await User.findOne({ clerkId: userId }).exec();
+        // Find user with debugging
+        console.log("Looking for user with clerkId:", userId);
+        
+        // Try multiple possible field names for Clerk ID
+        let user = await User.findOne({ clerkId: userId }).exec();
+        
         if (!user) {
-            return NextResponse.json({ success: false, message: "User not found" }, { status: 404 })
+            // Try alternative field names
+            user = await User.findOne({ clerk_id: userId }).exec();
         }
+        
+        if (!user) {
+            user = await User.findOne({ userId: userId }).exec();
+        }
+        
+        if (!user) {
+            user = await User.findOne({ _id: userId }).exec();
+        }
+        
+        if (!user) {
+            // Log all users to see the structure
+            const allUsers = await User.find({}).limit(5).exec();
+            console.log("Sample users in database:", allUsers.map(u => ({ 
+                id: u._id, 
+                clerkId: u.clerkId, 
+                clerk_id: u.clerk_id, 
+                userId: u.userId 
+            })));
+            
+            // Optional: Create user if they don't exist
+            // Uncomment the lines below if you want to auto-create users
+            /*
+            user = new User({
+                clerkId: userId,
+                cartItems: {}
+            });
+            await user.save();
+            console.log("Created new user:", user);
+            */
+            
+            return NextResponse.json({ 
+                success: false, 
+                message: "User not found. Please ensure you're logged in and your account is properly set up.",
+                debug: { 
+                    searchedUserId: userId,
+                    userCount: allUsers.length,
+                    suggestion: "User might need to be created in the database first"
+                }
+            }, { status: 404 })
+        }
+        
+        console.log("Found user:", { id: user._id, clerkId: user.clerkId });
 
         // Fetch all products
         const allProducts = await Product.find({}).sort({ date: -1 }).exec()
@@ -80,6 +131,7 @@ export async function POST(request) {
                 product: item.product,
                 quantity: item.quantity
             })),
+            amount, // Add the amount field
             totalAmount,
             address: {
                 userId: userId,
