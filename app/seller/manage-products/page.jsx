@@ -301,6 +301,7 @@ const ManageProducts = () => {
               <option value="Bathing Tubs & Seats">Bathing Tubs & Seats</option>
               <option value="Cosmetics & Skin Care">Cosmetics & Skin Care</option>
               <option value="Exercise & Fitness">Exercise & Fitness</option>
+              </select>
               </div>
 
               <div className="flex flex-col gap-1">
