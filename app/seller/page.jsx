@@ -168,14 +168,14 @@ const AddProduct = () => {
               <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
               <option value="Home & Lifestyle">Home & Lifestyle</option>
               <option value="Sports & Outdoor">Sports & Outdoor</option>
-              <option value="Electronic Accessories">Electronic & Accessories</option>
+              <option value="Electronic & Accessories">Electronic & Accessories</option>
               <option value="Groceries & Pets">Groceries & Pets</option>
               <option value="Men's Fashion">Men's Fashion</option>
               <option value="Watches & Accessories">Watches & Accessories</option>
               <option value="Women's Fashion">Women's Fashion</option>
               <option value="Health & Beauty">Health & Beauty</option>
               <option value="Babies & Toys">Babies & Toys</option>
-              <option value="Clothing & Accessories">Clothing & Accessories</option>
+              <option value="Clothing Accessories">Clothing Accessories</option>
               <option value="Sports & Outdoor Play">Sports & Outdoor Play</option>
               <option value="Gifts & Decorations">Gifts & Decorations</option>
               <option value="Nursery">Nursery</option>

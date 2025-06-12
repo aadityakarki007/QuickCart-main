@@ -33,7 +33,7 @@ const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
     "Women's Fashion",
     "Health & Beauty",
     "Babies & Toys",
-    "Clothing & Accessories",
+    "Clothing Accessories",
     "Sports & Outdoor Play",
     "Gifts & Decorations",
     "Nursery",
