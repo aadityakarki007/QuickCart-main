@@ -10,10 +10,10 @@ const Cart = () => {
 
   const { products, router, cartItems, addToCart, updateCartQuantity, getCartCount } = useAppContext();
 
-  const items = cartItems.map(item => ({
-    product: item.productId,
+  const items = Object.entries(cartItems).map(([productId, item]) => ({
+    product: productId,
     quantity: item.quantity,
-    color: item.color // <-- must be present!
+    color: item.color
   }));
 
   return (
@@ -124,9 +124,3 @@ const Cart = () => {
 };
 
 export default Cart;
-
-await fetch('/api/order/create', {
-  method: 'POST',
-  body: JSON.stringify({ address, items }),
-  headers: { 'Content-Type': 'application/json' }
-});

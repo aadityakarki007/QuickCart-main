@@ -17,9 +17,9 @@ export async function DELETE(request, { params }) {
     }
 }
 
-export async function PUT(request, { params }) {
+export async function PUT(request, context) {
     await connectDB();
-    const { id } = params;
+    const { id } = await context.params; // ✅ await params
     try {
         const formData = await request.formData();
         const updateData = {};
