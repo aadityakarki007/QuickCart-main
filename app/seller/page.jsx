@@ -283,18 +283,39 @@ const AddProduct = () => {
           </div>
           <div className="flex flex-col gap-1 w-48">
             <label className="text-base font-medium" htmlFor="color">
-              Color
+              Available Colors
             </label>
             <input
               id="color"
               type="text"
-              placeholder="Enter product color"
+              placeholder="e.g. Red, Blue, Green"
               className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
               onChange={(e) => setColor(e.target.value)}
               value={color}
               required
               autoComplete="off"
             />
+            <span className="text-xs text-gray-500">
+              Separate multiple colors with commas (e.g. Red, Blue, Green)
+            </span>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {color
+                .split(',')
+                .map((clr) => clr.trim())
+                .filter(Boolean)
+                .map((clr, idx) => (
+                  <span
+                    key={idx}
+                    className="px-2 py-1 rounded-full text-xs font-medium border bg-gray-100"
+                    style={{
+                      borderColor: clr,
+                      color: clr.toLowerCase(),
+                    }}
+                  >
+                    {clr}
+                  </span>
+                ))}
+            </div>
           </div>
         </div>
 

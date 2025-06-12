@@ -129,7 +129,8 @@ export async function POST(request) {
             userId: userId,
             items: items.map(item => ({
                 product: item.product,
-                quantity: item.quantity
+                quantity: item.quantity,
+                color: item.color // <-- Include color here
             })),
             amount, // Add the amount field
             totalAmount,

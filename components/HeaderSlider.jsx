@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { assets } from "@/assets/assets";
 import Image from "next/image";
+import Link from "next/link";
 
 const HeaderSlider = () => {
   const sliderData = [
@@ -11,6 +12,7 @@ const HeaderSlider = () => {
       buttonText1: "Buy now",
       buttonText2: "Find more",
       imgSrc: assets.header_headphone_image,
+      link: "https://www.hamroeshop.com/product/6847e56f94e24a6b4981a855",
     },
     {
       id: 2,
@@ -19,6 +21,7 @@ const HeaderSlider = () => {
       buttonText1: "Shop Now",
       buttonText2: "Explore Deals",
       imgSrc: assets.header_playstation_image,
+      link: "/products",
     },
     {
       id: 3,
@@ -27,6 +30,7 @@ const HeaderSlider = () => {
       buttonText1: "Order Now",
       buttonText2: "Learn More",
       imgSrc: assets.header_macbook_image,
+      link: "/products",
     },
   ];
 
@@ -62,9 +66,20 @@ const HeaderSlider = () => {
                 {slide.title}
               </h1>
               <div className="flex items-center mt-4 md:mt-6 ">
-                <button className="md:px-10 px-7 md:py-2.5 py-2 bg-orange-600 rounded-full text-white font-medium">
-                  {slide.buttonText1}
-                </button>
+                {slide.link.startsWith("http") ? (
+                  <a
+                    href={slide.link}
+                    className="md:px-10 px-7 md:py-2.5 py-2 bg-orange-600 rounded-full text-white font-medium"
+                  >
+                    {slide.buttonText1}
+                  </a>
+                ) : (
+                  <Link href={slide.link}>
+                    <button className="md:px-10 px-7 md:py-2.5 py-2 bg-orange-600 rounded-full text-white font-medium">
+                      {slide.buttonText1}
+                    </button>
+                  </Link>
+                )}
                 <button className="group flex items-center gap-2 px-6 py-2.5 font-medium">
                   {slide.buttonText2}
                   <Image className="group-hover:translate-x-1 transition" src={assets.arrow_icon} alt="arrow_icon" />

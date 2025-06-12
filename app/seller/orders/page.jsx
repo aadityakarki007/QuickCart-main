@@ -108,7 +108,16 @@ const Orders = () => {
                                 />
                                 <p className="flex flex-col gap-3">
                                     <span className="font-medium">
-                                        {order.items.map((item) => item.product.name + ` x ${item.quantity}`).join(", ")}
+                                        {order.items.map((item, idx) => (
+                                            <div key={idx}>
+                                                {item.product.name} x {item.quantity}
+                                                {item.color && (
+                                                    <span className="ml-2 text-xs px-2 py-1 rounded-full border bg-gray-100" style={{ color: item.color.toLowerCase(), borderColor: item.color }}>
+                                                        {item.color}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )).reduce((prev, curr) => [prev, ', ', curr])}
                                     </span>
                                     <span>Items : {order.items.length}</span>
                                 </p>

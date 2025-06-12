@@ -174,12 +174,23 @@ const OrderSummary = () => {
       let cartItemsArray = [];
 
       if (cartItems && typeof cartItems === "object") {
-        cartItemsArray = Object.entries(cartItems)
-          .map(([id, quantity]) => ({
-            product: id,
-            quantity: Number(quantity),
-          }))
-          .filter((item) => item.quantity > 0);
+        // Replace your items array logic with this:
+        cartItemsArray = Object.entries(cartItems).map(([productId, item]) => {
+          // If item is a number, fallback to old structure
+          if (typeof item === "number") {
+            return {
+              product: productId,
+              quantity: item,
+              color: "", // No color info
+            };
+          }
+          // New structure: item is an object with quantity and color
+          return {
+            product: productId,
+            quantity: item.quantity,
+            color: item.color || "",
+          };
+        });
       }
 
       if (cartItemsArray.length === 0) {

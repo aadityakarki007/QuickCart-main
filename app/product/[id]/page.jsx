@@ -23,6 +23,7 @@ const Product = () => {
     const [reviewComment, setReviewComment] = useState('');
     const [submittingReview, setSubmittingReview] = useState(false);
     const [qrUrl, setQrUrl] = useState('');
+    const [selectedColor, setSelectedColor] = useState('');
 
     const addToCart = async (itemId) => {
         if (!itemId) {
@@ -61,6 +62,12 @@ const Product = () => {
             // Set main image to first available image if not already set
             if (!mainImage && product.images && product.images.length > 0) {
                 setMainImage(product.images[0]);
+            }
+
+            // Set selected color to first available color option
+            if (product.color) {
+                const colorOptions = product.color.split(",").map(clr => clr.trim()).filter(Boolean);
+                setSelectedColor(colorOptions[0] || '');
             }
         }
     };
@@ -242,7 +249,8 @@ const Product = () => {
 
                 {/* QR code */}
                 {qrUrl && (
-                    <div className="flex items-start gap-6 mt-4">
+                    <div className="flex flex-col md:flex-row items-start gap-6 mt-4 md:justify-between">
+                        {/* QR Code */}
                         <div className="flex-shrink-0">
                             <div className="bg-white p-3 rounded-lg shadow-sm">
                                 <Image 
@@ -254,6 +262,31 @@ const Product = () => {
                                 />
                             </div>
                         </div>
+                        {/* Color Picker */}
+                        {colorOptions.length > 1 && (
+                            <div className="flex flex-col justify-center md:ml-auto min-w-[300px]">
+                                <div className="font-medium mb-2">Choose Color:</div>
+                                <div className="flex gap-2">
+                                    {colorOptions.map((clr) => (
+                                        <button
+                                            key={clr}
+                                            type="button"
+                                            className={`w-8 h-8 rounded-full border-2 ${
+                                                selectedColor === clr
+                                                  ? "border-orange-500 ring-2 ring-orange-300"
+                                                  : "border-gray-300"
+                                            }`}
+                                            style={{ backgroundColor: clr.toLowerCase() }}
+                                            title={clr}
+                                            onClick={() => setSelectedColor(clr)}
+                                        ></button>
+                                    ))}
+                                </div>
+                                <div className="mt-2 text-sm">
+                                    Selected: <span className="font-semibold">{selectedColor}</span>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -285,6 +318,11 @@ const Product = () => {
     const discountPercentage = productData.price && productData.offerPrice 
         ? Math.round(((productData.price - productData.offerPrice) / productData.price) * 100)
         : 0;
+
+    // Assume product.color is a string like "Red, Blue, Green"
+    const colorOptions = productData.color
+        ? productData.color.split(",").map((clr) => clr.trim()).filter(Boolean)
+        : [];
 
     return (
         <>
@@ -330,6 +368,7 @@ const Product = () => {
                     <ProductDetails product={productData} onAddToCart={addToCart} onBuyNow={() => { addToCart(productData._id); if (router?.push) router.push('/cart'); }} />
                 </div>
 
+                
                 {/* Reviews Section */}
                 <div className="w-full">
                     <div className="flex flex-col items-center mb-4 mt-16">

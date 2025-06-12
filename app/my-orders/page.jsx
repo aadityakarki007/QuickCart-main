@@ -63,12 +63,28 @@ const MyOrders = () => {
                                         width={64}
                                         height={64}
                                     />
-                                    <p className="flex flex-col gap-3">
-                                        <span className="font-medium text-base">
-                                            {order.items.map((item) => item.product.name + ` x ${item.quantity}`).join(", ")}
-                                        </span>
-                                        <span>Items : {order.items.length}</span>
-                                    </p>
+                                    <div className="flex flex-col gap-3">
+                                      <div className="font-medium text-base">
+                                        {order.items.map((item, idx) => (
+                                          <span key={idx} className="inline-flex items-center mr-2">
+                                            {item.product.name} x {item.quantity}
+                                            {item.color && (
+                                              <span
+                                                className="ml-2 text-xs px-2 py-1 rounded-full border bg-gray-100"
+                                                style={{
+                                                  color: item.color.toLowerCase(),
+                                                  borderColor: item.color,
+                                                }}
+                                              >
+                                                {item.color}
+                                              </span>
+                                            )}
+                                            {idx < order.items.length - 1 && <span>, </span>}
+                                          </span>
+                                        ))}
+                                      </div>
+                                      <span>Items : {order.items.length}</span>
+                                    </div>
                                 </div>
                                 <div>
                                     <p>
