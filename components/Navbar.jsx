@@ -23,34 +23,33 @@ const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
   }, [router]);
 
   const categories = [
-    "Motors, Tools & DIY",
-    "Home & Lifestyle",
-    "Sports & Outdoor",
-    "Electronic & Accessories",
-    "Groceries & Pets",
-    "Men's Fashion",
-    "Watches & Accessories",
-    "Women's Fashion",
-    "Health & Beauty",
-    "Babies & Toys",
-    "Clothing Accessories",
-    "Sports & Outdoor Play",
-    "Gifts & Decorations",
-    "Nursery",
-    "Diapering & Potty",
-    "Pacifiers & Accessories",
-    "Feeding",
-    "Remote Control & Vehicles",
-    "Baby Gear",
-    "Baby & Toddler Toys",
-    "Toys & Games",
-    "Baby Personal Care",
-    "Soaps, Cleansers & Bodywash",
-    "Baby Bath",
-    "Bathing Tubs & Seats",
-    "Cosmetics & Skin Care",
-    "Exercise & Fitness"
-  ];
+  "Motors, Tools & DIY",
+  "Home & Lifestyle",
+  "Sports & Outdoor",
+  "Electronic & Accessories",
+  "Mobiles & Laptops",
+  "Groceries & Pets",
+  "Men's Fashion",
+  "Watches & Accessories",
+  "Women's Fashion",
+  "Health & Beauty",
+  "Babies & Toys",
+  "Clothing Accessories",
+  "Sports & Outdoor Play",
+  "Gifts & Decorations",
+  "Nursery",
+  "Gaming Accessories",
+  "Diapering & Potty",
+  "Pacifiers & Accessories",
+  "Feeding",
+  "Remote Control & Vehicles",
+  "Toys & Games",
+  "Soaps, Cleansers & Bodywash",
+  "Bathing Tubs & Seats",
+  "Cosmetics & Skin Care",
+  "Exercise & Fitness"
+];
+
 
   const handleSearch = (e) => {
     e.preventDefault();

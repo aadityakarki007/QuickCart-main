@@ -373,18 +373,31 @@ const ManageProducts = () => {
                   onChange={(e) => setCategory(e.target.value)}
                   required
                 >
-                  <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
-                  <option value="Home & Lifestyle">Home & Lifestyle</option>
-                  <option value="Sports & Outdoor">Sports & Outdoor</option>
-                  <option value="Electronic Accessories">Electronic Accessories</option>
-                  <option value="Groceries & Pets">Groceries & Pets</option>
-                  <option value="Electronic Devices">Electronic Devices</option>
-                  <option value="Men's Fashion">Men's Fashion</option>
-                  <option value="Watches & Accessories">Watches & Accessories</option>
-                  <option value="Women's Fashion">Women's Fashion</option>
-                  <option value="Health & Beauty">Health & Beauty</option>
-                  <option value="Babies & Toys">Babies & Toys</option>
-                  <option value="Gifts & Decorations">Gifts & Decorations</option>
+                   <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
+              <option value="Home & Lifestyle">Home & Lifestyle</option>
+              <option value="Sports & Outdoor">Sports & Outdoor</option>
+              <option value="Electronic & Accessories">Electronic & Accessories</option>
+              <option value="Mobiles & Laptops">Mobiles & Laptops</option>
+              <option value="Groceries & Pets">Groceries & Pets</option>
+              <option value="Men's Fashion">Men's Fashion</option>
+              <option value="Watches & Accessories">Watches & Accessories</option>
+              <option value="Women's Fashion">Women's Fashion</option>
+              <option value="Health & Beauty">Health & Beauty</option>
+              <option value="Babies & Toys">Babies & Toys</option>
+              <option value="Clothing Accessories">Clothing Accessories</option>
+              <option value="Sports & Outdoor Play">Sports & Outdoor Play</option>
+              <option value="Gifts & Decorations">Gifts & Decorations</option>
+              <option value="Nursery">Nursery</option>
+              <option value="Gaming Accessories">Gaming Accessories</option>
+              <option value="Diapering & Potty">Diapering & Potty</option>
+              <option value="Pacifiers & Accessories">Pacifiers & Accessories</option>
+              <option value="Feeding">Feeding</option>
+              <option value="Remote Control & Vehicles">Remote Control & Vehicles</option>      
+              <option value="Toys & Games">Toys & Games</option>             
+              <option value="Soaps, Cleansers & Bodywash">Soaps, Cleansers & Bodywash</option>             
+              <option value="Bathing Tubs & Seats">Bathing Tubs & Seats</option>
+              <option value="Cosmetics & Skin Care">Cosmetics & Skin Care</option>
+              <option value="Exercise & Fitness">Exercise & Fitness</option>
                 </select>
               </div>
 
