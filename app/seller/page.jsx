@@ -46,7 +46,7 @@ const AddProduct = () => {
       formData.append('sellerName', sellerName);
       formData.append('brand', brand || '');
       formData.append('color', color || '');
-      formData.append('isPopular', false);
+      formData.append('isPopular', isPopular);
       formData.append('deliveryDate', deliveryDate || '');
       formData.append('stock', stock || '0');
       formData.append('warrantyDuration', warrantyDuration || '');
@@ -153,6 +153,17 @@ const AddProduct = () => {
             value={description}
             required
           ></textarea>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            id="isPopular"
+            type="checkbox"
+            checked={isPopular}
+            onChange={e => setIsPopular(e.target.checked)}
+          />
+          <label htmlFor="isPopular" className="text-base font-medium">
+            Mark as Popular Product
+          </label>
         </div>
         <div className="flex items-center gap-5 flex-wrap">
           <div className="flex flex-col gap-1 w-32">
