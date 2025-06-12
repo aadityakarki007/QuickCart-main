@@ -55,7 +55,7 @@ const MyOrders = () => {
                                     <Image
                                         className="max-w-16 max-h-16 object-cover"
                                         src={
-                                            order.items[0]?.product?.images?.[0]
+                                            order.items[0]?.product && order.items[0].product.images && order.items[0].product.images.length > 0
                                                 ? order.items[0].product.images[0]
                                                 : assets.box_icon
                                         }
@@ -67,17 +67,23 @@ const MyOrders = () => {
                                       <div className="font-medium text-base">
                                         {order.items.map((item, idx) => (
                                           <span key={idx} className="inline-flex items-center mr-2">
-                                            {item.product.name} x {item.quantity}
-                                            {item.color && (
-                                              <span
-                                                className="ml-2 text-xs px-2 py-1 rounded-full border bg-gray-100"
-                                                style={{
-                                                  color: item.color.toLowerCase(),
-                                                  borderColor: item.color,
-                                                }}
-                                              >
-                                                {item.color}
-                                              </span>
+                                            {item.product ? (
+                                              <>
+                                                {item.product.name} x {item.quantity}
+                                                {item.color && (
+                                                  <span
+                                                    className="ml-2 text-xs px-2 py-1 rounded-full border bg-gray-100"
+                                                    style={{
+                                                      color: item.color.toLowerCase(),
+                                                      borderColor: item.color,
+                                                    }}
+                                                  >
+                                                    {item.color}
+                                                  </span>
+                                                )}
+                                              </>
+                                            ) : (
+                                              <>Unknown Product x {item.quantity}</>
                                             )}
                                             {idx < order.items.length - 1 && <span>, </span>}
                                           </span>
