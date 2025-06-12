@@ -8,7 +8,7 @@ const HeaderSlider = () => {
     {
       id: 1,
       title: "Experience Pure Sound - Your Perfect Headphones Awaits!",
-      offer: "Limited Time Offer 30% Off",
+      offer: "Limited Time Offer 6% Off",
       buttonText1: "Buy now",
       buttonText2: "Find more",
       imgSrc: assets.header_headphone_image,
@@ -21,7 +21,7 @@ const HeaderSlider = () => {
       buttonText1: "Shop Now",
       buttonText2: "Explore Deals",
       imgSrc: assets.header_playstation_image,
-      link: "/products",
+      link: "https://www.hamroeshop.com/product/684acf35a9eca259d9bc91c3",
     },
     {
       id: 3,
