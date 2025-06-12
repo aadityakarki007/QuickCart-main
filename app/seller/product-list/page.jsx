@@ -92,13 +92,13 @@ const ProductList = () => {
                 <th className="px-4 py-3 font-medium truncate">
                   Price
                 </th>
-                <th className="px-4 py-3 font-medium truncate max-sm:hidden w-64">Action</th>
+                <th className="px-4 py-3 font-medium truncate w-24 md:w-auto">Action</th>
               </tr>
             </thead>
             <tbody className="text-sm text-gray-500">
               {products.map((product, index) => (
                 <tr key={index} className="border-t border-gray-500/20">
-                  <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
+                  <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3">
                     <div className="bg-gray-500/10 rounded p-2">
                       <Image
                         src={product.images[0]}
@@ -108,26 +108,32 @@ const ProductList = () => {
                         height={720}
                       />
                     </div>
-                    <span className="truncate w-full">
+                    <span className="w-full break-words">
                       {product.name}
                     </span>
                   </td>
                   <td className="px-4 py-3 max-sm:hidden">{product.category}</td>
                   <td className="px-4 py-3">${product.offerPrice}</td>
-                  <td className="px-4 py-3 max-sm:hidden flex items-center gap-2 w-64">
-                    <button onClick={() => router.push(`/product/${product._id}`)} className="flex items-center gap-1 px-1.5 md:px-3.5 py-2 bg-orange-600 text-white rounded-md">
-                      <span className="hidden md:block">Visit</span>
-                      <Image className="h-3.5" src={assets.redirect_icon} alt="redirect_icon" />
+                  <td className="px-4 py-3 flex flex-col md:flex-row items-stretch md:items-center gap-1 w-24 md:w-auto">
+                    <button
+                      onClick={() => router.push(`/product/${product._id}`)}
+                      className="flex items-center gap-0.5 px-1 py-0.5 md:px-3 md:py-1 bg-orange-600 text-white rounded-md md:w-auto justify-center text-[10px] md:text-sm min-w-0"
+                      style={{ minWidth: "auto", width: "auto" }}
+                    >
+                      Visit
+                      <Image className="h-2.5 w-2.5 md:h-4 md:w-4" src={assets.redirect_icon} alt="redirect_icon" />
                     </button>
                     <button
                       onClick={() => handleDelete(product._id)}
-                      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                      className="px-1 py-0.5 md:px-3 md:py-1 bg-red-600 text-white rounded hover:bg-red-700 md:w-auto text-[10px] md:text-sm min-w-0"
+                      style={{ minWidth: "auto", width: "auto" }}
                     >
                       Delete
                     </button>
                     <button
                       onClick={() => handleEdit(product)}
-                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      className="px-1 py-0.5 md:px-3 md:py-1 bg-blue-600 text-white rounded hover:bg-blue-700 md:w-auto text-[10px] md:text-sm min-w-0"
+                      style={{ minWidth: "auto", width: "auto" }}
                     >
                       Edit
                     </button>
