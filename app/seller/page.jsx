@@ -46,7 +46,7 @@ const AddProduct = () => {
       formData.append('sellerName', sellerName);
       formData.append('brand', brand || '');
       formData.append('color', color || '');
-      formData.append('isPopular', isPopular);
+      formData.append('isPopular', isPopular ? "true" : "false");
       formData.append('deliveryDate', deliveryDate || '');
       formData.append('stock', stock || '0');
       formData.append('warrantyDuration', warrantyDuration || '');
@@ -196,7 +196,7 @@ const AddProduct = () => {
               <option value="Pacifiers & Accessories">Pacifiers & Accessories</option>
               <option value="Feeding">Feeding</option>
               <option value="Remote Control & Vehicles">Remote Control & Vehicles</option>      
-              <option value="Toys & Games">Toys & Games</option>             
+              <option value="Toys & Games">Toys & Games>             
               <option value="Soaps, Cleansers & Bodywash">Soaps, Cleansers & Bodywash</option>             
               <option value="Bathing Tubs & Seats">Bathing Tubs & Seats</option>
               <option value="Cosmetics & Skin Care">Cosmetics & Skin Care</option>
