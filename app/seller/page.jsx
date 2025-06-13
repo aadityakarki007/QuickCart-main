@@ -196,7 +196,7 @@ const AddProduct = () => {
               <option value="Pacifiers & Accessories">Pacifiers & Accessories</option>
               <option value="Feeding">Feeding</option>
               <option value="Remote Control & Vehicles">Remote Control & Vehicles</option>      
-              <option value="Toys & Games">Toys & Games>             
+              <option value="Toys & Games">Toys & Games</option>             
               <option value="Soaps, Cleansers & Bodywash">Soaps, Cleansers & Bodywash</option>             
               <option value="Bathing Tubs & Seats">Bathing Tubs & Seats</option>
               <option value="Cosmetics & Skin Care">Cosmetics & Skin Care</option>
