@@ -102,6 +102,7 @@ export default function RootLayout({ children }) {
         <meta name="coverage" content="Nepal" />
         <meta name="HandheldFriendly" content="True" />
         <meta name="MobileOptimized" content="320" />
+        <meta name="google-site-verification" content="RdmsfHygOvTqPu2BDP5uafy9IsTCcB_gZMiL1VQk3Kk" />
         {/* E-commerce structured data (JSON-LD) */}
         <script
           type="application/ld+json"
@@ -118,8 +119,8 @@ export default function RootLayout({ children }) {
                 addressCountry: "NP"
               },
               sameAs: [
-                "https://www.facebook.com/hamroeshop",
-                "https://www.instagram.com/hamroeshop"
+                "https://www.facebook.com/profile.php?id=61576989100945",
+                "https://www.instagram.com/Hamro_e_shop"
               ]
             })
           }}
@@ -168,6 +169,70 @@ export default function RootLayout({ children }) {
               sameAs: [
                 "https://www.facebook.com/hamroeshop",
                 "https://www.instagram.com/hamroeshop"
+              ]
+            })
+          }}
+        />
+        {/* Favicon and manifest */}
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+
+        {/* Facebook Page and Google Site Verification */}
+        <meta property="fb:page_id" content="61576989100945" />
+        <meta property="og:see_also" content="https://www.facebook.com/profile.php?id=61576989100945" />
+        <meta property="og:see_also" content="https://www.instagram.com/Hamro_e_shop" />
+        <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE" />
+
+        {/* Alternate language tags (if you support Nepali) */}
+        <link rel="alternate" href="https://hamroeshop.com" hrefLang="en-np" />
+        <link rel="alternate" href="https://hamroeshop.com/np" hrefLang="ne-np" />
+
+        {/* Twitter Card for e-commerce */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@hamroeshop" />
+        <meta name="twitter:title" content="Hamro eShop - Best Online Shopping" />
+        <meta name="twitter:description" content="Shop electronics, fashion, gadgets, and more at Hamro eShop. Fast delivery and exclusive deals for Nepal." />
+        <meta name="twitter:image" content="https://hamroeshop.com/og.webp" />
+
+        {/* Breadcrumb structured data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://hamroeshop.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "All Products",
+                  "item": "https://hamroeshop.com/all-products"
+                }
+              ]
+            })
+          }}
+        />
+
+        {/* Site navigation structured data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SiteNavigationElement",
+              "name": ["Home", "All Products", "Deals", "Contact"],
+              "url": [
+                "https://hamroeshop.com",
+                "https://hamroeshop.com/all-products",
+                "https://hamroeshop.com/deals",
+                "https://hamroeshop.com/contact"
               ]
             })
           }}
