@@ -30,6 +30,7 @@ const OrderSummary = () => {
   const [isPromoApplied, setIsPromoApplied] = useState(false);
   const [discount, setDiscount] = useState(0);
   const [discountPercentage, setDiscountPercentage] = useState(0);
+  const [isCheckingPromo, setIsCheckingPromo] = useState(false);
 
   // Valid promo codes with their fixed discount percentages
   const validPromoCodes = {
@@ -43,7 +44,7 @@ const OrderSummary = () => {
     "eShopA907": 22, // 22% discount
     "eShopA231": 5,  // 5% discount
     "eShopA379": 15, // 15% discount
-    "eShopA000":50, //50% discount
+    "eShopA000": 50, // 50% discount
   };
 
   const paymentMethods = [
@@ -118,35 +119,72 @@ const OrderSummary = () => {
     setTotalDeliveryCharge(deliveryCharge);
   };
 
-  // Apply promo code function
-  const applyPromoCode = () => {
+  // NEW: Check if promo code has been used
+  const checkPromoCodeUsage = async (code) => {
+    try {
+      const response = await axios.post('/api/check-promo-usage', { code });
+      return response.data;
+    } catch (error) {
+      console.error('Error checking promo code usage:', error);
+      return { isUsed: false };
+    }
+  };
+
+  // UPDATED: Apply promo code function with usage check
+  const applyPromoCode = async () => {
     const itemsTotal = getCartAmount(); // Use offer price for eligibility check
     
     // Check if promo code exists in valid codes
-    if (validPromoCodes.hasOwnProperty(promoCode)) {
-      // Check if items total (without shipping/delivery) is more than 2000
-      if (itemsTotal > 2000) {
-        const promoDiscountPercent = validPromoCodes[promoCode];
-        // Use original prices for discount calculation
-        const originalPricesTotal = getCartAmountWithOriginalPrices();
-        const totalBeforeDiscount = originalPricesTotal + totalShippingFee + totalDeliveryCharge;
-        const discountAmount = Math.round(totalBeforeDiscount * (promoDiscountPercent / 100));
-        
-        setDiscount(discountAmount);
-        setDiscountPercentage(promoDiscountPercent);
-        setIsPromoApplied(true);
-        toast.success(`Promo code applied! ${promoDiscountPercent}% discount on total amount.`);
-      } else {
-        toast.error("Cart total must be more than Rs. 2000 to apply this promo code.");
-        setDiscount(0);
-        setDiscountPercentage(0);
-        setIsPromoApplied(false);
-      }
-    } else {
+    if (!validPromoCodes.hasOwnProperty(promoCode)) {
       toast.error("Invalid promo code.");
       setDiscount(0);
       setDiscountPercentage(0);
       setIsPromoApplied(false);
+      return;
+    }
+
+    // Check if items total (without shipping/delivery) is more than 2000
+    if (itemsTotal <= 2000) {
+      toast.error("Cart total must be more than Rs. 2000 to apply this promo code.");
+      setDiscount(0);
+      setDiscountPercentage(0);
+      setIsPromoApplied(false);
+      return;
+    }
+
+    // NEW: Check if promo code has been used
+    setIsCheckingPromo(true);
+    try {
+      const usageCheck = await checkPromoCodeUsage(promoCode);
+      
+      if (usageCheck.isUsed) {
+        toast.error("This promo code has already been used and is no longer valid.");
+        setDiscount(0);
+        setDiscountPercentage(0);
+        setIsPromoApplied(false);
+        setIsCheckingPromo(false);
+        return;
+      }
+
+      // If not used, apply the discount
+      const promoDiscountPercent = validPromoCodes[promoCode];
+      // Use original prices for discount calculation
+      const originalPricesTotal = getCartAmountWithOriginalPrices();
+      const totalBeforeDiscount = originalPricesTotal + totalShippingFee + totalDeliveryCharge;
+      const discountAmount = Math.round(totalBeforeDiscount * (promoDiscountPercent / 100));
+      
+      setDiscount(discountAmount);
+      setDiscountPercentage(promoDiscountPercent);
+      setIsPromoApplied(true);
+      toast.success(`Promo code applied! ${promoDiscountPercent}% discount on total amount.`);
+      
+    } catch (error) {
+      toast.error("Failed to verify promo code. Please try again.");
+      setDiscount(0);
+      setDiscountPercentage(0);
+      setIsPromoApplied(false);
+    } finally {
+      setIsCheckingPromo(false);
     }
   };
 
@@ -315,16 +353,16 @@ const OrderSummary = () => {
               placeholder="Enter promo code"
               value={promoCode}
               onChange={(e) => setPromoCode(e.target.value)}
-              disabled={isPromoApplied}
+              disabled={isPromoApplied || isCheckingPromo}
               className="w-full p-2.5 text-gray-600 border disabled:bg-gray-100"
             />
             {!isPromoApplied ? (
               <button 
                 onClick={applyPromoCode}
-                disabled={!promoCode.trim()}
+                disabled={!promoCode.trim() || isCheckingPromo}
                 className="bg-orange-600 text-white px-9 py-2 hover:bg-orange-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                Apply
+                {isCheckingPromo ? "Checking..." : "Apply"}
               </button>
             ) : (
               <button 

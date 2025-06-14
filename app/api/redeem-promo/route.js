@@ -1,5 +1,16 @@
+import UsedPromoCode from "@/models/UsedPromoCode";
+
 const luckyNumbers = {
-  
+  "eShopA823": 87, 
+  "eShopA492": 39,
+  "eShopA192": 74,
+  "eShopA765": 55,
+  "eShopA318": 61,
+  "eShopA654": 93,
+  "eShopA105": 28,
+  "eShopA907": 42,
+  "eShopA231": 17,
+  "eShopA379": 66
 };
 
 // In-memory stores for demo (replace with DB in production)
@@ -22,21 +33,55 @@ export async function POST(req) {
       return Response.json({ success: false, error: 'No attempts left.' }, { status: 400 });
     }
 
-    // Check if guessed number is a lucky number and not claimed
-    if (
-      luckyNumbers.hasOwnProperty(guessedNumber) &&
-      !claimedNumbers.has(guessedNumber)
-    ) {
-      // Mark as claimed
+    // Find the promo code that matches the guessed number
+    const promoEntry = Object.entries(luckyNumbers).find(([code, number]) => number === guessedNumber);
+    
+    if (promoEntry && !claimedNumbers.has(guessedNumber)) {
+      const [promoCode, luckyNumber] = promoEntry;
+
+      // 1. Check if promo code is already used in database
+      const alreadyUsed = await UsedPromoCode.findOne({ code: promoCode });
+      if (alreadyUsed) {
+        return Response.json({ success: false, error: "Promo code already used." }, { status: 400 });
+      }
+
+      // 2. Mark number as claimed in memory
       claimedNumbers.add(guessedNumber);
+      
+      // 3. Update user state
       userAttempts.set(userId, { attempts: userState.attempts + 1, hasWon: true });
-      return Response.json({ success: true, promoCode: luckyNumbers[guessedNumber] });
+
+      // 4. Mark promo code as used in database
+      await UsedPromoCode.create({ 
+        code: promoCode, 
+        usedBy: userId,
+        usedAt: new Date()
+      });
+
+      // 5. Return success with promo code
+      return Response.json({ 
+        success: true, 
+        promoCode,
+        message: `Congratulations! You won with number ${guessedNumber}!`
+      });
+      
     } else {
-      // Not a winner, increment attempts
+      // Not a winner or already claimed
       userAttempts.set(userId, { attempts: userState.attempts + 1, hasWon: false });
-      return Response.json({ success: false, error: 'Not a winning number.' });
+      
+      const remainingAttempts = 3 - (userState.attempts + 1);
+      const errorMessage = claimedNumbers.has(guessedNumber) 
+        ? 'This winning number has already been claimed by another user.'
+        : `Not a winning number. You have ${remainingAttempts} attempts left.`;
+        
+      return Response.json({ 
+        success: false, 
+        error: errorMessage,
+        attemptsRemaining: remainingAttempts
+      });
     }
   } catch (error) {
-    return Response.json({ success: false, error: error.message || 'Unknown error' }, { status: 500 });
+    console.error('Promo redemption error:', error);
+    return Response.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -14,6 +14,7 @@ const orderSchema = new mongoose.Schema({
     originalPrice: { type: Number },
     offerPrice: { type: Number },
     totalAmount: { type: Number },
+    promoCode: { type: String }, // <-- Add this line
 })
 
 const Order = mongoose.models.Order || mongoose.model('Order', orderSchema)

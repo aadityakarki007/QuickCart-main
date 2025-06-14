@@ -101,6 +101,14 @@ const MyOrders = () => {
                                         <span>{`${order.address.city}, ${order.address.province}`}</span>
                                         <br />
                                         <span>{order.address.PhoneNumber}</span>
+                                        {order.promoCode && (
+                                          <>
+                                            <br />
+                                            <span className="text-xs text-green-600 font-semibold">
+                                              Promo Code: {order.promoCode}
+                                            </span>
+                                          </>
+                                        )}
                                     </p>
                                 </div>
                                 <p className="font-medium my-auto">{currency}{order.totalAmount}</p>

@@ -5,6 +5,7 @@ import Product from "@/models/product"
 import User from "@/models/user"
 import Order from "@/models/Order"
 import { inngest } from "@/config/inngest"
+import UsedPromoCode from "@/models/UsedPromoCode" // <-- Add this import
 
 export async function POST(request) {
     try {
@@ -19,7 +20,7 @@ export async function POST(request) {
             return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 })
         }
 
-        const { address, items, amount, totalAmount } = await request.json()
+        const { address, items, amount, totalAmount, promoCode, discount, discountPercentage } = await request.json()
 
         if (!items || items.length === 0) {
             return NextResponse.json({ success: false, message: "No items in cart" }, { status: 400 })
@@ -34,25 +35,11 @@ export async function POST(request) {
 
         // Find user with debugging
         console.log("Looking for user with clerkId:", userId);
-        
-        // Try multiple possible field names for Clerk ID
         let user = await User.findOne({ clerkId: userId }).exec();
-        
+        if (!user) user = await User.findOne({ clerk_id: userId }).exec();
+        if (!user) user = await User.findOne({ userId: userId }).exec();
+        if (!user) user = await User.findOne({ _id: userId }).exec();
         if (!user) {
-            // Try alternative field names
-            user = await User.findOne({ clerk_id: userId }).exec();
-        }
-        
-        if (!user) {
-            user = await User.findOne({ userId: userId }).exec();
-        }
-        
-        if (!user) {
-            user = await User.findOne({ _id: userId }).exec();
-        }
-        
-        if (!user) {
-            // Log all users to see the structure
             const allUsers = await User.find({}).limit(5).exec();
             console.log("Sample users in database:", allUsers.map(u => ({ 
                 id: u._id, 
@@ -60,18 +47,6 @@ export async function POST(request) {
                 clerk_id: u.clerk_id, 
                 userId: u.userId 
             })));
-            
-            // Optional: Create user if they don't exist
-            // Uncomment the lines below if you want to auto-create users
-            /*
-            user = new User({
-                clerkId: userId,
-                cartItems: {}
-            });
-            await user.save();
-            console.log("Created new user:", user);
-            */
-            
             return NextResponse.json({ 
                 success: false, 
                 message: "User not found. Please ensure you're logged in and your account is properly set up.",
@@ -82,13 +57,26 @@ export async function POST(request) {
                 }
             }, { status: 404 })
         }
-        
         console.log("Found user:", { id: user._id, clerkId: user.clerkId });
+
+        // Promo code logic: check and mark as used
+        if (promoCode) {
+            const alreadyUsed = await UsedPromoCode.findOne({ code: promoCode });
+            if (alreadyUsed) {
+                return NextResponse.json({ 
+                    success: false, 
+                    message: "Promo code has already been used" 
+                }, { status: 400 });
+            }
+            await UsedPromoCode.create({
+                code: promoCode,
+                usedBy: userId,
+                usedAt: new Date()
+            });
+        }
 
         // Fetch all products
         const allProducts = await Product.find({}).sort({ date: -1 }).exec()
-
-        // Store in map
         const availableProducts = new Map()
         allProducts.forEach(product => {
             availableProducts.set(product._id.toString(), product)
@@ -109,7 +97,6 @@ export async function POST(request) {
         if (missingProducts.length > 0) {
             user.cartItems = {}
             await user.save()
-
             return NextResponse.json({
                 success: false,
                 message: `Your cart contains products that are no longer available. We've cleared your cart - please add available products and try again.`,
@@ -123,8 +110,11 @@ export async function POST(request) {
                 product: item.product,
                 quantity: item.quantity
             })),
-            amount, // Use amount from frontend
-            totalAmount, // Use totalAmount from frontend
+            amount,
+            totalAmount,
+            promoCode: promoCode || null,
+            discount: discount || 0,
+            discountPercentage: discountPercentage || 0,
             address: {
                 userId: userId,
                 fullName: address.fullName,
@@ -136,13 +126,11 @@ export async function POST(request) {
             },
             status: 'Order Placed',
             date: Date.now(),
-            paymentMethod: "Cash on Delivery" // Hardcoded
+            paymentMethod: "Cash on Delivery"
         })
 
-        // ✅ Save the order to MongoDB
         await order.save()
 
-        // Fire event to Inngest
         await inngest.send({
             name: "order/created",
             data: {
