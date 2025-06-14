@@ -19,7 +19,7 @@ export async function POST(request) {
             return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 })
         }
 
-        const { address, items } = await request.json()
+        const { address, items, amount, totalAmount } = await request.json()
 
         if (!items || items.length === 0) {
             return NextResponse.json({ success: false, message: "No items in cart" }, { status: 400 })
@@ -117,22 +117,14 @@ export async function POST(request) {
             }, { status: 404 })
         }
 
-        const amount = items.reduce((acc, item) => {
-            const product = products.find(p => p._id.toString() === item.product)
-            return acc + (product.offerPrice || product.price) * item.quantity
-        }, 0)
-
-        const tax = Math.floor(amount * 0.02)
-        const totalAmount = amount + tax
-
         const order = new Order({
             userId: userId,
             items: items.map(item => ({
                 product: item.product,
                 quantity: item.quantity
             })),
-            amount, // Add the amount field
-            totalAmount,
+            amount, // Use amount from frontend
+            totalAmount, // Use totalAmount from frontend
             address: {
                 userId: userId,
                 fullName: address.fullName,
@@ -161,7 +153,6 @@ export async function POST(request) {
                     quantity: item.quantity
                 })),
                 amount: totalAmount,
-                tax,
                 address,
                 status: 'Order Placed',
                 paymentMethod: "Cash on Delivery"

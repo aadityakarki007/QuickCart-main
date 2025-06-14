@@ -199,17 +199,20 @@ const OrderSummary = () => {
 
       const token = await getToken();
 
+      const orderData = {
+        address: selectedAddress,
+        items: cartItemsArray,
+        paymentMethod: selectedPaymentMethod,
+        promoCode: isPromoApplied ? promoCode : null,
+        discount: discount,
+        discountPercentage: discountPercentage,
+        amount: getApplicableCartAmount(),
+        totalAmount: getFinalTotal(), // <-- This should match the displayed total
+      };
+
       const response = await axios.post(
         "/api/order/create",
-        {
-          address: selectedAddress,
-          items: cartItemsArray,
-          paymentMethod: selectedPaymentMethod,
-          promoCode: isPromoApplied ? promoCode : null,
-          discount: discount,
-          discountPercentage: discountPercentage,
-          finalTotal: getFinalTotal(),
-        },
+        orderData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
