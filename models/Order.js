@@ -10,7 +10,10 @@ const orderSchema = new mongoose.Schema({
     address: {type: mongoose.Schema.Types.Mixed, required: true}, // Store as JSON object
     status: {type: String, required: true, default: "Order Placed"},
     date: {type: Number, required: true},
-    paymentMethod: {type: String, required: true, default: "cod"}
+    paymentMethod: {type: String, required: true, default: "cod"},
+    originalPrice: { type: Number },
+    offerPrice: { type: Number },
+    totalAmount: { type: Number },
 })
 
 const Order = mongoose.models.Order || mongoose.model('Order', orderSchema)

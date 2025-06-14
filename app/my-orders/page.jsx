@@ -103,7 +103,7 @@ const MyOrders = () => {
                                         <span>{order.address.PhoneNumber}</span>
                                     </p>
                                 </div>
-                                <p className="font-medium my-auto">{currency}{order.amount}</p>
+                                <p className="font-medium my-auto">{currency}{order.totalAmount}</p>
                                 <div>
                                     <p className="flex flex-col">
                                         <span>Date : {new Date(order.date).toLocaleDateString()}</span>
