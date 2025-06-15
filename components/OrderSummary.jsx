@@ -44,7 +44,8 @@ const OrderSummary = () => {
     "eShopA907": 22, // 22% discount
     "eShopA231": 5,  // 5% discount
     "eShopA379": 15, // 15% discount
-    "eShopA000": 50, // 50% discount
+    "eShopA000": 40, // 50% discount
+    "eShopA111": 50,
   };
 
   const paymentMethods = [

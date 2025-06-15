@@ -11,7 +11,12 @@ const luckyNumbers = {
   "eShopA907": 42,
   "eShopA231": 17,
   "eShopA379": 66,
+<<<<<<< HEAD
   "eShopA000": 77
+=======
+  "eShopA000": 77,
+  "eShopA111": 7
+>>>>>>> 3704b743a5728d91d9560e0713061478a51a7503
 };
 
 // In-memory stores for demo (replace with DB in production)
