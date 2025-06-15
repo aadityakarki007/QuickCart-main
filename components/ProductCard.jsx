@@ -20,10 +20,10 @@ const ProductCard = ({ product }) => {
 
     return (
         <div 
-            className="flex flex-col w-full cursor-pointer border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+            className="flex flex-col w-full cursor-pointer border border-gray-200 rounded-lg md:p-4 p-2 hover:shadow-md transition-shadow"
             onClick={() => { router.push('/product/' + product._id); scrollTo(0, 0) }}
         >
-            <div className="relative w-full aspect-square bg-gray-50 rounded-lg mb-3 overflow-hidden">
+            <div className="relative w-full aspect-square bg-gray-50 rounded-lg md:mb-3 mb-2 overflow-hidden">
                 <Image
                     src={product.images && product.images.length > 0 ? product.images[0] : assets.product_image1}
                     alt={product.name}
@@ -33,14 +33,14 @@ const ProductCard = ({ product }) => {
                 />
             </div>
 
-            <div className="space-y-2">
-                <div className="h-12">
-                    <h3 className="text-sm font-medium line-clamp-2">{product.name}</h3>
+            <div className="md:space-y-2 space-y-1">
+                <div className="md:h-12 h-10">
+                    <h3 className="md:text-sm text-xs font-medium line-clamp-2">{product.name}</h3>
                 </div>
 
                 <div className="flex items-baseline gap-2">
-                    <span className="text-lg font-medium">Rs. {product.offerPrice}</span>
-                    <span className="text-sm text-gray-500 line-through">Rs. {product.price}</span>
+                    <span className="md:text-lg text-sm font-medium">Rs. {product.offerPrice}</span>
+                    <span className="md:text-sm text-xs text-gray-500 line-through">Rs. {product.price}</span>
                     <span className="text-xs text-green-600">
                         {Math.round(((product.price - product.offerPrice) / product.price) * 100)}% off
                     </span>
@@ -49,5 +49,4 @@ const ProductCard = ({ product }) => {
         </div>
     )
 }
-
 export default ProductCard;

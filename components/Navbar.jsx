@@ -73,31 +73,31 @@ const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
   // Dynamic classes based on promo page
   const navClasses = isPromoPage 
     ? `${className} border-none shadow-lg text-white`
-    : "flex flex-col md:flex-row items-center gap-4 md:gap-0 justify-between px-6 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-gray-700 sticky top-0 bg-white z-50";
+    : "flex flex-col md:flex-row items-center gap-4 md:gap-0 justify-between px-4 md:px-16 lg:px-32 py-2 md:py-3 border-b border-gray-300 text-gray-700 sticky top-0 bg-white z-50";
 
   return (
     <nav className={navClasses}>
-      <div className="flex flex-col md:block w-full md:w-auto gap-3">
+      <div className="flex flex-col md:block w-full md:w-auto gap-2 md:gap-3">
         <div className="flex items-center justify-between md:justify-start">
           <Image
-            className="cursor-pointer w-28 md:w-32 hover:opacity-80 transition-opacity"
+            className="cursor-pointer w-24 md:w-32 hover:opacity-80 transition-opacity"
             onClick={() => router.push("/")}
             src={assets.logo}
             alt="logo"
           />
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-3 md:hidden">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="flex items-center gap-2 md:gap-3 md:hidden">
               {!hideText && (
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className={`p-2 rounded-lg transition-colors ${
+                  className={`p-1.5 md:p-2 rounded-lg transition-colors ${
                     isPromoPage 
                       ? 'hover:bg-white/20 text-white' 
                       : 'hover:bg-gray-100'
                   }`}
                   aria-label="Toggle mobile menu"
                 >
-                  <Menu className="w-6 h-6" />
+                  <Menu className="w-5 h-5 md:w-6 md:h-6" />
                 </button>
               )}
               {user ? (
@@ -119,14 +119,14 @@ const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
                 !hideText && (
                   <button
                     onClick={(e) => { e.preventDefault(); openSignIn(); }}
-                    className={`flex items-center gap-2 transition-all duration-200 ${
+                    className={`flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${
                       isPromoPage 
                         ? 'hover:text-yellow-300 hover:scale-105 text-white' 
                         : 'hover:text-orange-500 hover:scale-105'
                     }`}
                   >
-                    <Image src={assets.user_icon} alt="user icon" className="w-5 h-5" />
-                    Account
+                    <Image src={assets.user_icon} alt="user icon" className="w-4 h-4 md:w-5 md:h-5" />
+                    <span className="hidden sm:inline">Account</span>
                   </button>
                 )
               )}
@@ -136,28 +136,28 @@ const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
 
         {/* Mobile Menu - Hidden on promo page when hideText is true */}
         {isMobileMenuOpen && !hideText && (
-          <div className={`md:hidden absolute top-full left-0 right-0 py-4 px-6 shadow-lg z-50 ${
+          <div className={`md:hidden absolute top-full left-0 right-0 py-3 md:py-4 px-4 md:px-6 shadow-lg z-50 ${
             isPromoPage 
               ? 'bg-purple-900/90 backdrop-blur-sm border-b border-purple-700' 
               : 'bg-white border-b border-gray-200'
           }`}>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3 md:gap-4">
               <button
                 onClick={() => handleMobileNavigation("/")}
-                className={`flex items-center gap-2 ${
+                className={`flex items-center gap-2 text-sm md:text-base ${
                   isPromoPage ? 'text-white hover:text-yellow-300' : 'text-gray-700 hover:text-orange-600'
                 }`}
               >
-                <HomeIcon className="w-5 h-5" />
+                <HomeIcon className="w-4 h-4 md:w-5 md:h-5" />
                 Home
               </button>
               <button
                 onClick={() => handleMobileNavigation("/all-products")}
-                className={`flex items-center gap-2 ${
+                className={`flex items-center gap-2 text-sm md:text-base ${
                   isPromoPage ? 'text-white hover:text-yellow-300' : 'text-gray-700 hover:text-orange-600'
                 }`}
               >
-                <BoxIcon className="w-5 h-5" />
+                <BoxIcon className="w-4 h-4 md:w-5 md:h-5" />
                 All Products
               </button>
               
@@ -166,19 +166,19 @@ const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
                 <div className="relative">
                   <button
                     onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
-                    className={`flex items-center justify-between w-full ${
+                    className={`flex items-center justify-between w-full text-sm md:text-base ${
                       isPromoPage ? 'text-white hover:text-yellow-300' : 'text-gray-700 hover:text-orange-600'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <BoxIcon className="w-5 h-5" />
+                      <BoxIcon className="w-4 h-4 md:w-5 md:h-5" />
                       Categories
                     </div>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-3 h-3 md:w-4 md:h-4 transition-transform ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
                   
                   {isCategoryDropdownOpen && (
-                    <div className={`mt-2 ml-7 max-h-60 overflow-y-auto rounded-lg border ${
+                    <div className={`mt-2 ml-6 md:ml-7 max-h-48 md:max-h-60 overflow-y-auto rounded-lg border ${
                       isPromoPage 
                         ? 'bg-purple-800/90 border-purple-600' 
                         : 'bg-gray-50 border-gray-200'
@@ -187,7 +187,7 @@ const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
                         <button
                           key={index}
                           onClick={() => handleCategorySelect(category)}
-                          className={`block w-full text-left px-4 py-2 text-sm transition-colors ${
+                          className={`block w-full text-left px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm transition-colors ${
                             isPromoPage 
                               ? 'text-white hover:bg-purple-700 hover:text-yellow-300' 
                               : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'
@@ -205,22 +205,22 @@ const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
                 <>
                   <button
                     onClick={() => handleMobileNavigation("/cart")}
-                    className={`flex items-center gap-2 ${
+                    className={`flex items-center gap-2 text-sm md:text-base ${
                       isPromoPage ? 'text-white hover:text-yellow-300' : 'text-gray-700 hover:text-orange-600'
                     }`}
                   >
-                    <div className="w-5 h-5">
+                    <div className="w-4 h-4 md:w-5 md:h-5">
                       <CartIcon />
                     </div>
                     Cart
                   </button>
                   <button
                     onClick={() => handleMobileNavigation("/my-orders")}
-                    className={`flex items-center gap-2 ${
+                    className={`flex items-center gap-2 text-sm md:text-base ${
                       isPromoPage ? 'text-white hover:text-yellow-300' : 'text-gray-700 hover:text-orange-600'
                     }`}
                   >
-                    <ShoppingBag className="w-5 h-5" />
+                    <ShoppingBag className="w-4 h-4 md:w-5 md:h-5" />
                     My Orders
                   </button>
                 </>
@@ -228,21 +228,21 @@ const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
               {isSeller && (
                 <button
                   onClick={() => handleMobileNavigation("/seller")}
-                  className={`flex items-center gap-2 ${
+                  className={`flex items-center gap-2 text-sm md:text-base ${
                     isPromoPage ? 'text-white hover:text-yellow-300' : 'text-gray-700 hover:text-orange-600'
                   }`}
                 >
-                  <BoxIcon className="w-5 h-5" />
+                  <BoxIcon className="w-4 h-4 md:w-5 md:h-5" />
                   Seller Dashboard
                 </button>
               )}
               <button
                 onClick={() => handleMobileNavigation("/contact")}
-                className={`flex items-center gap-2 ${
+                className={`flex items-center gap-2 text-sm md:text-base ${
                   isPromoPage ? 'text-white hover:text-yellow-300' : 'text-gray-700 hover:text-orange-600'
                 }`}
               >
-                <Phone className="w-5 h-5" />
+                <Phone className="w-4 h-4 md:w-5 md:h-5" />
                 Contact
               </button>
             </div>
@@ -251,23 +251,23 @@ const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
 
         {/* Mobile Search Bar - Hidden on promo page when hideText is true */}
         {!hideText && (
-          <div className="flex items-center gap-2 md:hidden w-full">
+          <div className="flex items-center gap-1.5 md:gap-2 md:hidden w-full">
             <form onSubmit={handleSearch} className="relative flex-1">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search products..."
-                className={`w-full px-4 py-2 border rounded-lg outline-none transition-colors pr-10 ${
+                placeholder="Search..."
+                className={`w-full px-3 md:px-4 py-1.5 md:py-2 border rounded-lg outline-none transition-colors pr-8 md:pr-10 text-sm md:text-base ${
                   isPromoPage 
                     ? 'border-purple-300 bg-white/10 text-white placeholder-white/70 focus:border-yellow-400' 
                     : 'border-gray-300 focus:border-orange-500'
                 }`}
               />
-              <button type="submit" className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors ${
+              <button type="submit" className={`absolute right-2 md:right-3 top-1/2 -translate-y-1/2 transition-colors ${
                 isPromoPage ? 'hover:text-yellow-300' : 'hover:text-orange-500'
               }`}>
-                <Image className="w-4 h-4" src={assets.search_icon} alt="search icon" />
+                <Image className="w-3.5 h-3.5 md:w-4 md:h-4" src={assets.search_icon} alt="search icon" />
               </button>
             </form>
 
@@ -276,19 +276,19 @@ const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
               <div className="relative">
                 <button
                   onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
-                  className={`flex items-center gap-1 px-3 py-2 border rounded-lg transition-colors text-sm whitespace-nowrap ${
+                  className={`flex items-center gap-1 px-2 md:px-3 py-1.5 md:py-2 border rounded-lg transition-colors text-xs md:text-sm whitespace-nowrap ${
                     isPromoPage 
                       ? 'bg-purple-700/50 border-purple-500 text-white hover:bg-purple-600/50' 
                       : 'bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100'
                   }`}
                 >
-                  <BoxIcon className="w-4 h-4" />
+                  <BoxIcon className="w-3 h-3 md:w-4 md:h-4" />
                   <span className="hidden sm:inline">Filter</span>
-                  <ChevronDown className={`w-3 h-3 transition-transform ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-2.5 h-2.5 md:w-3 md:h-3 transition-transform ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
                 
                 {isCategoryDropdownOpen && (
-                  <div className={`absolute top-full right-0 mt-1 w-48 max-h-60 overflow-y-auto rounded-lg border shadow-lg z-50 ${
+                  <div className={`absolute top-full right-0 mt-1 w-44 md:w-48 max-h-52 md:max-h-60 overflow-y-auto rounded-lg border shadow-lg z-50 ${
                     isPromoPage 
                       ? 'bg-purple-800/90 border-purple-600' 
                       : 'bg-white border-gray-200'
@@ -298,7 +298,7 @@ const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
                         router.push('/all-products');
                         setIsCategoryDropdownOpen(false);
                       }}
-                      className={`block w-full text-left px-4 py-2 text-sm transition-colors border-b font-medium ${
+                      className={`block w-full text-left px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm transition-colors border-b font-medium ${
                         isPromoPage 
                           ? 'text-white hover:bg-purple-700 hover:text-yellow-300 border-purple-600' 
                           : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600 border-gray-100'
@@ -310,7 +310,7 @@ const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
                       <button
                         key={index}
                         onClick={() => handleCategorySelect(category)}
-                        className={`block w-full text-left px-4 py-2 text-sm transition-colors ${
+                        className={`block w-full text-left px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm transition-colors ${
                           isPromoPage 
                             ? 'text-white hover:bg-purple-700 hover:text-yellow-300' 
                             : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'

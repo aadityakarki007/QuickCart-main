@@ -97,6 +97,7 @@ const Orders = () => {
     console.log("- Orders count:", orders.length);
     console.log("- Filtered orders count:", filteredOrders.length);
     console.log("- User exists:", !!user);
+    console.log("Sample order:", orders[0]);
 
     return (
         <div className="flex-1 h-screen overflow-scroll flex flex-col justify-between text-sm">
