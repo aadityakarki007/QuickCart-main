@@ -42,6 +42,7 @@ const Footer = () => {
               <p>service.eshopnepal@gmail.com</p>
             </div>
           </div>
+          
         </div>
       </div>
 
