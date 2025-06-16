@@ -68,8 +68,81 @@ const AllProducts = () => {
                     <div className="w-16 h-0.5 bg-orange-600 rounded-full"></div>
                 </div>
 
-                {/* Product Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-12 w-full pb-10">
+                {/* Mobile Product Grid - 2 columns with custom pricing */}
+                <div className="md:hidden grid grid-cols-2 gap-2 mt-8 w-full pb-10">
+                    {currentProducts.length > 0 ? (
+                        currentProducts.map((product, index) => {
+                            const price = product.offerPrice || product.price;
+                            const original = product.price;
+                            const hasDiscount = product.price && product.offerPrice && product.price > product.offerPrice;
+                            const discount = hasDiscount
+                                ? Math.round(((product.price - product.offerPrice) / product.price) * 100)
+                                : 0;
+                            return (
+                                <div
+                                    key={index}
+                                    className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden cursor-pointer"
+                                    onClick={() => window.location.href = `/product/${product._id}`}
+                                >
+                                    {/* Square Product Image */}
+                                    <div className="w-full aspect-square bg-gray-100 flex items-center justify-center">
+                                        <img
+                                            src={product.images?.[0] || '/placeholder-image.jpg'}
+                                            alt={product.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    {/* Product Info */}
+                                    <div className="p-2">
+                                        <h3 className="text-xs font-medium text-gray-900 line-clamp-2 mb-1 h-8">
+                                            {product.name}
+                                        </h3>
+                                        <div className="flex items-center gap-x-4 mb-1">
+                                            <span className="text-base font-bold text-orange-600">
+                                                ${price}
+                                            </span>
+                                            {hasDiscount && (
+                                                <>
+                                                    <span className="text-xs text-gray-500 line-through">
+                                                        ${product.price}
+                                                    </span>
+                                                    <span className="text-xs text-green-600 font-semibold ml-2">
+                                                        -{discount}%
+                                                    </span>
+                                                </>
+                                            )}
+                                        </div>
+                                        {/* Category */}
+                                        <div className="text-xs text-gray-500 mb-1">{product.category}</div>
+                                        {/* Ratings */}
+                                        {product.rating && (
+                                            <div className="flex items-center gap-1 text-xs text-yellow-600 mb-1">
+                                                <span>★</span>
+                                                <span>{product.rating}</span>
+                                            </div>
+                                        )}
+                                        {/* Sold Count */}
+                                        {product.soldCount && (
+                                            <div className="text-xs text-gray-400">{product.soldCount} sold</div>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <div className="col-span-2 text-center py-8 text-gray-500">
+                            {categoryFilter ? 
+                                `No products found in category "${categoryFilter}"` :
+                                searchQuery ? 
+                                    `No products found matching "${searchQuery}"` :
+                                    "No products available"
+                            }
+                        </div>
+                    )}
+                </div>
+
+                {/* Desktop Product Grid - Uses ProductCard component */}
+                <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-12 w-full pb-10">
                     {currentProducts.length > 0 ? (
                         currentProducts.map((product, index) => (
                             <ProductCard key={index} product={product} />
