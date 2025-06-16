@@ -99,12 +99,12 @@ const AllProducts = () => {
                                         </h3>
                                         <div className="flex items-center gap-x-4 mb-1">
                                             <span className="text-base font-bold text-orange-600">
-                                                ${price}
+                                                Rs.{price}
                                             </span>
                                             {hasDiscount && (
                                                 <>
                                                     <span className="text-xs text-gray-500 line-through">
-                                                        ${product.price}
+                                                        Rs.{product.price}
                                                     </span>
                                                     <span className="text-xs text-green-600 font-semibold ml-2">
                                                         -{discount}%
