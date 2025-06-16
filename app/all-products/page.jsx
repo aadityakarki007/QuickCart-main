@@ -62,7 +62,7 @@ const AllProducts = () => {
     return (
         <>
             <Navbar />
-            <div className="flex flex-col items-start">
+            <div className="flex flex-col items-start px-2 md:px-16 lg:px-32">
                 <div className="flex flex-col items-end pt-12">
                     <p className="text-2xl font-medium">{getPageTitle()}</p>
                     <div className="w-16 h-0.5 bg-orange-600 rounded-full"></div>
