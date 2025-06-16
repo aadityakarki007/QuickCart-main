@@ -27,7 +27,7 @@ const Home = () => {
   };
 
   return (
-    <div className="relative pb-16">
+    <div className="relative">
       <Head>
         <title>Hamro eShop - Best Deals on Electronics, Fashion, and More</title>
         <meta name="description" content="Shop headphones, gaming, laptops, and more at Hamro eShop. Discover exclusive deals and top brands." />

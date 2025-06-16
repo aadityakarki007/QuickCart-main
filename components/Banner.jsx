@@ -4,9 +4,9 @@ import Image from "next/image";
 
 const Banner = () => {
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between md:pl-20 md:py-0 py-8 bg-[#E6E9F2] md:my-16 my-8 rounded-xl overflow-hidden">
+    <div className="flex flex-col md:flex-row items-center justify-between md:pl-20 md:py-0 py-4 bg-[#E6E9F2] md:my-16 my-4 rounded-xl overflow-hidden">
       <Image
-        className="md:max-w-56 max-w-40"
+        className="md:max-w-56 max-w-28"
         src={assets.jbl_soundbox_image}
         alt="jbl_soundbox_image"
       />
@@ -28,7 +28,7 @@ const Banner = () => {
         alt="md_controller_image"
       />
       <Image
-        className="md:hidden max-w-32"
+        className="md:hidden max-w-20"
         src={assets.sm_controller_image}
         alt="sm_controller_image"
       />

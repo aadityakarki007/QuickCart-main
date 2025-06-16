@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const Footer = () => {
   return (
-    <footer className="text-gray-500 border-t border-gray-300/30">
+    <footer className="pb-24 md:pb-0 text-gray-500 border-t border-gray-300/30">
       {/* Desktop Layout */}
       <div className="hidden md:flex justify-between items-start px-6 md:px-16 lg:px-32 gap-10 py-14">
         {/* About */}
@@ -38,7 +38,7 @@ const Footer = () => {
             <h2 className="font-medium text-gray-900 mb-5">Get in touch</h2>
             <div className="text-sm space-y-2">
               <p>+9779828086387</p>
-              <p>+977840186285</p>
+              <p>+9779840186285</p>
               <p>service.eshopnepal@gmail.com</p>
             </div>
           </div>
@@ -82,6 +82,28 @@ const Footer = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Links to Return Policy and Terms & Conditions */}
+      <div className="flex justify-center gap-6 mt-6">
+        <a
+          href="/return-policy"
+          className="text-xs md:text-sm text-green-700 hover:underline transition"
+        >
+          Return Policy
+        </a>
+        <a
+          href="/terms&conditions"
+          className="text-xs md:text-sm text-green-700 hover:underline transition"
+        >
+          Terms & Conditions
+        </a>
+        <a
+          href="/termsofservice"
+          className="text-xs md:text-sm text-green-700 hover:underline transition"
+        >
+          Terms of Service
+        </a>
       </div>
 
       {/* Footer Bottom Text */}
