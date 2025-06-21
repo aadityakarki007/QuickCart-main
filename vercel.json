@@ -2,6 +2,12 @@
   "redirects": [
     {
       "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "hamroeshop.com"
+        }
+      ],
       "destination": "https://www.hamroeshop.com/$1",
       "permanent": true
     }
