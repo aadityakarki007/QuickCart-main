@@ -237,56 +237,34 @@ const AllProducts = () => {
 
                 <div className="flex flex-col items-start px-2 md:px-16 lg:px-32">
                     {/* Header Section */}
-                    <header className="pt-8 pb-6">
-                        <div className="flex flex-col">
-                            <div className="flex items-start justify-between mb-4">
-                                <div className="flex-1">
-                                    <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">
-                                        {getPageTitle()}
-                                    </h1>
-                                    <div className="w-16 h-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
-                                </div>
-
-                                {/* Mobile Sort Control */}
-                                <div className="md:hidden ml-4">
-                                    <select
-                                        value={sortBy}
-                                        onChange={(e) => setSortBy(e.target.value)}
-                                        className="text-sm px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white shadow-sm min-w-0"
-                                        aria-label="Sort products"
-                                    >
-                                        <option value="newest">Newest</option>
-                                        <option value="price-low">Price ↑</option>
-                                        <option value="price-high">Price ↓</option>
-                                        <option value="rating">Rating</option>
-                                        <option value="popular">Popular</option>
-                                        <option value="name">A-Z</option>
-                                    </select>
-                                </div>
+                    <header className="pt-8 pb-6 w-full">
+                        <div className="flex flex-row items-center justify-between w-full mb-4">
+                            <div>
+                                <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">
+                                    {getPageTitle()}
+                                </h1>
+                                <div className="w-16 h-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
                             </div>
-
-                            <div className="flex items-center justify-between">
-                                <p className="text-sm md:text-base text-gray-600">
-                                    {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} found
-                                </p>
-
-                                {/* Desktop Sort Control */}
-                                <div className="hidden md:block">
-                                    <select
-                                        value={sortBy}
-                                        onChange={(e) => setSortBy(e.target.value)}
-                                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white shadow-sm"
-                                        aria-label="Sort products"
-                                    >
-                                        <option value="newest">Newest First</option>
-                                        <option value="price-low">Price: Low to High</option>
-                                        <option value="price-high">Price: High to Low</option>
-                                        <option value="rating">Highest Rated</option>
-                                        <option value="popular">Most Popular</option>
-                                        <option value="name">Name A-Z</option>
-                                    </select>
-                                </div>
+                            <div className="min-w-[140px]">
+                                <select
+                                    value={sortBy}
+                                    onChange={(e) => setSortBy(e.target.value)}
+                                    className="text-sm md:text-base px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white shadow-sm"
+                                    aria-label="Sort products"
+                                >
+                                    <option value="newest">Newest</option>
+                                    <option value="price-low">Price ↑</option>
+                                    <option value="price-high">Price ↓</option>
+                                    <option value="rating">Rating</option>
+                                    <option value="popular">Popular</option>
+                                    <option value="name">A-Z</option>
+                                </select>
                             </div>
+                        </div>
+                        <div className="flex items-center justify-between w-full">
+                            <p className="text-sm md:text-base text-gray-600">
+                                {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} found
+                            </p>
                         </div>
                     </header>
 
