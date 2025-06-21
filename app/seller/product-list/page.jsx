@@ -137,6 +137,34 @@ const ProductList = () => {
                     >
                       Edit
                     </button>
+                    <button
+                      onClick={async () => {
+                        try {
+                          const token = await getToken();
+                          const { data } = await axios.put(
+                            '/api/product/set-popular',
+                            { productId: product._id, isPopular: !product.isPopular },
+                            { headers: { Authorization: `Bearer ${token}` } }
+                          );
+                          if (data.success) {
+                            toast.success(data.message || (product.isPopular ? "Removed from popular" : "Marked as popular"));
+                            await fetchSellerProduct(); // <-- This will fetch the latest data from the backend
+                          } else {
+                            toast.error(data.message || "Failed to update popular status");
+                          }
+                        } catch (error) {
+                          toast.error(error.message || "Failed to update popular status");
+                        }
+                      }}
+                      className={`px-1 py-0.5 md:px-3 md:py-1 rounded md:w-auto text-[10px] md:text-sm min-w-0 ${
+                        product.isPopular
+                          ? "bg-yellow-400 text-gray-900 hover:bg-yellow-500"
+                          : "bg-gray-200 text-gray-700 hover:bg-yellow-200"
+                      }`}
+                      style={{ minWidth: "auto", width: "auto" }}
+                    >
+                      {product.isPopular ? "Unmark Popular" : "Mark Popular"}
+                    </button>
                   </td>
                 </tr>
               ))}

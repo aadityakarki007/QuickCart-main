@@ -670,22 +670,31 @@ const ManageProducts = () => {
                     </div>
                     <div className="flex justify-between items-center">
                       <div className="flex gap-2">
-                          <button
-                            onClick={() => handleEdit(product)}
-                            className="flex items-center text-blue-600 hover:text-blue-800"
-                          >
-                            <Pencil size={16} className="mr-1" />
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(product._id)}
-                            className="flex items-center text-red-600 hover:text-red-800"
-                          >
-                            <Trash2 size={16} className="mr-1" />
-                            Delete
-                          </button>
+                        <button
+                          onClick={() => handleEdit(product)}
+                          className="flex items-center text-blue-600 hover:text-blue-800"
+                        >
+                          <Pencil size={16} className="mr-1" />
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(product._id)}
+                          className="flex items-center text-red-600 hover:text-red-800"
+                        >
+                          <Trash2 size={16} className="mr-1" />
+                          Delete
+                        </button>
                       </div>
-                      <PopularProductManager product={product} />
+                      <button
+                        onClick={() => togglePopular(product._id, product.isPopular)}
+                        className={`px-3 py-1 rounded text-sm ${
+                          product.isPopular
+                            ? 'bg-orange-100 text-orange-600'
+                            : 'bg-gray-100 text-gray-600'
+                        }`}
+                      >
+                        {product.isPopular ? '★ Popular' : '☆ Mark Popular'}
+                      </button>
                     </div>
                     <div className="flex items-center gap-2 mt-2">
                       <button

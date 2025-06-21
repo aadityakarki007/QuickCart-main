@@ -26,6 +26,7 @@ const productSchema = new mongoose.Schema({
     deliveryDate: { type: String, default: "" },
     warrantyDuration: { type: String, default: "" },
     returnPeriod: { type: String, default: "" },
+    isPopular: { type: Boolean, default: false },
     // ------------------------
     reviews: [reviewSchema],
     averageRating: { type: Number, default: 0 },

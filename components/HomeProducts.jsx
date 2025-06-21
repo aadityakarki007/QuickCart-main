@@ -1,18 +1,50 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import { useAppContext } from "@/context/AppContext";
+import Loading from "@/components/Loading";
+import axios from 'axios';
 
 const HomeProducts = () => {
+  const { router } = useAppContext();
+  const [loading, setLoading] = useState(true);
+  const [popularProducts, setPopularProducts] = useState([]);
+  const [error, setError] = useState(null);
 
-  const { products, router } = useAppContext()
+  useEffect(() => {
+    const fetchPopularProducts = async () => {
+      try {
+        setLoading(true);
+        const { data } = await axios.get('/api/product/list', {
+          params: { limit: 100 }
+        });
+        if (data.success) {
+          // Filter for popular products and take only the top 10
+          const popular = data.products
+            .filter(product => product.isPopular === true)
+            .slice(0, 10);
+          setPopularProducts(popular);
+        } else {
+          setError(data.message || 'Failed to fetch products');
+        }
+      } catch (error) {
+        setError(error.message || 'Failed to fetch products');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPopularProducts();
+  }, []);
+
+  if (loading) return <Loading />;
+  if (error || !popularProducts.length) return null;
 
   return (
     <div className="flex flex-col items-center pt-14">
       <p className="text-2xl font-medium text-left w-full">Popular products</p>
+      {/* Mobile grid: custom card style */}
       <div className="w-full">
-        {/* Mobile grid: custom card style */}
         <div className="grid grid-cols-2 gap-2 md:hidden pb-14 mt-6">
-          {products.filter(product => product.isPopular).map((product, index) => {
+          {popularProducts.map((product, index) => {
             const price = product.offerPrice || product.price;
             const original = product.price;
             const hasDiscount = product.price && product.offerPrice && product.price > product.offerPrice;
@@ -73,8 +105,8 @@ const HomeProducts = () => {
         </div>
         {/* Desktop grid: keep ProductCard */}
         <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-6 pb-14 w-full">
-          {products.filter(product => product.isPopular).map((product, index) => (
-            <ProductCard key={index} product={product} />
+          {popularProducts.map((product, index) => (
+            <ProductCard key={product._id} product={product} />
           ))}
         </div>
       </div>
@@ -84,6 +116,5 @@ const HomeProducts = () => {
     </div>
   );
 };
-
 
 export default HomeProducts;
