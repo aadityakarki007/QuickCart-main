@@ -15,7 +15,7 @@ const HomeProducts = () => {
       try {
         setLoading(true);
         const { data } = await axios.get('/api/product/list', {
-          params: { limit: 100 }
+          params: { limit: 10, popular: true }
         });
         if (data.success) {
           // Filter for popular products and take only the top 10
