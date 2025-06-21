@@ -3,6 +3,7 @@ import ProductCard from "./ProductCard";
 import { useAppContext } from "@/context/AppContext";
 import Loading from "@/components/Loading";
 import axios from 'axios';
+import Image from "next/image";
 
 const HomeProducts = () => {
   const { router } = useAppContext();
@@ -59,10 +60,13 @@ const HomeProducts = () => {
               >
                 {/* Square Product Image */}
                 <div className="w-full aspect-square bg-gray-100 flex items-center justify-center">
-                  <img
+                  <Image
                     src={product.images?.[0] || '/placeholder-image.jpg'}
                     alt={product.name}
+                    width={400}
+                    height={400}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                 </div>
                 {/* Product Info */}
