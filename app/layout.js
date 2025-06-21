@@ -450,6 +450,7 @@ export default function RootLayout({ children }) {
           <meta name="twitter:title" content="Hamro eShop - Best Online Shopping" />
           <meta name="twitter:description" content="Shop electronics, fashion, gadgets, and more at Hamro eShop. Fast delivery and exclusive deals for Nepal." />
           <meta name="twitter:image" content="https://hamroeshop.com/og.webp" />
+          <link rel="canonical" href="https://www.hamroeshop.com" />
         </head>
         <body className={`${outfit.className} antialiased text-gray-700`}>
           <Toaster />
