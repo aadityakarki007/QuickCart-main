@@ -235,7 +235,7 @@ const AllProducts = () => {
                     </ol>
                 </nav>
 
-                <div className="px-4 md:px-16 lg:px-32 pb-8">
+                <div className="flex flex-col items-start px-2 md:px-16 lg:px-32">
                     {/* Header Section */}
                     <header className="pt-8 pb-6">
                         <div className="flex flex-col">
